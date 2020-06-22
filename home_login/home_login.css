@@ -1,0 +1,47 @@
+body {
+    background-color: darkslateblue;
+    margin: 0px;
+}
+
+.header {
+    overflow: hidden;
+    background-color: midnightblue;
+    padding: 10px 5px;
+    margin: 0px;
+}
+
+.header a {
+    float: left;
+    color: white;
+    text-align: center;
+    text-decoration: none;
+}
+
+.header a.logo {
+    font-size: 32px;
+    font-weight: bold;
+}
+
+.right_header {
+    float: right;
+    margin-right: 30px;
+}
+
+.right_header img.visitor_icon {
+    float: right;
+    height: 40px;
+    width: 40px;
+}
+
+.right_header a.login {
+    background-color: yellow;
+    color: black;
+    font-size: 20px;
+    margin-left: 15px;
+    margin-top: 6px;
+    text-align: center;
+    font-weight: bold;
+    border-radius: 4px;
+    padding: 4px;
+    text-decoration: none;
+}
