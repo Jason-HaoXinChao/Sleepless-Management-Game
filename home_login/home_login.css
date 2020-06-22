@@ -1,6 +1,8 @@
 body {
     background-color: #212121;
     margin: 0px;
+    width: 100%;
+    height: 100%;
 }
 
 .header {
@@ -45,4 +47,75 @@ body {
     border-radius: 4px;
     padding: 4px;
     text-decoration: none;
+}
+
+.container {
+    margin: auto;
+    width: 80%;
+    height: 60%;
+    color: white;
+    margin-top: 5%;
+    display: table;
+}
+
+.container .container_formatter {
+    display: table-row;
+}
+
+.container .about {
+    width: 50%;
+    height: 100%;
+    background-color: #3e50b4;
+    border-radius: 15px;
+    padding: 20px;
+    opacity: 100%;
+    display: table-cell;
+    text-align: left;
+    word-wrap: normal;
+}
+
+.about_title {
+    color: white;
+    opacity: 100%;
+    font-weight: bold;
+    font-size: 36px;
+    margin: 0px;
+    padding: 5px;
+}
+
+.container .signup {
+    background: #FF3F80;
+    width: 50%;
+    height: 100%;
+    opacity: 100%;
+    border-radius: 15px;
+    padding: 20px;
+    display: table-cell;
+}
+
+.signup_title {
+    font-weight: bold;
+    font-size: 36px;
+    opacity: 100%;
+    margin: 0px;
+    padding: 5px;
+}
+
+.signupform {
+    display: table;
+}
+
+.signupform p {
+    display: table-row;
+}
+
+.signupform label {
+    display: table-cell;
+    margin-top: 5px;
+    font-size: 20px;
+}
+
+.signupform input {
+    display: table-cell;
+    margin-top: 5px;
 }
