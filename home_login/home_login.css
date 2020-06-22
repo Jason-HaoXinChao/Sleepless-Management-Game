@@ -1,11 +1,11 @@
 body {
-    background-color: darkslateblue;
+    background-color: #212121;
     margin: 0px;
 }
 
 .header {
     overflow: hidden;
-    background-color: midnightblue;
+    background-color: #000000;
     padding: 10px 5px;
     margin: 0px;
 }
@@ -15,6 +15,7 @@ body {
     color: white;
     text-align: center;
     text-decoration: none;
+    margin-left: 20px;
 }
 
 .header a.logo {
