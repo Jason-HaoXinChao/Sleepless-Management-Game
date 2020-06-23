@@ -6,81 +6,61 @@ body {
 }
 
 .header {
-    overflow: hidden;
-    background-color: #000000;
-    padding: 10px 5px;
-    margin: 0px;
     height: 40px;
+    background-color: black;
+    font-family: 'Lucida Console', ui-monospace, monospace;
+    line-height: 40px;
+    padding: 10px 5px;
+    overflow: hidden;
 }
 
 .header a {
-    float: left;
-    color: white;
-    text-align: center;
-    text-decoration: none;
-    border-width: 0px;
-    padding: 0px;
-    font-size: 20px;
     margin-left: 20px;
+    color: white;
+    font-size: 18px;
     font-weight: bold;
+    padding: 5px;
+    text-decoration: none;
+    vertical-align: middle;
+}
+
+.header a.logo {
+    font-size: 28px;
 }
 
 .header a.currentpage {
     background-color: #39FF14;
     color: black;
-    padding-top: 5px;
-    padding-bottom: 5px;
-    padding-left: 5px;
-    padding-right: 5px;
     border-radius: 4px;
-}
-
-.header a.otherpage {
-    padding-top: 5px;
-    padding-bottom: 5px;
-    padding-left: 5px;
-    padding-right: 5px;
+    box-sizing: border-box;
 }
 
 .header a.otherpage:hover {
     border-bottom: 2px solid white;
 }
 
-.header a.logo {
-    font-size: 32px;
-    font-weight: bold;
-    margin-left: 20px;
-}
-
 .right_header {
     float: right;
     margin-right: 30px;
+    height: 40px;
+    line-height: 40px;
 }
 
 .right_header img.user_icon {
-    float: right;
-    height: 40px;
     width: 40px;
+    height: 40px;
+    vertical-align: middle;
 }
 
 .right_header a.logout {
+    margin-left: 15px;
     background-color: yellow;
     color: black;
-    font-size: 20px;
-    margin-left: 15px;
-    margin-top: 6px;
-    text-align: center;
+    font-size: 18px;
     font-weight: bold;
-    border-radius: 4px;
+    text-align: center;
     padding: 4px;
+    border-radius: 4px;
     text-decoration: none;
-}
-
-.container {
-    margin: auto;
-    width: 80%;
-    height: 60%;
-    color: white;
-    margin-top: 5%;
-    display: table;
+    vertical-align: middle;
 }
