@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="utf-8">
-    <title>Home</title>
+    <title>Diplomacy</title>
     <link rel="stylesheet" type="text/css" href="diplomacy.css">
 </head>
 
@@ -23,6 +23,26 @@
             <a href="logout" class="logout">Logout</a>
         </div>
     </div>
+
+    <!-- Table of cards each containing information of one diplomatic connection(friends),
+        there are 3 columns in the table, and indefinitely many rows. -->
+    <div class="maincontent">
+        <div class="card_container">
+            <div class="card">card1</div>
+            <div class="card">card2</div>
+            <div class="card">card3</div>
+            <div class="card">card4</div>
+        </div>
+        <div class="pagination">
+            <a href="previouspage">&lsaquo;</a>
+            <a href="page1">1</a>
+            <a href="page2">2</a>
+            <a href="page3" class="active">3</a>
+            <a href="nextpage">&rsaquo;</a>
+        </div>
+    </div>
+
+
 </body>
 
 <script type="text/javascript" src="diplomacy.js"></script>
