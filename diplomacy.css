@@ -104,10 +104,101 @@ body {
     width: 300px;
     height: 300px;
     color: white;
-    background-color: #121212;
+    background-color: #212121;
     border: 2px solid white;
-    display: inline-block;
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    grid-template-rows: repeat(8, 1fr);
+    grid-template-areas: "icon icon stat1icon stat1icon stat2icon stat2icon" "icon icon stat1 stat1 stat2 stat2" "username username stat3icon stat3icon stat4icon stat4icon" "username username stat3 stat3 stat4 stat4" "profile profile profile send send send" "profile profile profile send send send" "ask ask ask break break break" "ask ask ask break break break";
+    justify-content: center;
+    align-content: center;
 }
+
+.card img.icon {
+    grid-area: icon;
+    max-width: 100%;
+    object-fit: contain;
+    justify-self: center;
+}
+
+.card p {
+    max-width: 100%;
+    justify-self: center;
+    text-align: center;
+}
+
+.card .username {
+    grid-area: username;
+    font-size: 14px;
+}
+
+.card .stat1icon {
+    grid-area: stat1icon;
+    font-weight: bold;
+}
+
+.card .stat1 {
+    grid-area: stat1;
+}
+
+.card .stat2icon {
+    grid-area: stat2icon;
+    font-weight: bold;
+}
+
+.card .stat2 {
+    grid-area: stat2;
+}
+
+.card .stat3icon {
+    grid-area: stat3icon;
+    font-weight: bold;
+}
+
+.card .stat3 {
+    grid-area: stat3;
+}
+
+.card .stat4icon {
+    grid-area: stat4icon;
+    font-weight: bold;
+}
+
+.card .stat4 {
+    grid-area: stat4;
+}
+
+.card button {
+    color: white;
+    background-color: black;
+    border-radius: 0.5px;
+    border: 2px solid, white;
+    transition: all 0.2s;
+    margin: 3px;
+}
+
+.card .profile {
+    grid-area: profile;
+    max-width: 100%;
+}
+
+.card .send {
+    grid-area: send;
+    max-width: 100%;
+}
+
+.card .ask {
+    max-width: 100%;
+    grid-area: ask;
+}
+
+.card .break {
+    grid-area: break;
+    max-width: 100%;
+}
+
+
+/* Styling for inside the card */
 
 
 /* Styling for pagnation */
@@ -131,7 +222,7 @@ body {
 
 .pagination a.active {
     background-color: #39ff14;
-    border: 1px solid #white;
+    border: 1px solid white;
     color: black;
 }
 
