@@ -173,8 +173,13 @@ body {
     background-color: black;
     border-radius: 0.5px;
     border: 2px solid, white;
-    transition: all 0.2s;
+    transition: all 0.3s;
     margin: 3px;
+}
+
+.card button:hover {
+    color: #000000;
+    background-color: #FFFFFF;
 }
 
 .card .profile {
