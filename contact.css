@@ -3,6 +3,7 @@ body {
     margin: 0px;
     width: 100%;
     height: 100%;
+    font-family: 'Lucida Console', ui-monospace, monospace;
 }
 
 .header {
@@ -50,6 +51,7 @@ body {
     width: 40px;
     height: 40px;
     vertical-align: middle;
+    border-radius: 50%;
 }
 
 .right_header a.logout {
@@ -63,4 +65,59 @@ body {
     border-radius: 4px;
     text-decoration: none;
     vertical-align: middle;
+}
+
+.maincontent {
+    width: 80%;
+    height: 100vh;
+    margin: auto;
+    margin-top: 0px;
+    padding: 20px;
+    background-color: #121212;
+    overflow: hidden;
+}
+
+.maincontent p {
+    font-size: 24px;
+    color: white;
+    flex-flow: row;
+    width: 100%;
+}
+
+.maincontent strong {
+    font-size: 30px;
+    margin: 0px;
+    color: white;
+}
+
+#submitButton {
+    color: white;
+    background-color: black;
+    border: 2px solid #39FF14;
+    border-radius: 10%;
+    padding: 10px;
+    margin-top: 10px;
+    font-size: 18px;
+    transition: all 0.3s;
+    float: right;
+    margin-right: 5%;
+}
+
+#submitButton:hover {
+    color: #000000;
+    background-color: #FFFFFF;
+}
+
+textarea#inputTextBox {
+    color: white;
+    background-color: #212121;
+    border: 2px solid #39FF14;
+    border-radius: 1%;
+    height: 300px;
+    width: 95%;
+    text-align: left;
+    text-anchor: start;
+    font-size: 20px;
+    word-wrap: normal;
+    overflow: hidden;
 }
