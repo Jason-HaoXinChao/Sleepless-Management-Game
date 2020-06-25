@@ -1,0 +1,231 @@
+body {
+    background-color: #212121;
+    margin: 0px;
+    width: 100%;
+    height: 100%;
+}
+
+.header {
+    height: 40px;
+    background-color: black;
+    font-family: 'Lucida Console', ui-monospace, monospace;
+    line-height: 40px;
+    padding: 10px 5px;
+    overflow: hidden;
+}
+
+.header a {
+    margin-left: 20px;
+    color: white;
+    font-size: 18px;
+    font-weight: bold;
+    padding: 5px;
+    text-decoration: none;
+    vertical-align: middle;
+}
+
+.header a.logo {
+    font-size: 28px;
+}
+
+.header a.currentpage {
+    background-color: #39FF14;
+    color: black;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+.header a.otherpage:hover {
+    border-bottom: 2px solid white;
+}
+
+.right_header {
+    float: right;
+    margin-right: 30px;
+    height: 40px;
+    line-height: 40px;
+}
+
+.right_header img.user_icon {
+    width: 40px;
+    height: 40px;
+    vertical-align: middle;
+}
+
+.right_header a.logout {
+    margin-left: 15px;
+    background-color: yellow;
+    color: black;
+    font-size: 18px;
+    font-weight: bold;
+    text-align: center;
+    padding: 4px;
+    border-radius: 4px;
+    text-decoration: none;
+    vertical-align: middle;
+}
+
+.maincontent {
+    width: 80%;
+    min-height: 100%;
+    margin: auto;
+    margin-top: 0px;
+    padding: 20px;
+    background-color: #121212;
+    overflow: visible;
+    display: flex;
+    justify-items: start;
+    justify-content: flex-start;
+}
+
+.user_profile_container {
+    font-size: 18px;
+    color: white;
+    height: 100%;
+    width: 75%;
+    padding: 20px;
+    margin: 0px;
+    overflow: visible;
+}
+
+.user-profile{
+    float: left;
+    width: 50%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    height: 100%;
+    padding: 20px 150px;
+    overflow: auto;
+    box-sizing: border-box;
+}
+
+.user-profile img.user_profile_image{
+
+    border: 3px solid #39FF14;
+    border-radius: 50%;
+    width: 250px;
+}
+
+.user-profile p.username {
+    font-size: 24px;
+    font-weight: bold;
+    text-transform: uppercase;
+    text-decoration: none;
+    color: white;
+}
+.user-profile p.heading {
+    font-size: 24px;
+    font-weight: bold;
+    text-transform: uppercase;
+    text-decoration: none;
+    color: white;
+    width: max-content;
+    text-align: center;
+    margin: auto;
+    margin-top: 30px;
+    margin-bottom: 30px;
+}
+.box{
+    border: 3px solid #39FF14;
+    width: 400px;
+    padding: 5px;
+}
+
+.box p.info{
+    font-size: 16px;
+    font-weight: normal;
+    text-transform: uppercase;
+    text-decoration: none;
+    color: white;
+    margin-left: 10px;
+}
+
+.fixed_menubar p {
+    text-decoration: none;
+    color: white;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+#box{
+    display: flex;
+}
+
+.country-stat{    
+    float: right;
+    width: 50%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    height: 100%;
+    padding: 20px 150px;
+    box-sizing: border-box;
+    overflow: auto;
+}
+
+.country-stat p.countryname {
+    font-size: 24px;
+    font-weight: bold;
+    text-transform: uppercase;
+    text-decoration: none;
+    color: white;
+    width: max-content;
+}
+
+.Country-flag{
+    border: 3px solid #39FF14;
+    width: 400px;
+    border-radius: 8px;
+}
+
+.country-stat p.heading {
+    font-size: 24px;
+    font-weight: bold;
+    text-transform: uppercase;
+    text-decoration: none;
+    color: white;
+    width: max-content;
+    text-align: center;
+    margin: auto;
+    margin-top: 30px;
+    margin-bottom: 30px;
+}
+
+.bar {
+    width: 90%;
+    background-color: #ddd; 
+    border-radius: 10px;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    text-align: right; 
+    color: black; 
+}
+
+.economy{
+    width: 69%;
+    background-color: #39FF14;
+    border-radius: 10px;
+}
+
+.law-order{
+    width: 42%;
+    background-color: #39FF14;
+    border-radius: 10px;
+}
+
+.public-health{
+    width: 88%;
+    background-color: #39FF14;
+    border-radius: 10px;
+}
+
+.diplomacy{
+    width: 87%;
+    background-color: #39FF14;
+    border-radius: 10px;
+}
+
+
