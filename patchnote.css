@@ -8,6 +8,10 @@ body {
     font-family: 'Lucida Console', ui-monospace, monospace;
 }
 
+html {
+    scroll-padding-top: 60px;
+}
+
 .header {
     height: 40px;
     background-color: black;
@@ -158,11 +162,4 @@ body {
 
 .fixed_menubar a:hover {
     color: #39FF14;
-}
-
-color: #39FF14;
-
-}
-color: #39FF14;
-
 }
