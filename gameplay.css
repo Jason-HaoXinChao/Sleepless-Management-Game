@@ -1,0 +1,275 @@
+body {
+    background-color: #212121;
+    margin: 0px;
+    width: 100%;
+    height: 100%;
+    font-family: 'Lucida Console', ui-monospace, monospace;
+    overflow: hidden;
+}
+
+
+/* Styling for header bar */
+
+.header {
+    height: 40px;
+    background-color: black;
+    font-family: 'Lucida Console', ui-monospace, monospace;
+    line-height: 40px;
+    padding: 10px 5px;
+    overflow: hidden;
+}
+
+.header a {
+    margin-left: 20px;
+    color: white;
+    font-size: 18px;
+    font-weight: bold;
+    padding: 5px;
+    text-decoration: none;
+    vertical-align: middle;
+}
+
+.header a.logo {
+    font-size: 28px;
+}
+
+.header a.currentpage {
+    background-color: #39FF14;
+    color: black;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+.header a.otherpage:hover {
+    border-bottom: 2px solid white;
+}
+
+.right_header {
+    float: right;
+    margin-right: 30px;
+    height: 40px;
+    line-height: 40px;
+}
+
+.right_header img.user_icon {
+    width: 40px;
+    height: 40px;
+    vertical-align: middle;
+}
+
+.right_header a.logout {
+    margin-left: 15px;
+    background-color: yellow;
+    color: black;
+    font-size: 18px;
+    font-weight: bold;
+    text-align: center;
+    padding: 4px;
+    border-radius: 4px;
+    text-decoration: none;
+    vertical-align: middle;
+}
+
+.maincontent {
+    width: 80%;
+    height: 100vh;
+    margin: auto;
+    margin-top: 0px;
+    padding: 20px;
+    background-color: #121212;
+    overflow: hidden;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-evenly;
+    color: white;
+}
+
+.innerpanel {
+    width: 40%;
+    height: 40%;
+    background-color: #212121;
+    border: 2px solid #39FF14;
+    border-radius: 5%;
+}
+
+#title {
+    font-size: 24px;
+    font-weight: bold;
+    border-bottom: 3px solid #39FF14;
+    margin-bottom: 0px;
+    text-align: center;
+}
+
+
+/* The following are styling for statistics panel */
+
+.innerpanel .stats {
+    height: 100%;
+    width: 90%;
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    grid-template-rows: 30px repeat(4, 1fr);
+    grid-template-areas: "title title title title title" "econIcon econBar econBar econBar econBar" "orderIcon orderBar orderBar orderBar orderBar" "healthIcon healthBar healthBar healthBar healthBar" "diplomacyIcon diplomacyBar diplomacyBar diplomacyBar diplomacyBar";
+    padding: 5px;
+    align-items: center;
+    justify-items: center;
+    color: white;
+    margin: auto;
+}
+
+
+/* Assigning grid-area to all the components */
+
+.stats #title {
+    padding-top: 5px;
+    align-self: center;
+    grid-area: title;
+}
+
+.stats #econIcon {
+    grid-area: econIcon;
+    width: auto;
+    height: auto;
+}
+
+.stats #orderIcon {
+    grid-area: orderIcon;
+    width: auto;
+    height: auto;
+}
+
+.stats #healthIcon {
+    grid-area: healthIcon;
+    width: auto;
+    height: auto;
+}
+
+.stats #diplomacyIcon {
+    grid-area: diplomacyIcon;
+    width: auto;
+    height: auto;
+}
+
+.stats #econBar {
+    grid-area: econBar;
+}
+
+.stats #orderBar {
+    grid-area: orderBar;
+}
+
+.stats #healthBar {
+    grid-area: healthBar;
+}
+
+.stats #diplomacyBar {
+    grid-area: diplomacyBar;
+}
+
+
+/* Percentage bar for stats */
+
+.stats .barContainer {
+    border: 1px solid white;
+    background-color: #ccc;
+    position: relative;
+    height: 30px;
+    width: 80%;
+    padding: 0px;
+}
+
+
+/* the width of the bar should be handled by js */
+
+.stats .bar {
+    border: 0px;
+    position: relative;
+    text-align: center;
+    height: 100%;
+    width: auto;
+    font-weight: bold;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+}
+
+
+/* Doing this prevents the need to hardcode color code in js */
+
+.barContainer .bar#red {
+    background-color: #FF0000;
+}
+
+.barContainer .bar#green {
+    background-color: #00FF00;
+}
+
+
+/* Scrollable panel layout */
+
+
+/* This needs to be a fixed height else the divs inside bleeds out */
+
+.fixedPanel {
+    height: 380px;
+}
+
+.variablePanel {
+    height: 100%;
+}
+
+.fixedRelativePanel {
+    height: 100%;
+    position: relative;
+}
+
+.titleContainer {
+    height: 100%;
+    position: relative;
+}
+
+.titleContainer #title {
+    height: auto;
+    border: 0px;
+    border-bottom: 2px solid #39FF14;
+    display: inline-block;
+    text-align: center;
+    align-self: center;
+    padding-top: 10px;
+}
+
+.scrollableContainer {
+    height: 100%;
+    width: 100%;
+    padding-top: 40px;
+    padding-left: 10px;
+    padding-right: 10px;
+    box-sizing: border-box;
+    position: absolute;
+    top: 0;
+    overflow: hidden;
+}
+
+.scrollableBox {
+    max-height: 100%;
+    position: relative;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+div.boxWrapper {
+    display: block;
+    margin-bottom: 20px;
+}
+
+.scrollableBox .boxedItem {
+    border: 2px solid white;
+    border-radius: 10%;
+    padding: 10px 5px;
+    text-align: center;
+    display: inline-block;
+    margin: 0 auto;
+    word-wrap: normal;
+    max-width: 80%;
+}
