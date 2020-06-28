@@ -152,18 +152,22 @@ body {
 
 .stats #econBar {
     grid-area: econBar;
+    user-select: none;
 }
 
 .stats #orderBar {
     grid-area: orderBar;
+    user-select: none;
 }
 
 .stats #healthBar {
     grid-area: healthBar;
+    user-select: none;
 }
 
 .stats #diplomacyBar {
     grid-area: diplomacyBar;
+    user-select: none;
 }
 
 
@@ -225,8 +229,8 @@ body {
 }
 
 .titleContainer {
-    height: 100%;
-    position: relative;
+    height: auto;
+    text-align: center;
 }
 
 .titleContainer #title {
@@ -237,12 +241,13 @@ body {
     text-align: center;
     align-self: center;
     padding-top: 10px;
+    margin: 0px 0px;
 }
 
 .scrollableContainer {
     height: 100%;
     width: 100%;
-    padding-top: 40px;
+    padding-top: 50px;
     padding-left: 10px;
     padding-right: 10px;
     box-sizing: border-box;
@@ -258,18 +263,73 @@ body {
     overflow-x: hidden;
 }
 
-div.boxWrapper {
+.scrollableBox::-webkit-scrollbar {
+    width: 0.8em;
+    background-color: #212121;
+    border: 1px solid white;
+    padding: 0px 1px;
+}
+
+.scrollableBox::-webkit-scrollbar-thumb {
+    background-color: white;
+    transition: all 0.2s;
+    outline: 1px solid white;
+}
+
+.scrollableBox::-webkit-scrollbar-thumb:hover {
+    background-color: #00FF00;
+}
+
+
+/* Makes sure each line has only 1 item */
+
+div.blockWrapper {
     display: block;
     margin-bottom: 20px;
+    text-align: center;
 }
 
 .scrollableBox .boxedItem {
     border: 2px solid white;
-    border-radius: 10%;
+    border-radius: 15px;
     padding: 10px 5px;
     text-align: center;
     display: inline-block;
     margin: 0 auto;
-    word-wrap: normal;
+    word-wrap: break-word;
     max-width: 80%;
+}
+
+.scrollableBox p.log {
+    border: 0px;
+    padding: 2px 2px;
+    font-size: 16px;
+    word-wrap: break-word;
+    max-width: 100%;
+    text-align: left;
+    display: block;
+}
+
+.scrollableBox p.log span#timestamp {
+    color: yellow;
+}
+
+.scrollableBox p.log span#mainContent {
+    color: white;
+}
+
+.scrollableBox p.log span#econ {
+    color: #00FF00;
+}
+
+.scrollableBox p.log span#order {
+    color: #C0C0C0;
+}
+
+.scrollableBox p.log span#health {
+    color: #FF0000;
+}
+
+.scrollableBox p.log span#diplomacy {
+    color: skyblue;
 }
