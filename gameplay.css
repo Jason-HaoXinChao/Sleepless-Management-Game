@@ -130,24 +130,28 @@ body {
     grid-area: econIcon;
     width: auto;
     height: auto;
+    user-select: none;
 }
 
 .stats #orderIcon {
     grid-area: orderIcon;
     width: auto;
     height: auto;
+    user-select: none;
 }
 
 .stats #healthIcon {
     grid-area: healthIcon;
     width: auto;
     height: auto;
+    user-select: none;
 }
 
 .stats #diplomacyIcon {
     grid-area: diplomacyIcon;
     width: auto;
     height: auto;
+    user-select: none;
 }
 
 .stats #econBar {
@@ -195,7 +199,7 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    color: white;
+    color: black;
 }
 
 
@@ -281,7 +285,7 @@ body {
 }
 
 
-/* Makes sure each line has only 1 item */
+/* Wrapper makes sure each line has only 1 item */
 
 div.blockWrapper {
     display: block;
@@ -298,6 +302,13 @@ div.blockWrapper {
     margin: 0 auto;
     word-wrap: break-word;
     max-width: 80%;
+    font-size: 16px;
+    transition: all 0.2s;
+    user-select: none;
+}
+
+.scrollableBox .boxedItem:hover {
+    border: 2px solid #39FF14;
 }
 
 .scrollableBox p.log {
@@ -309,6 +320,9 @@ div.blockWrapper {
     text-align: left;
     display: block;
 }
+
+
+/* Different color for each component of the a log message */
 
 .scrollableBox p.log span#timestamp {
     color: yellow;
@@ -332,4 +346,116 @@ div.blockWrapper {
 
 .scrollableBox p.log span#diplomacy {
     color: skyblue;
+}
+
+
+/* Styling for the strategy pannel */
+
+.strategyGrid {
+    display: grid;
+    height: 100%;
+    width: 100%;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: 40px repeat(4, 1fr);
+    grid-template-areas: "title title title" "econIcon econMenu econMenu" "orderIcon orderMenu orderMenu" "healthIcon healthMenu healthMenu" "diplomacyIcon diplomacyMenu diplomacyMenu";
+    align-items: center;
+    justify-items: center;
+    color: white;
+    padding-left: 20px;
+    padding-right: 20px;
+    margin: auto;
+}
+
+.strategyGrid #title {
+    grid-area: title;
+    border: 0px;
+    border-bottom: 2px solid #39FF14;
+    font-size: 24px;
+    padding-top: 5px;
+    margin-right: 15px;
+    display: inline-block;
+}
+
+.strategyGrid #econIcon {
+    grid-area: econIcon;
+}
+
+.strategyGrid #orderIcon {
+    grid-area: orderIcon;
+}
+
+.strategyGrid #healthIcon {
+    grid-area: healthIcon;
+}
+
+.strategyGrid #diplomacyIcon {
+    grid-area: diplomacyIcon;
+}
+
+.strategyGrid .dropdownContainer {
+    position: relative;
+    display: inline-block;
+    justify-self: flex-start;
+}
+
+.strategyGrid .dropdownButton {
+    background-color: black;
+    border: 1px solid white;
+    border-radius: 5px;
+    color: white;
+    font-size: 20px;
+    padding: 5px 10px;
+    height: 40px;
+    width: 200px;
+    transition: linear 0.1s;
+    user-select: none;
+    outline: none;
+}
+
+.strategyGrid .dropdownButton:hover {
+    border: 2px solid #39FF14;
+}
+
+.strategyGrid .dropdownMenu {
+    position: absolute;
+    background-color: black;
+    color: white;
+    border: 1px solid white;
+    min-width: 200px;
+    overflow: auto;
+    z-index: 1;
+    display: none;
+    left: 100%;
+    bottom: 0px;
+    border-radius: 10px;
+    user-select: none;
+}
+
+.strategyGrid .dropdownMenu .item {
+    display: block;
+    text-align: center;
+    border: 0px;
+    font-size: 20px;
+    padding: 5px 5px;
+    transition: linear 0.1s;
+}
+
+.strategyGrid .dropdownMenu .item:hover {
+    background-color: #39FF14;
+}
+
+.strategyGrid #econMenuContainer {
+    grid-area: econMenu;
+}
+
+.strategyGrid #orderMenuContainer {
+    grid-area: orderMenu;
+}
+
+.strategyGrid #healthMenuContainer {
+    grid-area: healthMenu;
+}
+
+.strategyGrid #diplomacyMenuContainer {
+    grid-area: diplomacyMenu;
 }
