@@ -65,6 +65,36 @@ function loadUserData(e) {
     logSamples.forEach(log => {
         pushLog(log);
     });
+    establishmentSample.forEach(establishment => {
+        pushEstablishment(establishment);
+    });
+    setupStrategyButton(strategies);
+}
+
+// Change the current text of the strategy buttons to the strategy chosen by the user previously.
+function setupStrategyButton(strategies) {
+    const econButton = document.getElementById("econButton");
+    const orderButton = document.getElementById("orderButton");
+    const healthButton = document.getElementById("healthButton");
+    const diplomacyButton = document.getElementById("diplomacyButton");
+    econButton.innerText = strategies[0];
+    orderButton.innerText = strategies[1];
+    healthButton.innerText = strategies[2];
+    diplomacyButton.innerText = strategies[3];
+}
+
+// Adds a new establishment to the establishment window
+function pushEstablishment(establishment) {
+    const wrapper = document.createElement("div");
+    wrapper.setAttribute("class", "blockWrapper");
+    const content = document.createElement("p");
+    content.innerText = establishment.name;
+    content.setAttribute("class", "boxedItem");
+    wrapper.appendChild(content);
+    const box = document.getElementById("establishmentBox");
+    box.appendChild(wrapper);
+    // Scroll to bottom
+    box.scrollTop = box.scrollHeight - box.clientHeight;
 }
 
 // Adds a new log message to the eventlog window.
@@ -182,6 +212,38 @@ function changeStrategy(e) {
     // Change the text of the button to the item selected in the dropdown button
     mainButton.innerText = strategyChosen.innerText;
     // Here should include sending data to server to indicate change of strategy
+
+    // Write an event log to indicate the strategy change.
+    // This log message should've been from the server(so time stamp matches server time)
+    // but here we are just making a mock version
+    const curTime = new Date;
+    let time;
+    const hour = curTime.getHours();
+    if (hour < 10) {
+        time = "0" + hour;
+    } else {
+        time = hour.toString();
+    }
+    time = time + ":" + curTime.getMinutes().toString();
+    let type;
+    switch (mainButton.id) {
+        case "econButton":
+            type = "[Economy]";
+            break;
+        case "orderButton":
+            type = "[Law and Order]"
+            break;
+        case "healthButton":
+            type = "[Public Health]"
+            break;
+        case "diplomacyButton":
+            type = "[Diplomacy]"
+            break;
+        default:
+            break;
+    }
+    const mainContent = type + " strategy has been changed to [" + mainButton.innerText + "].";
+    pushLog(new eventLog(time, mainContent, [0, 0, 0, 0]))
 }
 
 // Hide dropdown menu when user clicks somewhere else
