@@ -11,7 +11,7 @@ body {
 /* Styling for header bar */
 
 .header {
-    height: 40px;
+    max-height: 5vh;
     background-color: black;
     font-family: 'Lucida Console', ui-monospace, monospace;
     line-height: 40px;
