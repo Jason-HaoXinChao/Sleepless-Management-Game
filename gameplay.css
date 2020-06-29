@@ -77,19 +77,41 @@ body {
     margin-top: 0px;
     padding: 20px;
     background-color: #121212;
-    overflow: hidden;
+    /* overflow: hidden;
     display: flex;
     flex-wrap: wrap;
-    justify-content: space-evenly;
+    justify-content: space-evenly; */
     color: white;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+    grid-template-areas: "stats establishments" "eventLog strategy";
+    justify-items: center;
+    align-content: space-around;
 }
 
 .innerpanel {
-    width: 40%;
-    height: 40%;
+    width: 80%;
+    height: 80%;
     background-color: #212121;
     border: 2px solid #39FF14;
     border-radius: 5%;
+}
+
+.innerpanel#stats {
+    grid-area: stats;
+}
+
+.innerpanel#establishments {
+    grid-area: establishments;
+}
+
+.innerpanel#eventLog {
+    grid-area: eventLog;
+}
+
+.innerpanel#strategy {
+    grid-area: strategy;
 }
 
 #title {
@@ -220,7 +242,7 @@ body {
 /* This needs to be a fixed height else the divs inside bleeds out */
 
 .fixedPanel {
-    height: 380px;
+    height: 98%;
 }
 
 .variablePanel {
