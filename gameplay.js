@@ -4,7 +4,7 @@ class user {
         this.icon = icon;
         this.stat = stat;
         this.establishment = establishment;
-        this.log = log
+        this.log = log;
         this.strategy = strategy;
     }
 }
@@ -20,7 +20,16 @@ class eventLog {
         this.statChange = statChange;
     }
 }
-
+// A randomEvent object records the content and the result of an event
+class randomEvent {
+    constructor(title, description, choices, logs, establishments) {
+        this.title = title;
+        this.description = description;
+        this.choices = choices;
+        this.logs = logs;
+        this.establishments = establishments;
+    }
+}
 
 /*  An establishment is a buff or debuff that the user obtained. 
     The server version of this class would contain information
@@ -54,6 +63,7 @@ let dropdownVisible = false;
 //can pass values without having to call the server. Realistically, to avoid cheating, none of these would be 
 //stored on the client end.
 let userProfile;
+let randomEvents = [];
 
 function initializePage(e) {
     // Add event listeners to the dropdown menu items
@@ -64,7 +74,7 @@ function initializePage(e) {
     }
     // Here should be a server call to get the user's data
     loadUserData();
-
+    showRandomEvent();
 }
 
 function loadUserData(e) {
@@ -82,6 +92,8 @@ function loadUserData(e) {
     establishmentSample.push(new establishment("Sample Short Establishment", "short description."));
     establishmentSample.push(new establishment("Sample Long Establishment with a very long title which will take up a lot of spaces and see if it breaks the code.", "description."));
     establishmentSample.push(new establishment("Medical Bills", "Lack of affordable healthcare causes citizens to be unwilling or unable to get treatments."));
+
+    userProfile = new user("user", "logged_in_user_icon.jpg", statisticsSample, establishmentSample, logSamples, strategies);
     // Here we put the data into the webpage
     updateStatistics(statisticsSample);
     logSamples.forEach(log => {
@@ -92,7 +104,29 @@ function loadUserData(e) {
     });
     setupStrategyButton(strategies);
 
-    userProfile = new user("user", "logged_in_user_icon.jpg", statisticsSample, establishmentSample, logSamples, strategies);
+
+    makeNewEvents();
+}
+
+// The data stored in randomEvents should've been obtained from server
+// This function is only for making mock events, it shouldn't exist in the actual game
+function makeNewEvents() {
+    let title;
+    let description;
+    let choices = [];
+    let logs = [];
+    let establishments = [];
+
+    // First event: toilet paper shortage
+    title = "Toilet Paper Shortage";
+    description = "People are buying out all toilet paper rolls from all stores. The shortage of toilet paper is causing panic and outrage.";
+    choices.push("Rationalize toilet paper sales");
+    choices.push("Import toilet paper to satisfy demand");
+    logs.push(new eventLog("", "Toilet paper panic was resolved after government rationalize toilet paper sales.", [-1, 1, -1, 0]));
+    logs.push(new eventLog("", "Grocery store chains made banks thanks to toilet paper craze.", [5, -3, -2, 0]));
+    establishments.push(new establishment("Rational Toilet Paper", "Toilet paper sales has been rationalized, preventing the possibility of another public panic buyout."));
+    establishments.push(null);
+    randomEvents.push(new randomEvent(title, description, choices, logs, establishments));
 }
 
 // Change the current text of the strategy buttons to the strategy chosen by the user previously.
@@ -119,6 +153,7 @@ function pushEstablishment(establishment) {
     box.appendChild(wrapper);
     // Scroll to bottom
     box.scrollTop = box.scrollHeight - box.clientHeight;
+    userProfile.establishment.push(establishment);
     // Add onclick eventlistener to show modal window containing description
     content.addEventListener("click", showDescription, false);
 }
@@ -128,7 +163,7 @@ function showDescription(e) {
     let i = 0;
     const title = document.getElementById("titlediv").querySelector("#title");
     const content = document.getElementsByClassName("modalContent")[0].querySelector("p");
-    // The title and ontent shuold've been sent from the server.
+    // The title and ontent shuold've been obtained from the server.
     while (i < userProfile.establishment.length) {
         if (userProfile.establishment[i].name == e.target.innerText) {
             title.innerText = userProfile.establishment[i].name;
@@ -181,6 +216,7 @@ function pushLog(log) {
     }
     const logScrollBox = document.getElementById("eventLogBox");
     logScrollBox.appendChild(container);
+    userProfile.log.push(log);
     // Scroll to bottom
     logScrollBox.scrollTop = logScrollBox.scrollHeight - logScrollBox.clientHeight;
 }
@@ -261,7 +297,7 @@ function changeStrategy(e) {
     // Here should include sending data to server to indicate change of strategy
 
     // Write an event log to indicate the strategy change.
-    // This log message should've been from the server(so time stamp matches server time)
+    // This log message should've been obtained from the server(so time stamp matches server time)
     // but here we are just making a mock version
     const curTime = new Date;
     let time;
@@ -319,12 +355,73 @@ function closeDropdown(e) {
 
 // Modal Window related manipulations
 
+function showRandomEvent(eventToShow) {
+    const modalWindow = document.getElementById("modalBackground");
+    const modalTitle = document.getElementById("titlediv").querySelector("#title");
+    const content = document.getElementsByClassName("modalContent")[0].querySelector("p");
+    const button1 = document.getElementById("choice1");
+    const button2 = document.getElementById("choice2");
+    document.getElementById("close").style.display = "none";
+    button1.style.display = "block";
+    button2.style.display = "block";
+
+    // The following should've been using the eventToShow parameter which should've
+    // been obtained from the server
+    modalTitle.innerText = randomEvents[0].title;
+    content.innerText = randomEvents[0].description;
+    button1.innerText = randomEvents[0].choices[0];
+    button2.innerText = randomEvents[0].choices[1];
+    modalWindow.style.display = "flex";
+}
+
 function selectChoiceOne(e) {
     e.preventDefault();
+    // The information being displayed should've been obtained from server.
+    const curTime = new Date;
+    let time;
+    const hour = curTime.getHours();
+    if (hour < 10) {
+        time = "0" + hour;
+    } else {
+        time = hour.toString();
+    }
+    time = time + ":" + curTime.getMinutes().toString();
+    randomEvents[0].logs[0].time = time;
+    pushLog(randomEvents[0].logs[0]);
+    userProfile.stat[0] += randomEvents[0].logs[0].statChange[0];
+    userProfile.stat[1] += randomEvents[0].logs[0].statChange[1];
+    userProfile.stat[2] += randomEvents[0].logs[0].statChange[2];
+    userProfile.stat[3] += randomEvents[0].logs[0].statChange[3];
+    updateStatistics(userProfile.stat);
+    if (randomEvents[0].establishments[0] != null) {
+        pushEstablishment(randomEvents[0].establishments[0])
+    }
+    document.getElementById("modalBackground").style.display = "none";
 }
 
 function selectChoiceTwo(e) {
     e.preventDefault();
+    // The information being displayed should've been obtained from server.
+    const curTime = new Date;
+    let time;
+    const hour = curTime.getHours();
+    if (hour < 10) {
+        time = "0" + hour;
+    } else {
+        time = hour.toString();
+    }
+    time = time + ":" + curTime.getMinutes().toString();
+    randomEvents[0].logs[1].time = time;
+    pushLog(randomEvents[0].logs[1]);
+    userProfile.stat[0] += randomEvents[0].logs[1].statChange[0];
+    userProfile.stat[1] += randomEvents[0].logs[1].statChange[1];
+    userProfile.stat[2] += randomEvents[0].logs[1].statChange[2];
+    userProfile.stat[3] += randomEvents[0].logs[1].statChange[3];
+    updateStatistics(userProfile.stat);
+    if (randomEvents[0].establishments[1] != null) {
+        pushEstablishment(randomEvents[0].establishments[1])
+    }
+    document.getElementById("modalBackground").style.display = "none";
 }
 
 function hideModal(e) {
