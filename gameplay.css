@@ -121,6 +121,7 @@ body {
     border-bottom: 3px solid #39FF14;
     margin-bottom: 0px;
     text-align: center;
+    user-select: none;
 }
 
 
@@ -147,6 +148,7 @@ body {
     padding-top: 5px;
     align-self: center;
     grid-area: title;
+    user-select: none;
 }
 
 .stats #econIcon {
@@ -401,18 +403,22 @@ div.blockWrapper {
 
 .strategyGrid #econIcon {
     grid-area: econIcon;
+    user-select: none;
 }
 
 .strategyGrid #orderIcon {
     grid-area: orderIcon;
+    user-select: none;
 }
 
 .strategyGrid #healthIcon {
     grid-area: healthIcon;
+    user-select: none;
 }
 
 .strategyGrid #diplomacyIcon {
     grid-area: diplomacyIcon;
+    user-select: none;
 }
 
 .strategyGrid .dropdownContainer {
@@ -481,4 +487,86 @@ div.blockWrapper {
 
 .strategyGrid #diplomacyMenuContainer {
     grid-area: diplomacyMenu;
+}
+
+
+/* Styling for modal window, it should have a title, some text/image then two buttons */
+
+.modalBackground {
+    display: none;
+    position: fixed;
+    z-index: 2;
+    height: 100%;
+    width: 100%;
+    left: 0;
+    top: 0;
+    overflow: hidden;
+    background-color: rgb(0, 0, 0, 0.8);
+    align-items: center;
+    justify-items: center;
+}
+
+.modalBackground .modalGrid {
+    display: grid;
+    margin: auto;
+    grid-template-columns: repeat(4, 1fr);
+    grid-template-rows: 1fr 4fr 1fr 1fr;
+    grid-template-areas: ". title title ." "content content content content" "choice1 choice1 choice2 choice2" ". close close .";
+    border: 5px solid #39FF14;
+    border-radius: 10px;
+    box-shadow: 0px 0px 10px #39FF14;
+    height: 60%;
+    width: 50%;
+    background: #212121;
+    color: white;
+    padding: 5px 10px;
+    justify-items: center;
+}
+
+.modalGrid div#titlediv {
+    grid-area: title;
+    text-align: center;
+}
+
+.modalGrid p#title {
+    display: inline-block;
+}
+
+.modalGrid .modalContent {
+    grid-area: content;
+    align-self: center;
+    width: 60%;
+    height: 100%;
+    text-align: left;
+    word-wrap: break-word;
+}
+
+.modalGrid .modalButton {
+    color: white;
+    font-size: 16px;
+    width: 80%;
+    height: 80%;
+    background: #121212;
+    align-self: center;
+    outline: 0px;
+    border: 2px solid white;
+    transition: linear 0.2s;
+    border-radius: 10px;
+    display: block;
+}
+
+.modalGrid .modalButton:hover {
+    border: 2px solid #39FF14;
+}
+
+.modalButton#choice1 {
+    grid-area: choice1;
+}
+
+.modalButton#choice2 {
+    grid-area: choice2;
+}
+
+.modalButton#close {
+    grid-area: close;
 }

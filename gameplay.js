@@ -1,3 +1,13 @@
+class user {
+    constructor(username, icon, stat, establishment, log, strategy) {
+        this.username = username;
+        this.icon = icon;
+        this.stat = stat;
+        this.establishment = establishment;
+        this.log = log
+        this.strategy = strategy;
+    }
+}
 // An eventLog object represents a log entry
 class eventLog {
     constructor(time, content, statChange) {
@@ -33,7 +43,17 @@ document.getElementById("orderButton").addEventListener("click", showOrderMenu);
 document.getElementById("healthButton").addEventListener("click", showHealthMenu);
 document.getElementById("diplomacyButton").addEventListener("click", showDiplomacyMenu);
 
+// Add event listener for modal window
+document.getElementById("choice1").addEventListener("click", selectChoiceOne);
+document.getElementById("choice2").addEventListener("click", selectChoiceTwo);
+document.getElementById("close").addEventListener("click", hideModal);
+
+// Global variables
 let dropdownVisible = false;
+//This should've been stored and manipulated on server side, we are keeping it here so the functions
+//can pass values without having to call the server. Realistically, to avoid cheating, none of these would be 
+//stored on the client end.
+let userProfile;
 
 function initializePage(e) {
     // Add event listeners to the dropdown menu items
@@ -44,22 +64,24 @@ function initializePage(e) {
     }
     // Here should be a server call to get the user's data
     loadUserData();
+
 }
 
 function loadUserData(e) {
     // This function should call the server to get data of the user
     // Then it should update the value in statistics, establishment, and log page
     // Here we make up some mock data
-    const statisticsSample = [99, 42, 69, 78];
+    const statisticsSample = [86, 42, 69, 78];
     let logSamples = [];
     let establishmentSample = [];
-    const strategies = ["Hands off", "Weak Enforcement", "Reactive Response", "Neutral"];
+    let strategies = ["Hands off", "Weak Enforcement", "Reactive Response", "Neutral"];
     logSamples.push(new eventLog("04:20", "An anti-lockdown protest has started, it's mostly peaceful at the moment.", [0, -1, -5, 0]));
     logSamples.push(new eventLog("04:25", "Karens around the country has joined the protest, claiming face mask policy is a violation of their rights.", [0, -1, -1, 0]));
     establishmentSample.push(new establishment("Quarantine Enforcement", "Citizens of the country has been adviced to stay home and avoid human contact to reduce to chance of virus spreading."));
     establishmentSample.push(new establishment("Face Mask Policy", "Citizens are required to wear face masks when entering stores or public places, reducing the chance of contacting the virus during unavoidable human interactions."));
     establishmentSample.push(new establishment("Sample Short Establishment", "short description."));
     establishmentSample.push(new establishment("Sample Long Establishment with a very long title which will take up a lot of spaces and see if it breaks the code.", "description."));
+    establishmentSample.push(new establishment("Medical Bills", "Lack of affordable healthcare causes citizens to be unwilling or unable to get treatments."));
     // Here we put the data into the webpage
     updateStatistics(statisticsSample);
     logSamples.forEach(log => {
@@ -69,6 +91,8 @@ function loadUserData(e) {
         pushEstablishment(establishment);
     });
     setupStrategyButton(strategies);
+
+    userProfile = new user("user", "logged_in_user_icon.jpg", statisticsSample, establishmentSample, logSamples, strategies);
 }
 
 // Change the current text of the strategy buttons to the strategy chosen by the user previously.
@@ -95,6 +119,28 @@ function pushEstablishment(establishment) {
     box.appendChild(wrapper);
     // Scroll to bottom
     box.scrollTop = box.scrollHeight - box.clientHeight;
+    // Add onclick eventlistener to show modal window containing description
+    content.addEventListener("click", showDescription, false);
+}
+
+function showDescription(e) {
+    e.preventDefault();
+    let i = 0;
+    const title = document.getElementById("titlediv").querySelector("#title");
+    const content = document.getElementsByClassName("modalContent")[0].querySelector("p");
+    // The title and ontent shuold've been sent from the server.
+    while (i < userProfile.establishment.length) {
+        if (userProfile.establishment[i].name == e.target.innerText) {
+            title.innerText = userProfile.establishment[i].name;
+            content.innerText = userProfile.establishment[i].description;
+            break;
+        }
+        i++;
+    }
+    document.getElementById("choice1").style.display = "none";
+    document.getElementById("choice2").style.display = "none";
+    document.getElementById("close").style.display = "block";
+    document.getElementById("modalBackground").style.display = "flex";
 }
 
 // Adds a new log message to the eventlog window.
@@ -140,10 +186,10 @@ function pushLog(log) {
 }
 // Reflect the change in statistic by updating it in the bar elements.
 function updateStatistics(statistics) {
-    const econBar = document.getElementById("econBar").getElementsByClassName("bar");
-    const orderBar = document.getElementById("orderBar").getElementsByClassName("bar");
-    const healthBar = document.getElementById("healthBar").getElementsByClassName("bar");
-    const diplomacyBar = document.getElementById("diplomacyBar").getElementsByClassName("bar");
+    const econBar = document.getElementById("econBar").getElementsByClassName("bar")[0];
+    const orderBar = document.getElementById("orderBar").getElementsByClassName("bar")[0];
+    const healthBar = document.getElementById("healthBar").getElementsByClassName("bar")[0];
+    const diplomacyBar = document.getElementById("diplomacyBar").getElementsByClassName("bar")[0];
 
     econBar.innerText = statistics[0];
     orderBar.innerText = statistics[1];
@@ -211,6 +257,7 @@ function changeStrategy(e) {
     const mainButton = (strategyChosen.parentNode.parentNode).querySelector("button");
     // Change the text of the button to the item selected in the dropdown button
     mainButton.innerText = strategyChosen.innerText;
+
     // Here should include sending data to server to indicate change of strategy
 
     // Write an event log to indicate the strategy change.
@@ -229,15 +276,19 @@ function changeStrategy(e) {
     switch (mainButton.id) {
         case "econButton":
             type = "[Economy]";
+            userProfile.strategy[0] = mainButton.innerText; //This should've been server manipulation
             break;
         case "orderButton":
-            type = "[Law and Order]"
+            type = "[Law and Order]";
+            userProfile.strategy[1] = mainButton.innerText; //This should've been server manipulation
             break;
         case "healthButton":
-            type = "[Public Health]"
+            type = "[Public Health]";
+            userProfile.strategy[2] = mainButton.innerText; //This should've been server manipulation
             break;
         case "diplomacyButton":
-            type = "[Diplomacy]"
+            type = "[Diplomacy]";
+            userProfile.strategy[3] = mainButton.innerText; //This should've been server manipulation
             break;
         default:
             break;
@@ -248,7 +299,7 @@ function changeStrategy(e) {
 
 // Hide dropdown menu when user clicks somewhere else
 function closeDropdown(e) {
-    e.preventDefault();
+    // e.preventDefault();
     const target = e.target;
     if (!target.classList.contains("dropdownButton")) {
         if (!target.classList.contains("item")) {
@@ -264,4 +315,20 @@ function closeDropdown(e) {
         }
     }
 
+}
+
+// Modal Window related manipulations
+
+function selectChoiceOne(e) {
+    e.preventDefault();
+}
+
+function selectChoiceTwo(e) {
+    e.preventDefault();
+}
+
+function hideModal(e) {
+    e.preventDefault();
+    const modalWindow = document.getElementById("modalBackground");
+    modalWindow.style.display = "none";
 }
