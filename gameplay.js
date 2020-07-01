@@ -58,12 +58,13 @@ document.getElementById("choice2").addEventListener("click", selectChoiceTwo);
 document.getElementById("close").addEventListener("click", hideModal);
 
 // Global variables
-let dropdownVisible = false;
-//This should've been stored and manipulated on server side, we are keeping it here so the functions
+let dropdownVisible = false; // toggle to indicate if dropdown menu is visible or not
+//The following should've been stored and manipulated on server side, we are keeping it here so the functions
 //can pass values without having to call the server. Realistically, to avoid cheating, none of these would be 
 //stored on the client end.
 let userProfile;
 let randomEvents = [];
+let interval;
 
 function initializePage(e) {
     // Add event listeners to the dropdown menu items
@@ -74,12 +75,19 @@ function initializePage(e) {
     }
     // Here should be a server call to get the user's data
     loadUserData();
-    showRandomEvent();
+    interval = setInterval(function() {
+        console.log("server tick");
+        calculateStatChange();
+    }, 5000);
+    setTimeout(function() {
+        console.log("random event");
+        showRandomEvent();
+    }, Math.floor(Math.random() * (20000 - (10000))) + (10000));
 }
 
 function loadUserData(e) {
     // This function should call the server to get data of the user
-    // Then it should update the value in statistics, establishment, and log page
+    // Then it should display the value in DOM elements
     // Here we make up some mock data
     const statisticsSample = [86, 42, 69, 78];
     let logSamples = [];
@@ -103,8 +111,6 @@ function loadUserData(e) {
         pushEstablishment(establishment);
     });
     setupStrategyButton(strategies);
-
-
     makeNewEvents();
 }
 
@@ -340,7 +346,6 @@ function closeDropdown(e) {
     if (!target.classList.contains("dropdownButton")) {
         if (!target.classList.contains("item")) {
             if (dropdownVisible) {
-                console.log("closed menu");
                 document.getElementById("econMenu").style.display = "none";
                 document.getElementById("orderMenu").style.display = "none";
                 document.getElementById("healthMenu").style.display = "none";
@@ -372,6 +377,9 @@ function showRandomEvent(eventToShow) {
     button1.innerText = randomEvents[0].choices[0];
     button2.innerText = randomEvents[0].choices[1];
     modalWindow.style.display = "flex";
+
+    // pause updating during a random event
+    clearInterval(interval);
 }
 
 function selectChoiceOne(e) {
@@ -397,6 +405,10 @@ function selectChoiceOne(e) {
         pushEstablishment(randomEvents[0].establishments[0])
     }
     document.getElementById("modalBackground").style.display = "none";
+
+    interval = setInterval(function() {
+        calculateStatChange();
+    }, 5000);
 }
 
 function selectChoiceTwo(e) {
@@ -422,10 +434,124 @@ function selectChoiceTwo(e) {
         pushEstablishment(randomEvents[0].establishments[1])
     }
     document.getElementById("modalBackground").style.display = "none";
+    interval = setInterval(function() {
+        calculateStatChange();
+    }, 5000);
 }
 
 function hideModal(e) {
     e.preventDefault();
     const modalWindow = document.getElementById("modalBackground");
     modalWindow.style.display = "none";
+}
+
+/*  A function to calculate the change in stats for each server tick.'
+    this function should've been entirely server manipulation, the client
+    shouldn't know or care about what the change in stat is. The proper
+    way this works should be: server ticks->server calculate change in stat->
+    server changes stat at server end-> server sends updated stat as well as log
+    to front end-> front end displays stat and pushes log 
+ */
+function calculateStatChange() {
+    let statChange = [0, 0, 0, 0];
+
+    // Note that these stat changes are randomly made up to simulate actual gameplay
+    // it's obviously unbalanced and probably doesn't even make much sense
+
+    // Economy change
+    switch (userProfile.strategy[0]) {
+        case "Revitalize":
+            statChange[0] += 4;
+            statChange[1] -= 3;
+            break;
+        case "Stablize":
+            statChange[0] += 1
+            break;
+        case "Hands off":
+            statChange[0] += Math.floor(Math.random() * (5 - (-5))) + (-5);
+        default:
+            break;
+    }
+
+    // order change
+    switch (userProfile.strategy[1]) {
+        case "Iron Fist":
+            statChange[0] -= 8;
+            statChange[1] += 6;
+            statChange[2] += 2;
+            break;
+        case "Strict Ruling":
+            statChange[0] -= 3;
+            statChange[1] += 2;
+            statChange[2] += 1;
+            break;
+        case "Weak Enforcement":
+            statChange[0] += Math.floor(Math.random() * (3));
+            statChange[1] -= 2;
+            statChange[2] -= 1;
+            break;
+        default:
+            break;
+    }
+
+    // health change
+
+    switch (userProfile.strategy[2]) {
+        case "Active Prevention":
+            statChange[2] += 5;
+            statChange[0] -= 4;
+            break;
+        case "Reactive Response":
+            statChange[2] = 0;
+            break;
+
+        case "No Testing":
+            statChange[2] -= 5;
+            break;
+
+        default:
+            break;
+    }
+
+    switch (userProfile.strategy[3]) {
+        case "Hawk":
+            statChange[3] -= 4;
+            statChange[1] += 3;
+            break;
+
+        case "Neutral":
+            statChange[3] += Math.floor(Math.random() * (4 - (-3))) + (-3);
+            break;
+
+        case "Dove":
+            statChange[3] += 1;
+            break;
+        default:
+            break;
+    }
+    userProfile.stat[0] += statChange[0];
+    userProfile.stat[1] += statChange[1];
+    userProfile.stat[2] += statChange[2];
+    userProfile.stat[3] += statChange[3];
+    userProfile.stat.forEach(statistic => {
+        if (statistic > 100) {
+            statistic = 100;
+        } else if (statistic < 0) {
+            statistic = 0;
+        }
+    });
+    updateStatistics(userProfile.stat);
+
+    // Make a log message to indicate the Change
+    const curTime = new Date;
+    let time;
+    const hour = curTime.getHours();
+    if (hour < 10) {
+        time = "0" + hour;
+    } else {
+        time = hour.toString();
+    }
+    time = time + ":" + curTime.getMinutes().toString();
+    userProfile.log.push(new eventLog(time, "A week has passed.", statChange));
+    pushLog(userProfile.log[userProfile.log.length - 1]);
 }
