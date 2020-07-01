@@ -529,17 +529,16 @@ function calculateStatChange() {
         default:
             break;
     }
-    userProfile.stat[0] += statChange[0];
-    userProfile.stat[1] += statChange[1];
-    userProfile.stat[2] += statChange[2];
-    userProfile.stat[3] += statChange[3];
-    userProfile.stat.forEach(statistic => {
-        if (statistic > 100) {
-            statistic = 100;
-        } else if (statistic < 0) {
-            statistic = 0;
+    let i;
+    for (i = 0; i < 4; i++) {
+        if ((userProfile.stat[i] + statChange[i]) > 100) {
+            statChange[i] = 100 - userProfile.stat[i];
+        } else if ((userProfile.stat[i] + statChange[i]) < 0) {
+            statChange[i] = 0 - userProfile.stat[i];
         }
-    });
+        userProfile.stat[i] += statChange[i];
+    }
+
     updateStatistics(userProfile.stat);
 
     // Make a log message to indicate the Change
