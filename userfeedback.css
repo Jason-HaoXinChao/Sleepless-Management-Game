@@ -1,0 +1,141 @@
+body {
+    background-color: #212121;
+    margin: 0px;
+    width: 100%;
+    height: 100%;
+}
+
+.header {
+    height: 40px;
+    background-color: black;
+    font-family: 'Lucida Console', ui-monospace, monospace;
+    line-height: 40px;
+    padding: 10px 5px;
+    overflow: hidden;
+}
+
+.header a {
+    margin-left: 20px;
+    color: white;
+    font-size: 18px;
+    font-weight: bold;
+    padding: 5px;
+    text-decoration: none;
+    vertical-align: middle;
+}
+
+.header a.logo {
+    font-size: 28px;
+}
+
+.header a.currentpage {
+    background-color: #39FF14;
+    color: black;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+.header a.otherpage:hover {
+    border-bottom: 2px solid white;
+}
+
+.right_header {
+    float: right;
+    margin-right: 30px;
+    height: 40px;
+    line-height: 40px;
+}
+
+.right_header img.user_icon {
+    width: 40px;
+    height: 40px;
+    vertical-align: middle;
+}
+
+.right_header a.logout {
+    margin-left: 15px;
+    background-color: yellow;
+    color: black;
+    font-size: 18px;
+    font-weight: bold;
+    text-align: center;
+    padding: 4px;
+    border-radius: 4px;
+    text-decoration: none;
+    vertical-align: middle;
+}
+
+.maincontent {
+    width: 80%;
+    min-height: 100%;
+    margin: auto;
+    margin-top: 0px;
+    padding: 20px;
+    background-color: #121212;
+    overflow: visible;
+}
+
+.heading{
+    padding-bottom: 10px;
+    overflow: auto;
+}
+
+.heading p.heading {
+    font-size: 24px;
+    font-weight: bold;
+    text-transform: uppercase;
+    text-decoration: none;
+    color: white;
+    width: max-content;
+    text-align: center;
+    margin: auto;
+    margin-top: 30px;
+    margin-bottom: 30px;
+}
+
+.heading button.delete{
+    float: right;
+    margin: 10px;
+} 
+
+.user-feedback-container{
+    /* width: 80%;
+    min-height: 100%;
+    display: inline; */
+    width: 80%;
+    /* min-height: 100%; */
+    margin: auto;
+    margin-top: 10px;
+    padding: 20px;
+    overflow: visible;
+    padding: 20px;
+    overflow-y: scroll;
+    height: 500px;
+}
+
+.feedback-box{
+    width: 100%;
+    min-height: 200px;
+    margin-top: 0px;
+    display: inline-block;
+    text-align: center;
+    border: 3px solid #39FF14;
+}
+
+.checkbox {
+    float: left;
+    text-align: center;
+    color: white;
+    padding: 70px 0;
+    width: 20%;
+    margin: auto;
+}
+
+.textbox {
+    float: right;
+    color: white;
+    width: 75%;
+    text-align: justify;
+    min-height: 150px;
+    padding: 10px 10px;
+}
