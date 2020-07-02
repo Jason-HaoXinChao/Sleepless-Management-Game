@@ -113,12 +113,12 @@ body {
     display: grid;
     grid-template-columns: repeat(6, 1fr);
     grid-template-rows: repeat(8, 1fr);
-    grid-template-areas: "icon icon stat1icon stat1icon stat2icon stat2icon" "icon icon stat1 stat1 stat2 stat2" "username username stat3icon stat3icon stat4icon stat4icon" "username username stat3 stat3 stat4 stat4" "profile profile profile send send send" "profile profile profile send send send" "ask ask ask break break break" "ask ask ask break break break";
+    grid-template-areas: "icon icon econIcon econIcon orderIcon orderIcon" "icon icon econStat econStat orderStat orderStat" "username username healthIcon healthIcon diplomacyIcon diplomacyIcon" "username username healthStat healthStat diplomacyStat diplomacyStat" "profile profile profile send send send" "profile profile profile send send send" "ask ask ask break break break" "ask ask ask break break break";
     justify-content: center;
     align-content: center;
 }
 
-.card img.icon {
+.card img#icon {
     grid-area: icon;
     max-width: 100%;
     object-fit: contain;
@@ -136,57 +136,61 @@ body {
     text-align: center;
 }
 
-.card .username {
+.card #username {
     grid-area: username;
     font-size: 14px;
 }
 
-.card .stat1icon {
-    grid-area: stat1icon;
-    font-weight: bold;
+.card img {
+    align-self: center;
+    object-fit: contain;
+    justify-self: center;
+    user-select: none;
 }
 
-.card .stat1 {
-    grid-area: stat1;
+.card #econIcon {
+    grid-area: econIcon;
 }
 
-.card .stat2icon {
-    grid-area: stat2icon;
-    font-weight: bold;
+.card #orderIcon {
+    grid-area: orderIcon;
 }
 
-.card .stat2 {
-    grid-area: stat2;
+.card #healthIcon {
+    grid-area: healthIcon;
 }
 
-.card .stat3icon {
-    grid-area: stat3icon;
-    font-weight: bold;
+.card #diplomacyIcon {
+    grid-area: diplomacyIcon;
 }
 
-.card .stat3 {
-    grid-area: stat3;
+.card #econStat {
+    grid-area: econStat;
 }
 
-.card .stat4icon {
-    grid-area: stat4icon;
-    font-weight: bold;
+.card #orderStat {
+    grid-area: orderStat;
 }
 
-.card .stat4 {
-    grid-area: stat4;
+.card #healthStat {
+    grid-area: healthStat;
+}
+
+.card #diplomacyStat {
+    grid-area: diplomacyStat;
 }
 
 .card button {
     color: white;
     background-color: black;
     border: 2px solid #39FF14;
-    border-radius: 10%;
+    border-radius: 10px;
     transition: all 0.3s;
     display: inline-block;
     height: auto;
     width: auto;
     margin: 5px;
+    outline: none;
 }
 
 .card button:hover {
@@ -194,19 +198,19 @@ body {
     background-color: #FFFFFF;
 }
 
-.card .profile {
+.card button.profile {
     grid-area: profile;
 }
 
-.card .send {
+.card button.send {
     grid-area: send;
 }
 
-.card .ask {
+.card button.ask {
     grid-area: ask;
 }
 
-.card .break {
+.card button.break {
     grid-area: break;
 }
 
@@ -233,7 +237,7 @@ body {
     margin: 5px;
 }
 
-.pagination a.active {
+.pagination a#active {
     background-color: #39ff14;
     border: 1px solid white;
     color: black;

@@ -8,7 +8,6 @@ function checkCredentials(e) {
     e.stopImmediatePropagation();
     const username = document.getElementById("username-1").value;
     const password = document.getElementById("password-1").value;
-    console.log("credential checked");
     if (username == "user" && password == "user") {
         window.open("../gameplay.html", "_self");
     } else if (username == "admin" && password == "admin") {
