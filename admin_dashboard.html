@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Admin Dashboard</title>
+    <link rel="stylesheet" type="text/css" href="admin_dashboard.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script type="text/javascript" src="admin_dashboard.js" defer></script>
+</head>
+<body>
+    <!-- header -->
+    <div class="header">
+        <a href="" class="logo">INSERT LOGO HERE</a>
+        <div class="right_header ">
+            <a href="user_profile.html ">
+                <img src="logged_in_user_icon.jpg " alt="user_icon " class="user_icon ">
+            </a>
+            <a href="home_login/home_login.html" class="logout">Logout</a>
+        </div>
+    </div>
+    <!-- content -->
+    <div class="maincontent ">
+        <h2>Admin Dashboard</h2>
+        <div class="admin-module-header">
+            <label for="user-search">Search User:</label>
+            <input id="user-search" type="text"></input>
+            <button>Search</button>
+        </div>
+        <div class="admin-module-main-container">
+            <div id="user-icon">
+                <img src="ipretendidonotseeit_icon.jpg" alt="User icon">
+            </div>
+            <button id="remove-user-icon">Remove User Icon</button>
+            <div class="admin-module-main">
+                <p id="user-info">
+                    <b>Username: </b> <span contenteditable="false">ipretendidonotseeit</span>
+                    <button class="edit-user-info">Edit Username</button>
+                    <br>
+                    <br>
+                    <b>Email:</b> <span contenteditable="false">ipretendidonotseeit@gmail.com</span>
+                    <button class="edit-user-info">Edit Email</button>
+                </p>
+                <div id="user-stats">
+                    <img src="econ.png" alt="Econ icon">
+                    <span class="stat" contenteditable="true">65</span class="stat">
+                    <button class="change-stat decrease-stat">-</button>
+                    <button class="change-stat increase-stat">+</button>
+                    <img src="order.png" alt="Order icon">
+                    <span class="stat" contenteditable="true">17</span class="stat">
+                    <button class="change-stat decrease-stat">-</button>
+                    <button class="change-stat increase-stat">+</button>
+                    <img src="health.png" alt="Health icon">
+                    <span class="stat" contenteditable="true">28</span class="stat">
+                    <button class="change-stat decrease-stat">-</button>
+                    <button class="change-stat increase-stat">+</button>
+                    <img src="diplomacy.png" alt="Diplomacy icon">
+                    <span class="stat" contenteditable="true">35</span class="stat">
+                    <button class="change-stat decrease-stat">-</button>
+                    <button class="change-stat increase-stat">+</button>
+                </div>
+                <div id="ban-user">
+                    <input id="ban-user-checkbox" type="checkbox">
+                    <label for="ban-user-checkbox">Ban User</label>
+                </div>
+                <div id="confirm-changes">
+                    <input id="confirm-changes-checkbox" type="checkbox">
+                    <label for="confirm-changes-checkbox">Confirm Changes</label>
+                </div>
+                <div id="save-changes">
+                    <button id="save-changes-button">Save Changes</button>
+                </div>
+            </div>
+        </div>
+        <div class="admin-module-header">
+            <label for="event-search">Search Event:</label>
+            <input id="event-search" type="text"></input>
+            <button>Search</button>
+            <button id="new-event">New Event</button>
+        </div>
+    </div>
+</body>
+</html>

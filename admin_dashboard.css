@@ -1,0 +1,329 @@
+body {
+    background-color: #212121;
+    margin: 0px;
+    width: 100%;
+    height: 100%;
+    font-family: 'Lucida Console', ui-monospace, monospace;
+}
+
+.header {
+    position: fixed;
+    top: 0;
+    z-index: 3;
+    width: 100%;
+    height: 40px;
+    background-color: black;
+    line-height: 40px;
+    padding: 10px 5px;
+    overflow: hidden;
+}
+
+.header a {
+    margin-left: 20px;
+    color: white;
+    font-size: 18px;
+    font-weight: bold;
+    padding: 5px;
+    text-decoration: none;
+    vertical-align: middle;
+}
+
+.header a.logo {
+    font-size: 28px;
+}
+
+.header a.currentpage {
+    background-color: #39FF14;
+    color: black;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+.header a.otherpage:hover {
+    border-bottom: 2px solid white;
+}
+
+.right_header {
+    float: right;
+    margin-right: 30px;
+    height: 40px;
+    line-height: 40px;
+}
+
+.right_header img.user_icon {
+    width: 40px;
+    height: 40px;
+    vertical-align: middle;
+}
+
+.right_header a.logout {
+    margin-left: 15px;
+    background-color: yellow;
+    color: black;
+    font-size: 18px;
+    font-weight: bold;
+    text-align: center;
+    padding: 4px;
+    border-radius: 4px;
+    text-decoration: none;
+    vertical-align: middle;
+}
+
+.maincontent {
+    position: relative;
+    margin: 0 auto;
+    width: 80%;
+    min-height: 100vh;
+    background-color: #121212;
+    padding: 90px 100px 100px;
+    overflow: hidden;
+    box-sizing: border-box;
+    counter-reset: leaderboard;
+}
+
+.maincontent::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 150px;
+    height: 100%;
+    border-left: 3px ridge #39FF14;
+}
+
+h2 {
+    position: relative;
+    z-index: 2;
+    display: inline-block;
+    margin: 0 0 50px;
+    width: auto;
+    height: 50px;
+    background-color: #39FF14;
+    font-size: 36px;
+    line-height: 50px;
+    padding: 0 10px;
+    border-radius: 4px;
+}
+
+.admin-module-header,
+.admin-module-main {
+    padding: 20px;
+    border: 3px solid #39FF14;
+    background-color: #212121;
+    color: #ffffff;
+    box-sizing: border-box;
+}
+
+.admin-module-header {
+    margin-left: 75px;
+    border-radius: 20px 5px 5px 5px;
+}
+
+.admin-module-header:not(:first-of-type) {
+    margin-top: 50px;
+}
+
+.admin-module-main-container {
+    display: grid;
+    grid-template: "user-icon main" 150px
+                   "remove-icon main" 1fr /
+                   150px 1fr;
+    grid-gap: 10px 35px;
+    margin: 10px 0 0 75px;
+}
+
+.admin-module-main-container > button {
+    height: 45px;
+}
+
+.admin-module-main {
+    grid-area: main;
+    display: grid;
+    grid-gap: 20px;
+    flex-grow: 1;
+    grid-template: "user-info user-info" 75px
+                   "user-stats ." 125px
+                   "user-stats ban-user" 25px
+                   "user-stats confirm-changes" 25px
+                   "user-stats save-changes" 25px /
+                   1fr 1fr;
+    align-items: self-end;
+    border-radius: 5px 5px 20px 5px;
+}
+
+p {
+    margin: 0;
+    line-height: 25px;
+}
+
+#user-icon {
+    grid-area: user-icon;
+    display: inline-block;
+    position: relative;
+    width: 150px;
+    height: 150px;
+}
+
+#user-icon::before {
+    content: '';
+    position: absolute;
+    top: calc(50% - 10px);
+    left: calc(100% - 2px);
+    border-style: solid;
+    border-width: 20px 30px 0 0;
+    border-color: #39FF14 transparent transparent transparent;
+}
+
+#user-icon > img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    border-radius: 50%;
+    border: 5px solid #39FF14;
+    box-sizing: border-box;
+}
+
+#user-info {
+    grid-area: user-info;
+}
+
+#user-info > button {
+    float: right;
+}
+
+#user-stats {
+    grid-area: user-stats;
+    display: grid;
+    grid-template-columns: 50px 1fr 50px 50px;
+    grid-template-rows: repeat(4, 50px);
+    justify-items: center;
+    align-items: center;
+    grid-gap: 10px;
+    width: 100%;
+    height: 100%;    
+    border: 3px ridge #39FF14;
+    background-color: #121212;
+    border-radius: 5px;
+    padding: 10px;
+    box-sizing: border-box;
+}
+
+button:focus {
+    outline: none;
+}
+
+#user-stats > span {
+    width: auto;
+    height: auto;
+    font-size: 20px;
+}
+
+#user-stats > button {
+    width: 35px;
+    height: 35px;
+    border: none;
+    border-radius: 50%;
+    -webkit-text-stroke: 1px #000000;
+    font-size: 25px;
+    font-weight: bold;
+    line-height: 25px;
+}
+
+.change-stat.inactive {
+    visibility: hidden;
+}
+
+.decrease-stat {
+    background-color: #ff0000;
+}
+
+.increase-stat {
+    background-color: #00ff00;
+}
+
+#ban-user {
+    grid-area: ban-user;
+}
+
+#confirm-changes {
+    grid-area: confirm-changes;
+}
+
+#save-changes {
+    grid-area: save-changes;
+}
+
+input[type="checkbox"] {
+    position: relative;
+    -webkit-appearance: none;
+    background-color: #00ff00;
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    vertical-align: bottom;
+}
+
+input[type="checkbox"]:checked::before {    
+    content: '\2713';
+    position: absolute;
+    display: inline-block;
+    width: 15px;
+    height: 15px;
+    font-weight: bold;
+    line-height: 17px;
+    text-align: center;
+}
+
+input[type="checkbox"]:focus {
+    outline: none;
+}
+
+input[type="text"] {
+    height: 20px;
+    border: 2px ridge #39FF14;
+    background-color: #121212;
+    color: #ffffff;
+    font-family: Lucida Console;
+    padding: 0 5px;
+    border-radius: 5px;
+}
+
+input[type="text"]:focus {
+    outline: none;
+}
+
+button {
+    height: auto;
+    border: 2px ridge #39FF14;
+    background-color: #212121;
+    color: #ffffff;
+    font-family: Lucida Console;
+    text-decoration: none;
+    padding: 5px 10px;
+    border-radius: 15px;
+    user-select: none;
+}
+
+.confirm-ban {
+    position: absolute;
+    top: 10%;
+    left: 10%;
+    width: 80%;
+    height: 80%;
+}
+
+*[contenteditable='true'] {
+    border: 2px solid #39FF14;
+    background-color: #121212;
+    padding: 5px;
+}
+
+*[contenteditable='true']:focus {
+    border: 2px solid #39FF14;
+    background-color: #121212;
+    padding: 5px;
+}
+
+#new-event {
+    float: right;
+}
