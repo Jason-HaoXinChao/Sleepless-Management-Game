@@ -5,14 +5,17 @@ document.getElementById("signin-form").addEventListener("submit", checkCredentia
 // Should've sent credentials to user then obtain what to do from server
 function checkCredentials(e) {
     e.preventDefault();
+    e.stopImmediatePropagation();
     const username = document.getElementById("username-1").value;
     const password = document.getElementById("password-1").value;
+    console.log("credential checked");
     if (username == "user" && password == "user") {
-        open("../gameplay.html");
+        window.open("../gameplay.html", "_self");
     } else if (username == "admin" && password == "admin") {
         // open admin panel
+        console.log("open admin panel");
     } else {
-        alert("Incorrect username or password!")
+        alert("Incorrect username or password!");
     }
 }
 
