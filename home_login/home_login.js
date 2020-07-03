@@ -11,8 +11,7 @@ function checkCredentials(e) {
     if (username == "user" && password == "user") {
         window.open("../gameplay.html", "_self");
     } else if (username == "admin" && password == "admin") {
-        // open admin panel
-        console.log("open admin panel");
+        window.open("../admin_dashboard.html", "_self");
     } else {
         alert("Incorrect username or password!");
     }
