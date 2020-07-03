@@ -9,9 +9,9 @@ function checkCredentials(e) {
     const username = document.getElementById("username-1").value;
     const password = document.getElementById("password-1").value;
     if (username == "user" && password == "user") {
-        window.open("../gameplay.html", "_self");
+        window.open("../userPage/gameplay.html", "_self");
     } else if (username == "admin" && password == "admin") {
-        window.open("../admin_dashboard.html", "_self");
+        window.open("../adminPage/admin_dashboard.html", "_self");
     } else {
         alert("Incorrect username or password!");
     }

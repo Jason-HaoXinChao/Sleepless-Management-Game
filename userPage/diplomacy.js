@@ -15,10 +15,10 @@ window.addEventListener("load", initializePage);
 */
 function initializePage(e) {
     let user = [];
-    user.push(new userInfo("piano_cat_icon.jpg", "piano cat", [12, 34, 56, 78]));
-    user.push(new userInfo("yelledatcat_icon.png", "why you yelling", [98, 87, 65, 54]));
-    user.push(new userInfo("grumpycat_icon.png", "alright", [59, 31, 47, 78]));
-    user.push(new userInfo("tomandjerry_icon.png", "polish jerry", [20, 35, 68, 74]));
+    user.push(new userInfo("../images/piano_cat_icon.jpg", "piano cat", [12, 34, 56, 78]));
+    user.push(new userInfo("../images/yelledatcat_icon.png", "why you yelling", [98, 87, 65, 54]));
+    user.push(new userInfo("../images/grumpycat_icon.png", "alright", [59, 31, 47, 78]));
+    user.push(new userInfo("../images/tomandjerry_icon.png", "polish jerry", [20, 35, 68, 74]));
     user.forEach(element => {
         addCard(element);
     });
@@ -40,19 +40,19 @@ function addCard(user) {
     // stat icons
     const econIcon = document.createElement("img");
     econIcon.setAttribute("id", "econIcon");
-    econIcon.src = "econ.png";
+    econIcon.src = "../images/econ.png";
     card.appendChild(econIcon);
     const orderIcon = document.createElement("img");
     orderIcon.setAttribute("id", "orderIcon");
-    orderIcon.src = "order.png";
+    orderIcon.src = "../images/order.png";
     card.appendChild(orderIcon);
     const healthIcon = document.createElement("img");
     healthIcon.setAttribute("id", "healthIcon");
-    healthIcon.src = "health.png";
+    healthIcon.src = "../images/health.png";
     card.appendChild(healthIcon);
     const diplomacyIcon = document.createElement("img");
     diplomacyIcon.setAttribute("id", "diplomacyIcon");
-    diplomacyIcon.src = "diplomacy.png";
+    diplomacyIcon.src = "../images/diplomacy.png";
     card.appendChild(diplomacyIcon);
     // stats
     const econStat = document.createElement("p");
