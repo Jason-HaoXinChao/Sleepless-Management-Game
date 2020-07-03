@@ -1,0 +1,1 @@
+// Here we should obtain data of the patch notes from server to display on the webpage
