@@ -90,7 +90,7 @@ body {
     border-left: 3px ridge #39FF14;
 }
 
-h2 {
+.maincontent > h2 {
     position: relative;
     z-index: 2;
     display: inline-block;
@@ -125,7 +125,8 @@ h2 {
 .admin-module-main-container {
     display: grid;
     grid-template: "user-icon main" 150px
-                   "remove-icon main" 1fr /
+                   "remove-icon main" 1fr 
+                   "revert-changes main" 45px /
                    150px 1fr;
     grid-gap: 10px 35px;
     margin: 10px 0 0 75px;
@@ -135,15 +136,15 @@ h2 {
     height: 45px;
 }
 
-.admin-module-main {
+.admin-module-main-container > .admin-module-main {
     grid-area: main;
     display: grid;
     grid-gap: 20px;
     flex-grow: 1;
-    grid-template: "user-info user-info" 75px
+    grid-template: "user-info user-info" min-content
                    "user-stats ." 125px
+                   "user-stats ." 25px
                    "user-stats ban-user" 25px
-                   "user-stats confirm-changes" 25px
                    "user-stats save-changes" 25px /
                    1fr 1fr;
     align-items: self-end;
@@ -185,6 +186,13 @@ p {
 
 #user-info {
     grid-area: user-info;
+}
+
+#user-info > span {
+    display: inline-block;
+    width: auto;
+    max-width: 50%;
+    word-break: break-all;
 }
 
 #user-info > button {
@@ -295,7 +303,7 @@ input[type="text"]:focus {
 button {
     height: auto;
     border: 2px ridge #39FF14;
-    background-color: #212121;
+    background-color: #121212;
     color: #ffffff;
     font-family: Lucida Console;
     text-decoration: none;
@@ -326,4 +334,65 @@ button {
 
 #new-event {
     float: right;
+}
+
+#popup-module-blackout {
+    display: none;
+    position: fixed;
+    z-index: 3;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.65);
+    backdrop-filter: blur(4px);
+}
+
+#popup-module-blackout.active {
+    display: block;
+}
+
+#popup-module {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    position: absolute;
+    top: calc(50% - 175px);
+    left: calc(50% - 325px);
+    width: 650px;
+    height: 350px;
+    border: 3px ridge #39FF14;
+    background-color: #212121;
+    color: #39FF14;
+    padding: 50px;
+    box-sizing: border-box;
+}
+
+#popup-module > h2 {
+    margin: 0;
+    height: auto;
+    border-left: 5px solid #39FF14;
+    line-height: 25px;
+    padding-left: 20px;
+}
+
+#popup-module li {
+    display: none;
+}
+
+#popup-module li.active {
+    display: list-item;
+}
+
+#no-changes {
+    opacity: 0;
+    font-size: 10px;
+}
+
+#no-changes.active {
+    opacity: 1;
+}
+
+.maincontent > .admin-module-main {
+    margin: 10px 0 0 75px;
 }

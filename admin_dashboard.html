@@ -28,33 +28,33 @@
         </div>
         <div class="admin-module-main-container">
             <div id="user-icon">
-                <img src="ipretendidonotseeit_icon.jpg" alt="User icon">
+                <img data-original="ipretendidonotseeit_icon.jpg" src="ipretendidonotseeit_icon.jpg" alt="User icon">
             </div>
             <button id="remove-user-icon">Remove User Icon</button>
+            <button id="revert-changes">Revert Changes</button>
             <div class="admin-module-main">
                 <p id="user-info">
-                    <b>Username: </b> <span contenteditable="false">ipretendidonotseeit</span>
-                    <button class="edit-user-info">Edit Username</button>
+                    <b>Username: </b> <span id="username" data-original="ipretendidonotseeit" contenteditable="false">ipretendidonotseeit</span>
+                    <button id="edit-username">Edit Username</button>
                     <br>
                     <br>
-                    <b>Email:</b> <span contenteditable="false">ipretendidonotseeit@gmail.com</span>
-                    <button class="edit-user-info">Edit Email</button>
+                    <b>Email:</b> <span>ipretendidonotseeit@gmail.com</span>
                 </p>
                 <div id="user-stats">
                     <img src="econ.png" alt="Econ icon">
-                    <span class="stat" contenteditable="true">65</span class="stat">
+                    <span class="stat" data-original="65">65</span class="stat">
                     <button class="change-stat decrease-stat">-</button>
                     <button class="change-stat increase-stat">+</button>
                     <img src="order.png" alt="Order icon">
-                    <span class="stat" contenteditable="true">17</span class="stat">
+                    <span class="stat" data-original="17">17</span class="stat">
                     <button class="change-stat decrease-stat">-</button>
                     <button class="change-stat increase-stat">+</button>
                     <img src="health.png" alt="Health icon">
-                    <span class="stat" contenteditable="true">28</span class="stat">
+                    <span class="stat" data-original="28">28</span class="stat">
                     <button class="change-stat decrease-stat">-</button>
                     <button class="change-stat increase-stat">+</button>
                     <img src="diplomacy.png" alt="Diplomacy icon">
-                    <span class="stat" contenteditable="true">35</span class="stat">
+                    <span class="stat" data-original="35">35</span class="stat">
                     <button class="change-stat decrease-stat">-</button>
                     <button class="change-stat increase-stat">+</button>
                 </div>
@@ -62,12 +62,9 @@
                     <input id="ban-user-checkbox" type="checkbox">
                     <label for="ban-user-checkbox">Ban User</label>
                 </div>
-                <div id="confirm-changes">
-                    <input id="confirm-changes-checkbox" type="checkbox">
-                    <label for="confirm-changes-checkbox">Confirm Changes</label>
-                </div>
                 <div id="save-changes">
                     <button id="save-changes-button">Save Changes</button>
+                    <span id="no-changes">No Changes Made...</span>
                 </div>
             </div>
         </div>
@@ -76,6 +73,24 @@
             <input id="event-search" type="text"></input>
             <button>Search</button>
             <button id="new-event">New Event</button>
+        </div>
+        <div class="admin-module-main">
+            <form>
+                <label for="event-name">Event Name: </label>
+                <input id="event-name" type="text">
+            </form>
+        </div>
+    </div>
+    <div id="popup-module-blackout">
+        <div id="popup-module">
+            <h2>Please confirm the following changes:</h2>
+            <ul>
+                <li id="ban-user-confirm">The user will be <b><u>banned</u></b></li>
+                <li id="remove-user-icon-confirm">The user's icon will be <b><u>removed</u></b></li>
+                <li id="change-username-confirm">The user's username will be <b><u>changed</u></b></li>
+                <li id="change-stats-confirm">The user's stats will be <b><u>altered</u></b></li>
+            </ul>
+            <button id="confirm-changes">Confirm</button>
         </div>
     </div>
 </body>
