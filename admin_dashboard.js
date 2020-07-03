@@ -67,3 +67,25 @@ $("#revert-changes").on("click", function() {
         }
     });
 });
+
+$("input[type='range']").on("change", function() {
+    if ($(this).val() > 0) {
+        $(this).next(".stat-effect-value").text("+" + $(this).val());
+    } else {
+        $(this).next(".stat-effect-value").text($(this).val());
+    }
+});
+
+$("#new-event").on("click", function() {
+    $(this).parent().next().addClass("active");
+});
+
+$(".admin-module-header button").on("click", function() {
+    const notFoundIndicator = $(this).next();
+
+    notFoundIndicator.addClass("active");
+
+    setTimeout(function() {
+        notFoundIndicator.removeClass("active");
+    }, 2000);
+});

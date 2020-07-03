@@ -216,7 +216,8 @@ p {
     box-sizing: border-box;
 }
 
-button:focus {
+button:focus,
+input[type="submit"] {
     outline: none;
 }
 
@@ -286,8 +287,8 @@ input[type="checkbox"]:focus {
     outline: none;
 }
 
-input[type="text"] {
-    height: 20px;
+input[type="text"],
+textarea {
     border: 2px ridge #39FF14;
     background-color: #121212;
     color: #ffffff;
@@ -296,11 +297,23 @@ input[type="text"] {
     border-radius: 5px;
 }
 
-input[type="text"]:focus {
+input[type="text"] {
+    height: 20px;
+}
+
+textarea {
+    resize: none;
+    padding: 5px;
+    box-sizing: border-box;
+}
+
+input[type="text"]:focus,
+textarea:focus {
     outline: none;
 }
 
-button {
+button,
+input[type="submit"] {
     height: auto;
     border: 2px ridge #39FF14;
     background-color: #121212;
@@ -394,5 +407,59 @@ button {
 }
 
 .maincontent > .admin-module-main {
+    display: none;
     margin: 10px 0 0 75px;
+}
+
+.maincontent > .admin-module-main.active {
+    display: block;
+}
+
+form > input[type="text"],
+form > textarea {
+    grid-column: 2 / span 2;
+}
+
+form {
+    display: grid;
+    grid-template-columns: 300px 1fr 75px;
+    grid-gap: 20px;
+}
+
+form > span {
+    align-self: center;
+    text-align: center;
+}
+
+form > input[type="submit"] {
+    grid-column: 3 / span 1;
+}
+
+input[type="range"] {
+  -webkit-appearance: none;
+  width: 100%;
+  height: 10px;
+  background: #121212;
+  border-radius: 5px;
+}
+
+input[type="range"]:focus {
+    outline: none;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 15px;
+    height: 15px;
+    background: #39FF14;
+    border-radius: 50%;
+}
+
+button + span {
+    display: none;
+    font-size: 12px;
+}
+
+button + span.active {
+    display: inline;
 }
