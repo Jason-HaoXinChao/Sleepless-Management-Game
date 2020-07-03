@@ -1,7 +1,7 @@
 'use strict';
 
 $("#remove-user-icon").on("click", function() {
-    $(this).prev("#user-icon").children("img").attr("src", "home_login/visitor_icon.png")
+    $(this).prev("#user-icon").children("img").attr("src", "../images/visitor_icon.png")
 });
 
 $("#edit-username").on("click", function() {
