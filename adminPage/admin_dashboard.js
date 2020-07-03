@@ -1,17 +1,29 @@
 'use strict';
 
+/*
+ * Removes a user's icon and replaces it with a temporary icon 
+ */
 $("#remove-user-icon").on("click", function() {
     $(this).prev("#user-icon").children("img").attr("src", "../images/visitor_icon.png")
 });
 
+/*
+ * When the "Edit Username" button is clicked, make the username text editable via the contenteditable attr 
+ */
 $("#edit-username").on("click", function() {
     $("#username").attr("contenteditable", $(this).prev("span").attr("contenteditable") == 'false');
 });
 
+/*
+ * Allows the admin user to increase or decrease a user's stats while limiting a stat's value to a min of 0 and a max of 100
+ */
 $(".change-stat").on("click", function() {
     $(this).prevAll(".stat:first").text(Math.max(0, Math.min(100, parseInt($(this).prevAll(".stat:first").text()) + ($(this).hasClass("decrease-stat") ? -1 : 1))));
 });
 
+/*
+ * Checks what changes to a user's info has been made by the admin user (which will display the relevant bullet points in the confirm changes popup)
+ */
 $("#save-changes").on("click", function() {
     if ($("input#ban-user-checkbox").is(":checked")) {
         $("li#ban-user-confirm").addClass("active");
@@ -42,7 +54,13 @@ $("#save-changes").on("click", function() {
     }
 });
 
+/*
+ * Displays a change confirmation to the admin user
+ * NOTE: some functionality is not yet present until we access to a server in phase 2 
+ */
 $("#confirm-changes").on("click", function() {
+    // In phase 2, once the admin user confirms the changes, the updated user info should be sent to the server and override the existing info of the user
+
     $("*[data-original]").each(function() {
         if ($(this).is("img")) {
             $(this).attr("data-original", $(this).attr("src"));
@@ -58,6 +76,9 @@ $("#confirm-changes").on("click", function() {
     });
 });
 
+/*
+ * Allows the admin user to revert changes to a user's info to its original values given that they haven't saved the changes
+ */
 $("#revert-changes").on("click", function() {
     $("*[data-original]").each(function() {
         if ($(this).is("img")) {
@@ -68,6 +89,9 @@ $("#revert-changes").on("click", function() {
     });
 });
 
+/* 
+ * Updates the value indicator for the stat effect range input
+ */
 $("input[type='range']").on("change", function() {
     if ($(this).val() > 0) {
         $(this).next(".stat-effect-value").text("+" + $(this).val());
@@ -76,11 +100,29 @@ $("input[type='range']").on("change", function() {
     }
 });
 
+/*
+ * Displays the new event creation module when the user clicks on the "New Event" button
+ */
 $("#new-event").on("click", function() {
     $(this).parent().next().addClass("active");
 });
 
+/*
+ * Handles the submission for the new event form
+ * NOTE: this functionality is not yet present until we access to a server in phase 2 
+ */
+$("#event-form").on("submit", function() {
+    // Currently, the new event creation form doesn't do anything when you submit it, but in phase 2, when the admin user submits the form, the new event's info will be sent to our server
+});
+
+/*
+ * Displays the corresponding user/event data based on the admin user's search term
+ * NOTE: this functionality is not yet present until we access to a server in phase 2 
+ */
 $(".admin-module-header button").on("click", function() {
+    // Currently, a "______ not found..." text indicator is displayed to the admin user when they search for a user or an admin.
+    // In phase 2, a request would be made to the server to attempt to retrieve the specified user/event's info
+
     const notFoundIndicator = $(this).next();
 
     notFoundIndicator.addClass("active");
