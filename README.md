@@ -1,7 +1,7 @@
 # team32
 Instructions:
-To start, open “home_login.html”. Here you will see a header bar and some content. On the header bar you can click on the headers to open the corresponding pages.
-    Leaderboard: on this page, you can see the top 10 players on the server. You can see their icons, username, core ingame statistics, and you can visit their profile page by clicking on the view profile button. (please don’t actually do it, we didn’t hardcode 10 different profile pages just for this)
+To start, open “home_login.html” in the "home_login" folder. On this page you will see a header bar and some content. On the header bar you can click on the headers to open the corresponding pages.
+    Leaderboard: on this page, you can see the top 10 players on the server. You can see their icons, username, core ingame statistics, and you can visit their profile page by clicking on the view profile button. (please don’t actually do it, we didn’t hardcode 10 different profile pages just for this, clicking view profile will just refresh the page as the href is empty.)
     Patch Notes: on this page, you can see the game developer’s most recent note and update on the game. On the sidebar menu, you can click on the links to jump to the corresponding topics. (currently we only have placeholder text to display the layout of the page)
     You can come back to the login page by clicking the logo on the top left.
 
