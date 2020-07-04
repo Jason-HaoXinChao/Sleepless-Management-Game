@@ -25,24 +25,29 @@ $(".change-stat").on("click", function() {
  * Checks what changes to a user's info has been made by the admin user (which will display the relevant bullet points in the confirm changes popup)
  */
 $("#save-changes").on("click", function() {
+    // Check to see if the admin user intends to ban the user. If so, the bullet point corresponding to that will be displayed in the comfirm changes popup
     if ($("input#ban-user-checkbox").is(":checked")) {
         $("li#ban-user-confirm").addClass("active");
     }
 
+    // Check to see if the admin user intends on removing the user's avatar. If so, the bullet point corresponding to that will be displayed in the comfirm changes popup
     if ($("#user-icon > img").attr("src") != $("#user-icon > img").attr("data-original")) {
         $("li#remove-user-icon-confirm").addClass("active");
     }
 
+    // Check to see if the admin user intends on changing the user's username. If so, the bullet point corresponding to that will be displayed in the comfirm changes popup
     if ($("#username").text() != $("#username").attr("data-original")) {
         $("li#change-username-confirm").addClass("active");
     }
 
+    // Check to see if the admin user intends on changing one or more of the user's stats. If so, the bullet point corresponding to that will be displayed in the comfirm changes popup
     $(".stat").each(function() {
         if ($(this).text() != $(this).attr("data-original")) {
             $("li#change-stats-confirm").addClass("active");
         }
     });
 
+    // Display the confirm changes popup if changes has been made. Otherwise, display a text indicator indicating that no changes have been made.
     if ($("li.active").length) {
         $("#popup-module-blackout").addClass("active");
     } else {
@@ -61,6 +66,7 @@ $("#save-changes").on("click", function() {
 $("#confirm-changes").on("click", function() {
     // In phase 2, once the admin user confirms the changes, the updated user info should be sent to the server and override the existing info of the user
 
+    // Upon confirming the changes, update the data-original attribute values with the new user info values
     $("*[data-original]").each(function() {
         if ($(this).is("img")) {
             $(this).attr("data-original", $(this).attr("src"));
@@ -69,15 +75,17 @@ $("#confirm-changes").on("click", function() {
         }
     });
 
+    // Close the confirm changes popup
     $(this).closest("#popup-module-blackout").removeClass("active");
 
+    // Reset the bullet points that summarizes what changes have been made 
     $("li").each(function() {
         $(this).removeClass("active");
     });
 });
 
 /*
- * Allows the admin user to revert changes to a user's info to its original values given that they haven't saved the changes
+ * Allows the admin user to revert changes to a user's info to its original values (stored in the data-original attribute) given that they haven't saved the changes
  */
 $("#revert-changes").on("click", function() {
     $("*[data-original]").each(function() {
@@ -93,6 +101,7 @@ $("#revert-changes").on("click", function() {
  * Updates the value indicator for the stat effect range input
  */
 $("input[type='range']").on("change", function() {
+    // Adds a '+' before the value for consistency if the value is positive
     if ($(this).val() > 0) {
         $(this).next(".stat-effect-value").text("+" + $(this).val());
     } else {
@@ -125,8 +134,10 @@ $(".admin-module-header button").on("click", function() {
 
     const notFoundIndicator = $(this).next();
 
+    // Displays the text indicator 
     notFoundIndicator.addClass("active");
 
+    // Makes the text indicator dissapears on its own after 2 seconds
     setTimeout(function() {
         notFoundIndicator.removeClass("active");
     }, 2000);
