@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="utf-8">
-    <title>Home</title>
+    <title>User Profile</title>
     <link rel="stylesheet" type="text/css" href="user_profile.css">
 </head>
 
@@ -30,26 +30,30 @@
                 <p class="username">UserName</p>
                 <div>
                     <img src="../images/logged_in_user_icon.jpg" alt="user_profile_image" class="user_profile_image">
+                    <button id="edit-profile-pic">Edit Profile Pic</button>
                 </div>
                 <form class="profile-info">
                     <p class="heading"> Personal Information</p>
-                    <div class=b ox>
+                    <div class="box">
                         <p class="info">Age: 20</p>
                         <p class="info">Country: Canada</p>
                         <p class="info">Gender: Female</p>
                         <p class="info">Email Address: fake@gmail.com</p>
-                        <p class="info">Social Media: Twitter</p>
+                        <p class="info">Social Media: Twitter ID</p>
+
+                        
                     </div>
                 </form>
             </div>
             <div class="country-stat">
-                <p class="countryname">Country</p>
+                <p class="countryname">Country Name</p>
                 <div>
                     <img src="../images/country-flag.png" alt="Country-flag" class="Country-flag">
+                    <button id="edit-flag">Edit Country Flag</button>
                 </div>
                 <form class="stats">
                     <p class="heading"> Country Statistic</p>
-                    <div class=b ox>
+                    <div class="box">
                         <p class="info">economy: 69</p>
                         <div class="bar">
                             <div class="economy">69%</div>
@@ -72,8 +76,14 @@
             </div>
         </div>
     </div>
+    <div id="popup-module-blackout">
+        <div id="popup-module">
+            <h2>Upload Image in Phase 2...</h2>
+            <button id="confirm-changes">Confirm</button>
+        </div>
+    </div>
 </body>
-
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script type="text/javascript" src="user_profile.js"></script>
 
 </html>

@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="utf-8">
-    <title>User Profile</title>
+    <title>User Feedback</title>
     <link rel="stylesheet" type="text/css" href="userfeedback.css">
 </head>
 
@@ -22,12 +22,12 @@
     <div class="maincontent">
         <div class="heading">
             <p class="heading">User Feedback</p>
-            <button class="delete" type="button">Delete</button>
+            <button class="delete" type="button" id="delete-button">Delete</button>
         </div>
         <div class="user-feedback-container">
-            <div class="feedback-box">
+            <div class="feedback-box" id="feedback1">
                 <div class="checkbox">
-                    <input type="checkbox">
+                    <input type="checkbox" id="checkbox1">
                 </div>
                 <div class="textbox">
                     <p class="from">
@@ -38,9 +38,9 @@
                     </p>
                 </div>
             </div>
-            <div class="feedback-box">
+            <div class="feedback-box" id="feedback2">
                 <div class="checkbox">
-                    <input type="checkbox">
+                    <input type="checkbox" id="checkbox2">
                 </div>
                 <div class="textbox">
                     <p class="from">
@@ -51,9 +51,9 @@
                     </p>
                 </div>
             </div>
-            <div class="feedback-box">
+            <div class="feedback-box" id="feedback3">
                 <div class="checkbox">
-                    <input type="checkbox">
+                    <input type="checkbox" id="checkbox3">
                 </div>
                 <div class="textbox">
                     <p class="from">
@@ -64,9 +64,9 @@
                     </p>
                 </div>
             </div>
-            <div class="feedback-box">
+            <div class="feedback-box" id="feedback4">
                 <div class="checkbox">
-                    <input type="checkbox">
+                    <input type="checkbox" id="checkbox4">
                 </div>
                 <div class="textbox">
                     <p class="from">
@@ -82,7 +82,7 @@
     </div>
     </div>
 </body>
-
-<script type="text/javascript" src="user_profile.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script type="text/javascript" src="userfeedback.js"></script>
 
 </html>
