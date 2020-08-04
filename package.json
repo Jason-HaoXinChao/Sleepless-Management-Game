@@ -1,0 +1,20 @@
+{
+  "name": "team32",
+  "version": "1.0.0",
+  "description": "Instructions:\r To start, open “home_login.html” in the \"home_login\" folder. On this page you will see a header bar and some content. On the header bar you can click on the headers to open the corresponding pages.",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/csc309-summer-2020/team32.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/csc309-summer-2020/team32/issues"
+  },
+  "homepage": "https://github.com/csc309-summer-2020/team32#readme"
+}
