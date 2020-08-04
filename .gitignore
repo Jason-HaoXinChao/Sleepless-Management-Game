@@ -1,0 +1,7 @@
+mongo-data
+node_module
+package-lock.json
+!package.json
+!server.js
+!db
+!models
