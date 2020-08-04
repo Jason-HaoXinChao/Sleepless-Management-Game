@@ -10,7 +10,8 @@ app.use(bodyParser.json());
 // Mongo and Mongoose
 const { ObjectID } = require('mongodb');
 const { mongoose } = require('./db/mongoose');
-const { Restaurant } = require('./models/restaurant');
+mongoose.set('bufferCommands', false);
+mongoose.set('useFindAndModify', false);
 
 // Default get route
 app.get("/", (req, res) => {
