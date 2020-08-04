@@ -33,7 +33,6 @@ const LogSchema = new mongoose.Schema({
 
 const UserSchema = new mongoose.Schema({
     username: String,
-    password: String,
     statistic: StatisticSchema,
     establishment: [EstablishmentSchema],
     log: [LogSchema],
