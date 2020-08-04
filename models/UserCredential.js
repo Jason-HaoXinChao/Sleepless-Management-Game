@@ -5,7 +5,8 @@ const mongoose = require("mongoose");
 const CredentialSchema = new mongoose.Schema({
     username: String,
     password: Number,
-    email: String
+    email: String,
+    birthday: String
 });
 
 // A mongoose middleware to hash password before saving it into the database
