@@ -1,0 +1,29 @@
+<div class="header">
+    {{#unless admin}}
+    <a href="{{#if login}}/login{{else}}/gameplay{{/if}}" class="logo">INSERT LOGO HERE</a>
+    {{#unless login}}<a class="{{#if gameplay}}currentpage{{else}}otherpage{{/if}}" href="/gameplay">Gameplay</a>{{/unless}}
+    {{#unless login}}<a class="{{#if diplomacy}}currentpage{{else}}otherpage{{/if}}" href="/diplomacy">Diplomacy</a>{{/unless}}
+    <a class="{{#if leaderboard}}currentpage{{else}}otherpage{{/if}}" href="/leaderboard">Leaderboard</a>
+    <a class="{{#if patchnotes}}currentpage{{else}}otherpage{{/if}}" href="/patchnotes">Patch Notes</a>
+    {{#unless login}}<a class="{{#if contact}}currentpage{{else}}otherpage{{/if}}" href="/contact">Contact</a>{{/unless}}
+    {{#unless login}}
+    {{/unless}}
+    {{else}}
+    <a href="/admin_dashboard" class="logo">INSERT LOGO HERE</a>
+    <a class="{{#if adminpanel}}currentpage{{else}}otherpage{{/if}}" href="/admin_dashboard">Admin Panel</a>
+    <a class="{{#if userfeedback}}currentpage{{else}}otherpage{{/if}}" href="/user_feedback">User Feedback</a>
+    <a class="{{#if patchnotes}}currentpage{{else}}otherpage{{/if}}" href="/patchnotes">Patch Notes</a>
+    {{/unless}}
+    {{#unless login}}
+    <div class="right_header">
+        {{#unless admin}}
+        <a href="/user_profile">
+            <img src="../images/logged_in_user_icon.jpg" alt="user_icon" class="user_icon">
+        </a>
+        {{/unless}}
+        <form action="/api/logout" method="post">
+            <button type="submit" class="logout">Logout</button>
+        </form>
+    </div>
+    {{/unless}}
+</div>

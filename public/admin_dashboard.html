@@ -1,25 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="utf-8">
     <title>Admin Dashboard</title>
-    <link rel="stylesheet" type="text/css" href="admin_dashboard.css">
+    <link rel="stylesheet" type="text/css" href="css/admin_dashboard.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    <script type="text/javascript" src="admin_dashboard.js" defer></script>
+    <script type="text/javascript" src="js/admin_dashboard.js" defer></script>
 </head>
-
 <body>
     <!-- header -->
-    <div class="header">
-        <a href="" class="logo">INSERT LOGO HERE</a>
-        <a class="currentpage" href="admin_dashboard.html">Admin Panel</a>
-        <a class="otherpage" href="userfeedback.html">User Feedback</a>
-        <a class="otherpage" href="patchnote_admin.html">Patch Notes</a>
-        <div class="right_header ">
-            <a href="../home_login/home_login.html" class="logout">Logout</a>
-        </div>
-    </div>
+    {{> header admin=true adminpanel=true}}
     <!-- content -->
     <div class="maincontent ">
         <h2>Admin Dashboard</h2>
@@ -113,5 +103,4 @@
         </div>
     </div>
 </body>
-
 </html>

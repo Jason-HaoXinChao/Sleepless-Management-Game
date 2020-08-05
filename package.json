@@ -18,8 +18,12 @@
   },
   "homepage": "https://github.com/csc309-summer-2020/team32#readme",
   "dependencies": {
+    "argon2": "^0.26.2",
     "express": "^4.17.1",
+    "express-handlebars": "^5.1.0",
+    "express-session": "^1.17.1",
     "mongodb": "^3.6.0",
-    "mongoose": "^5.9.27"
+    "mongoose": "^5.9.27",
+    "validator": "^13.1.1"
   }
 }

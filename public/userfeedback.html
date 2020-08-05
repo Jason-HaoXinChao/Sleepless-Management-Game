@@ -1,23 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="utf-8">
     <title>User Feedback</title>
     <link rel="stylesheet" type="text/css" href="userfeedback.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script type="text/javascript" src="userfeedback.js" defer></script>
 </head>
-
 <body>
     <!-- header -->
-    <div class="header">
-        <a href="" class="logo">INSERT LOGO HERE</a>
-        <a class="otherpage" href="admin_dashboard.html">Admin Panel</a>
-        <a class="currentpage" href="userfeedback.html">User Feedback</a>
-        <a class="otherpage" href="patchnote_admin.html">Patch Notes</a>
-        <div class="right_header">
-            <a href="home_login/home_login.html" class="logout">Logout</a>
-        </div>
-    </div>
+    {{> header admin=true userfeedback=true}}
     <!-- user profile -->
     <div class="maincontent">
         <div class="heading">
@@ -82,7 +74,4 @@
     </div>
     </div>
 </body>
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-<script type="text/javascript" src="userfeedback.js"></script>
-
 </html>

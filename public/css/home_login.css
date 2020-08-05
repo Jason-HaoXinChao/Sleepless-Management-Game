@@ -76,7 +76,7 @@ body {
     overflow: hidden;
 }
 
-#form-module-container.sign-in {
+#form-module-container.sign-up {
     background-image: linear-gradient(-45deg, #FF8A80 0%, #EF5350 100%);;
 }
 
@@ -97,7 +97,7 @@ body {
     overflow: hidden;
 }
 
-#form-module-container.sign-in > #form-module {
+#form-module-container.sign-up > #form-module {
     left: 50%;
     background-image: linear-gradient(45deg, #26A69A 0%, #0097A7 100%);
     transition: all 0.35s ease-in-out;
@@ -122,16 +122,16 @@ form {
     text-align: left;
 }
 
-form#signin-form {
+form#signup-form {
     display: none;
 }
 
-#form-module-container.sign-in form#signup-form {
-    display: none;
-}
-
-#form-module-container.sign-in form#signin-form {
+#form-module-container.sign-up form#signup-form {
     display: inline-block;
+}
+
+#form-module-container.sign-up form#signin-form {
+    display: none;
 }
 
 #form-module h2 {
@@ -148,12 +148,12 @@ form#signin-form {
     display: none;
 }
 
-#form-module-container.sign-in h2:first-of-type {
-    display: none;
+#form-module-container.sign-up h2:first-of-type {
+    display: block;
 }
 
-#form-module-container.sign-in h2:last-of-type {
-    display: block;
+#form-module-container.sign-up h2:last-of-type {
+    display: none;
 }
 
 label {
@@ -201,12 +201,13 @@ form > div {
     align-items: center;
 }
 
-form > div > span {
+form > div > .form-toggle {
     max-width: 175px;
     font-size: 15px;
+    cursor: pointer;
 }
 
-form > div > span:hover {
+form > div > .form-toggle:hover {
     text-decoration: underline;
 }
 
@@ -225,6 +226,7 @@ button {
     text-align: center;
     transition: all 0.25s ease;
     user-select: none;
+    cursor: pointer;
 }
 
 button:hover {
@@ -256,7 +258,7 @@ button:focus {
     overflow: auto;
 }
 
-#form-module-container.sign-in > #game-about {
+#form-module-container.sign-up > #game-about {
     right: 50%;
     color: #ffffff;
     transition: all 0.35s ease-in-out;

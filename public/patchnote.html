@@ -4,25 +4,12 @@
 <head>
     <meta charset="utf-8">
     <title>Patchnotes</title>
-    <link rel="stylesheet" type="text/css" href="patchnote.css">
+    <link rel="stylesheet" type="text/css" href="css/patchnote.css">
+    <script type="text/javascript" src="js/patchnote.js" defer></script>
 </head>
-
 <body>
     <!-- header -->
-    <div class="header">
-        <a href="" class="logo">INSERT LOGO HERE</a>
-        <a class="otherpage" href="gameplay.html">Gameplay</a>
-        <a class="otherpage" href="diplomacy.html">Diplomacy</a>
-        <a class="otherpage" href="leaderboard.html">Leaderboard</a>
-        <a class="currentpage" href="patchnote.html">Patch Notes</a>
-        <a class="otherpage" href="contact.html">Contact</a>
-        <div class="right_header">
-            <a href="user_profile.html">
-                <img src="../images/logged_in_user_icon.jpg" alt="user_icon" class="user_icon">
-            </a>
-            <a href="../home_login/home_login.html" class="logout">Logout</a>
-        </div>
-    </div>
+    {{#if login}}{{> header login=true patchnotes=true}}{{else}}{{> header patchnotes=true}}{{/if}}
     <div class="maincontent">
         <div class="patchnote_container">
             <div class="note" id="title1">
@@ -146,6 +133,4 @@
         </div>
     </div>
 </body>
-<script type="text/javascript" src="patchnote.js"></script>
-
 </html>

@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Diplomacy</title>
+    <link rel="stylesheet" type="text/css" href="css/diplomacy.css">
+    <script type="text/javascript" src="js/diplomacy.js" defer></script>
+</head>
+<body>
+    <!-- header -->
+    {{> header diplomacy=true}}
+    <!-- Table of cards each containing information of one diplomatic connection(friends),
+        there are 3 columns in the table, and indefinitely many rows. -->
+    <div class="maincontent">
+        <div class="card_container">
+        </div>
+        <div class="pagination">
+            <a href="">&lsaquo;</a>
+            <a href="">1</a>
+            <a href="">2</a>
+            <a href="" id="active">3</a>
+            <a href="">&rsaquo;</a>
+        </div>
+    </div>
+</body>
+</html>

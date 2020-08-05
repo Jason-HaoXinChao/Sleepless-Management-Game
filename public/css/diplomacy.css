@@ -54,8 +54,13 @@ body {
     vertical-align: middle;
 }
 
-.right_header a.logout {
+.right_header form {
+    display: inline-block;
+}
+
+.right_header button.logout {
     margin-left: 15px;
+    border: none;
     background-color: yellow;
     color: black;
     font-size: 18px;

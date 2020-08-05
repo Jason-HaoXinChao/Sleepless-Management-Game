@@ -4,26 +4,21 @@
 <head>
     <meta charset="utf-8">
     <title>Login • Sign Up</title>
-    <link rel="stylesheet" type="text/css" href="home_login.css">
+    <link rel="stylesheet" type="text/css" href="css/home_login.css">
     <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@100;300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    <script src="home_login.js" defer></script>
+    <script src="js/home_login.js" defer></script>
 </head>
-
 <body>
     <!-- header -->
-    <div class="header">
-        <a href="home_login.html" class="logo">INSERT LOGO HERE</a>
-        <a class="otherpage" href="leaderboard_visitor.html">Leaderboard</a>
-        <a class="otherpage" href="patchnote_visitor.html">Patch Notes</a>
-    </div>
+    {{> header login=true}}
     <!-- content -->
     <div id="form-module-container">
         <div id="form-module">
             <div id="form-module-inner">
                 <h2>Hello!<br>Let's Get Started!</h2>
-                <form id="signup-form">
+                <form id="signup-form" action="/api/register" method="post">
                     <label for="email"><b>Email</b></label>
                     <input id="email" type="email" placeholder="Email" name="email" required>
                     <label for="username-2"><b>Username</b></label>
@@ -38,7 +33,7 @@
                     </div>
                 </form>
                 <h2>Hello!<br>Welcome Back!</h2>
-                <form id="signin-form">
+                <form id="signin-form" action="/api/login" method="post">
                     <label for="username-1"><b>Username</b></label>
                     <input id="username-1" type="text" placeholder="Username" name="username" required>
                     <label for="password-1"><b>Password</b></label>
@@ -63,7 +58,4 @@
         </div>
     </div>
 </body>
-
-<script type="text/javascript" src="home_login.js"></script>
-
 </html>
