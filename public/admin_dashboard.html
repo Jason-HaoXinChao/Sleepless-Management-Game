@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="utf-8">
     <title>Admin Dashboard</title>
@@ -7,6 +8,7 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script type="text/javascript" src="js/admin_dashboard.js" defer></script>
 </head>
+
 <body>
     <!-- header -->
     {{> header admin=true adminpanel=true}}
@@ -21,7 +23,7 @@
         </div>
         <div class="admin-module-main-container">
             <div id="user-icon">
-                <img data-original="../images/ipretendidonotseeit_icon.jpg" src="../images/ipretendidonotseeit_icon.jpg" alt="User icon">
+                <img data-original="./images/ipretendidonotseeit_icon.jpg" src="./images/ipretendidonotseeit_icon.jpg" alt="User icon">
             </div>
             <button id="remove-user-icon">Remove User Icon</button>
             <button id="revert-changes">Revert Changes</button>
@@ -34,19 +36,19 @@
                     <b>Email:</b> <span id="email">ipretendidonotseeit@gmail.com</span>
                 </p>
                 <div id="user-stats">
-                    <img src="../images/econ.png" alt="Econ icon">
+                    <img src="./images/econ.png" alt="Econ icon">
                     <span class="stat" data-original="65">65</span class="stat">
                     <button class="change-stat decrease-stat">-</button>
                     <button class="change-stat increase-stat">+</button>
-                    <img src="../images/order.png" alt="Order icon">
+                    <img src="./images/order.png" alt="Order icon">
                     <span class="stat" data-original="17">17</span class="stat">
                     <button class="change-stat decrease-stat">-</button>
                     <button class="change-stat increase-stat">+</button>
-                    <img src="../images/health.png" alt="Health icon">
+                    <img src="./images/health.png" alt="Health icon">
                     <span class="stat" data-original="28">28</span class="stat">
                     <button class="change-stat decrease-stat">-</button>
                     <button class="change-stat increase-stat">+</button>
-                    <img src="../images/diplomacy.png" alt="Diplomacy icon">
+                    <img src="./images/diplomacy.png" alt="Diplomacy icon">
                     <span class="stat" data-original="35">35</span class="stat">
                     <button class="change-stat decrease-stat">-</button>
                     <button class="change-stat increase-stat">+</button>
@@ -103,4 +105,5 @@
         </div>
     </div>
 </body>
+
 </html>
