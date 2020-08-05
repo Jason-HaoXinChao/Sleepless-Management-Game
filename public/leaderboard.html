@@ -10,7 +10,7 @@
 
 <body>
     <!-- header -->
-    {{#if login}}{{> header login=true leaderboard=true}}{{else}}{{> header leaderboard=true}}{{/if}}
+    {{> header is_logged_out=this.is_logged_out leaderboard=true}}
     <!-- content -->
     <div class="maincontent ">
         <h2>Top World Leaders</h2>

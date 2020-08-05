@@ -193,7 +193,7 @@ app.get('/leaderboard', (req, res) => {
         res.render('leaderboard');
     } else {
         res.render('leaderboard', {
-            login: true
+            is_logged_out: true
         });
     }
 });
@@ -204,7 +204,7 @@ app.get('/patchnotes', (req, res) => {
         res.render('patchnote');
     } else {
         res.render('patchnote', {
-            login: true
+            is_logged_out: true
         });
     }
 });
