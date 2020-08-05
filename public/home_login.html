@@ -17,6 +17,17 @@
     <div id="form-module-container">
         <div id="form-module">
             <div id="form-module-inner">
+                <h2>Hello!<br>Welcome Back!</h2>
+                <form id="signin-form" action="/api/login" method="post">
+                    <label for="username-1"><b>Username</b></label>
+                    <input id="username-1" type="text" placeholder="Username" name="username" required>
+                    <label for="password-1"><b>Password</b></label>
+                    <input id="password-1" type="password" placeholder="Password" name="password" required>
+                    <div>
+                        <span class="form-toggle">Create an account!</span>
+                        <button type="submit" name="submit">Login</button>
+                    </div>
+                </form>
                 <h2>Hello!<br>Let's Get Started!</h2>
                 <form id="signup-form" action="/api/register" method="post">
                     <label for="email"><b>Email</b></label>
@@ -30,17 +41,6 @@
                     <div>
                         <span class="form-toggle">I already have an account!</span>
                         <button type="submit" name="submit">Register</button>
-                    </div>
-                </form>
-                <h2>Hello!<br>Welcome Back!</h2>
-                <form id="signin-form" action="/api/login" method="post">
-                    <label for="username-1"><b>Username</b></label>
-                    <input id="username-1" type="text" placeholder="Username" name="username" required>
-                    <label for="password-1"><b>Password</b></label>
-                    <input id="password-1" type="password" placeholder="Password" name="password" required>
-                    <div>
-                        <span class="form-toggle">Create an account!</span>
-                        <button type="submit" name="submit">Login</button>
                     </div>
                 </form>
             </div>

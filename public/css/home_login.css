@@ -126,12 +126,12 @@ form#signup-form {
     display: none;
 }
 
-#form-module-container.sign-up form#signup-form {
-    display: inline-block;
-}
-
 #form-module-container.sign-up form#signin-form {
     display: none;
+}
+
+#form-module-container.sign-up form#signup-form {
+    display: inline-block;
 }
 
 #form-module h2 {
@@ -149,11 +149,11 @@ form#signup-form {
 }
 
 #form-module-container.sign-up h2:first-of-type {
-    display: block;
+    display: none;
 }
 
 #form-module-container.sign-up h2:last-of-type {
-    display: none;
+    display: block;
 }
 
 label {
@@ -276,7 +276,7 @@ button:focus {
     font-size: 45px;
 }
 
-#form-module-container.sign-in > #game-about h2 {
+#form-module-container.sign-up > #game-about h2 {
     background-image: linear-gradient(to right, #26A69A 0%, #0097A7 100%);
 }
 
