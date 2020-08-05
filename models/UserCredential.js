@@ -1,13 +1,13 @@
-/* user credential models */
 const mongoose = require("mongoose");
 const validator = require('validator');
 const argon2 = require('argon2');
 
+/* User Credential model */
 const CredentialSchema = new mongoose.Schema({
     username: {
         type: String,
         required: true,
-        unique: true,
+        unique: true, // Usernames need to be unique
         minLength: 3,
         lowercase: true,
         trim: true
@@ -15,11 +15,11 @@ const CredentialSchema = new mongoose.Schema({
     email: {
         type: String,
         required: true,
-        unique: true,
+        unique: true, // Usernames need to be unique
         minLength: 1,
         trim: true,
         validate: {
-            validator: validator.isEmail,
+            validator: validator.isEmail, // Uses express-validator to validate whether or not the provided string is a valid email
             message: 'Not a valid email'
         }
     },
@@ -33,7 +33,7 @@ const CredentialSchema = new mongoose.Schema({
         required: true,
         trim: true,
         validate: {
-            validator: validator.isDate,
+            validator: validator.isDate, // Uses express-validator to validate whether or not the provided string is a valid date (YYYY-MM-DD)
             message: 'Not a valid date'
         }
     }
@@ -57,29 +57,31 @@ CredentialSchema.pre('save', async function(next) {
     }
 });
 
+// Static method for finding a user based on their username and password
 CredentialSchema.statics.findByUsernamePassword = async function(username, password) {
     const User = this;
 
-    // First, find the user by their username
     try {
+        // Attempt to find the user by their username
         const user = await User.findOne({ username: username });
 
-        if (!user) return;
+        // If the user cannot be found, simply return a rejected promise
+        if (!user) return Promise.reject(false);
         
+        // Otherwise verify whether or not the user's inputted password matches the (argon2id) hashed password stored in the database
         if (await argon2.verify(user.password, password)) {
+            // If the password matches, return the user document (which will automatically be wrapped in a promise)
             return user;
         } else {
-            return;
+            // Otherwise, simply return a rejected promise
+            return Promise.reject(false);
         }
     } catch (err) {
         console.log(err);
     }
-
-    if (!user) {
-        return Promise.reject(false);
-    }
 }
 
+// Compile the model
 const Credential = mongoose.model("Credential", CredentialSchema);
 
 module.exports = { Credential };
