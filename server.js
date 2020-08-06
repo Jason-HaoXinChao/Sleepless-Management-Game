@@ -45,6 +45,11 @@ app.use(session({
     }
 }));
 
+// Helper function which checks for the error returned by the promise rejection if Mongo database suddently disconnects
+function isMongoError(error) { 
+	return typeof error === 'object' && error !== null && error.name === "MongoNetworkError";
+};
+
 // Middleware for checking if user is currently logged out in order to redirect them to the gameplay page ('/gameplay' route) if necessary
 const sessionChecker = (req, res, next) => {
     if (req.session.user) {
@@ -143,7 +148,6 @@ app.post("/api/login", mongoChecker, (req, res) => {
         if (isMongoError(err)) {
             res.status(500).redirect('/welcome');
         } else {
-            log(err);
             res.status(400).redirect('/welcome');
         }
     });
