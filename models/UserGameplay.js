@@ -101,7 +101,7 @@ const LogSchema = new mongoose.Schema({
     }
 });
 
-const UserSchema = new mongoose.Schema({
+const UserGameplaySchema = new mongoose.Schema({
     username: {
         type: String,
         required: true,
@@ -128,6 +128,22 @@ const UserSchema = new mongoose.Schema({
     }
 });
 
-const UserGameplay = mongoose.model("User", UserSchema);
+// Find a user's gameplay statistics by their username
+UserGameplaySchema.static.findByUsername = async function(username) {
+    const User = this;
+
+    try {
+        const user = await User.findOne({ username: username });
+        if (!user) {
+            return Promise.reject(false);
+        } else {
+            return user;
+        };
+    } catch (err) {
+        console.log(err);
+    }
+};
+
+const UserGameplay = mongoose.model("User", UserGameplaySchema);
 
 module.exports = { UserGameplay };

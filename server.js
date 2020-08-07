@@ -16,6 +16,8 @@ mongoose.set('useFindAndModify', false);
 
 // Import our models
 const { Credential } = require("./models/UserCredential");
+const { SystemData } = require("./models/SystemData");
+const { UserGameplay } = require("./models/UserGameplay");
 
 // express-session for managing user sessions
 const session = require('express-session')
@@ -46,8 +48,8 @@ app.use(session({
 }));
 
 // Helper function which checks for the error returned by the promise rejection if Mongo database suddently disconnects
-function isMongoError(error) { 
-	return typeof error === 'object' && error !== null && error.name === "MongoNetworkError";
+function isMongoError(error) {
+    return typeof error === 'object' && error !== null && error.name === "MongoNetworkError";
 };
 
 // Middleware for checking if user is currently logged out in order to redirect them to the gameplay page ('/gameplay' route) if necessary
@@ -73,14 +75,14 @@ const loggedOutChecker = (req, res, next) => {
 
 // Middleware for mongo connection error for routes that need it
 const mongoChecker = (req, res, next) => {
-	// check mongoose connection established.
-	if (mongoose.connection.readyState != 1) {
-		log('Issue with mongoose connection');
-		res.status(500).send('Internal Server Error');
-		return;
-	} else {
-		next();
-	}	
+    // check mongoose connection established.
+    if (mongoose.connection.readyState != 1) {
+        log('Issue with mongoose connection');
+        res.status(500).send('Internal Server Error');
+        return;
+    } else {
+        next();
+    }
 };
 
 /**
@@ -128,7 +130,7 @@ app.post("/api/register", mongoChecker, (req, res) => {
  *      }
  */
 app.post("/api/login", mongoChecker, (req, res) => {
-	const username = req.body.username
+    const username = req.body.username
     const password = req.body.password
 
     // Search for the user credentials in the database based on the user's inputted username and page  
@@ -141,7 +143,7 @@ app.post("/api/login", mongoChecker, (req, res) => {
             req.session.user = user._id;
             req.session.username = user.username;
             req.session.email = user.email;
-             // ...and redirect the (now logged-in) user to the gameplay page ('/gameplay' page)
+            // ...and redirect the (now logged-in) user to the gameplay page ('/gameplay' page)
             res.redirect('/gameplay');
         }
     }).catch((err) => {
@@ -166,6 +168,51 @@ app.post("/api/logout", (req, res) => {
     });
 });
 
+
+/** 
+ * Route for getting gameplay related statistic of user.
+ * Expected request body: none, server checks the currently logged in user through cookie
+ * ":type" indicates which statistic of the user is being requested, possible options:
+ * all: send the entire user document
+ * name: send the username
+ * stat: send statistic property 
+ * log: send log property
+ * strategy: send strategy property
+ */
+app.get("/api/user/gameplay:type", mongoChecker, (req, res) => {
+    const username = req.session.username;
+    const reqType = req.body.type;
+
+    UserGameplay.findByUsername(username).then((user) => {
+        if (!user) {
+            // Either client's cookie is corrupted or user has been deleted by admin
+            // Logging the user out should be appropriate
+            res.redirect("/api/logout");
+        } else {
+            switch (reqType) {
+                case "all":
+                    res.send(user);
+                    break;
+                case "name":
+                    res.send(user.username);
+                    break;
+                case "stat":
+                    res.send(user.statistic);
+                    break;
+                case "log":
+                    res.send(user.statistic);
+                    break;
+                case "strategy":
+                    res.send(user.strategy);
+                    break;
+                default:
+                    res.send(user);
+                    break;
+            };
+        };
+    });
+});
+
 // Root route: redirects to the '/welcome'
 app.get('/', sessionChecker, (req, res) => {
     res.redirect('/welcome');
@@ -173,7 +220,7 @@ app.get('/', sessionChecker, (req, res) => {
 
 // '/welcome' route: redirects to '/gameplay' if the user is already logged in
 app.get('/welcome', sessionChecker, (req, res) => {
-	res.render('home_login');
+    res.render('home_login');
 });
 
 // '/gameplay' route: redirects to '/login' if the user isn't logged in
