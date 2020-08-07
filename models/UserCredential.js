@@ -36,6 +36,10 @@ const CredentialSchema = new mongoose.Schema({
             validator: validator.isDate, // Uses express-validator to validate whether or not the provided string is a valid date (YYYY-MM-DD)
             message: 'Not a valid date'
         }
+    },
+    is_admin: {
+        type: Boolean,
+        default: false
     }
 });
 
