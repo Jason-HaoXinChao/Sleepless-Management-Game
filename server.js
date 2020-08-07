@@ -15,10 +15,10 @@ mongoose.set('bufferCommands', false);
 mongoose.set('useFindAndModify', false);
 
 // Import our models
-const { Credential } = require("./models/UserCredential");
+const { Credential } = require("./models/Credential");
 const { EstablishmentInfo, RandomEvent } = require("./models/SystemData");
-const { UserGameplay } = require("./models/UserGameplay");
-const { Profile } = require("./models/UserProfile");
+const { Gameplay } = require("./models/Gameplay");
+const { Profile } = require("./models/Profile");
 
 // express-session for managing user sessions
 const session = require('express-session')
@@ -138,7 +138,7 @@ app.post("/api/register", mongoChecker, (req, res) => {
         req.session.is_admin = user.is_admin;
 
         // Generate default gameplay data for user
-        const gameplayData = new UserGameplay({
+        const gameplayData = new Gameplay({
             username: user.username,
             statistic: {
                 economy: 50,
@@ -237,7 +237,7 @@ app.get("/api/user/gameplay:type", mongoChecker, (req, res) => {
     const username = req.session.username;
     const reqType = req.body.type;
 
-    UserGameplay.findByUsername(username).then((user) => {
+    Gameplay.findByUsername(username).then((user) => {
         if (!user) {
             // Either client's cookie is corrupted or user has been deleted by admin
             // Logging the user out should be appropriate
@@ -330,7 +330,7 @@ app.post("/api/user/gameplay:strategyType:value", mongoChecker, (req, res) => {
     const value = req.body.value;
     const username = req.session.username;
 
-    UserGameplay.findByUsername(username).then((user) => {
+    Gameplay.findByUsername(username).then((user) => {
         if (!user) {
             // Either client's cookie is corrupted or user has been deleted by admin
             // Logging the user out should be appropriate
@@ -386,7 +386,7 @@ app.post("/api/user/gameplay:strategyType:value", mongoChecker, (req, res) => {
  * Expected return value:
  * {
  *  establishment: String or null,
- *  log: Object  (see logSchema in /models/UserGameplay)
+ *  log: Object  (see logSchema in /models/Gameplay)
  *  newStatistics: [Number]
  * }
  */
@@ -395,7 +395,7 @@ app.post("/api/user/gameplay/event", mongoChecker, (req, res) => {
     const eventName = req.body.eventName;
     const choice = req.body.choice;
 
-    UserGameplay.findByUsername(username).then((user) => {
+    Gameplay.findByUsername(username).then((user) => {
         if (!user) {
             // Either client's cookie is corrupted or user has been deleted by admin
             // Logging the user out should be appropriate
@@ -466,7 +466,7 @@ app.post("/api/user/gameplay/event", mongoChecker, (req, res) => {
  * Expected return value:
  * {
  * new stat:[Number],
- * log: Object  (see logSchema in /models/UserGameplay)
+ * log: Object  (see logSchema in /models/Gameplay)
  * randomEvent: {
  *                  name:String,
  *                  description: String,
@@ -478,7 +478,7 @@ app.post("/api/user/gameplay/event", mongoChecker, (req, res) => {
 app.get("/api/user/gameplay/update", mongoChecker, (req, res) => {
     const username = req.session.username;
 
-    UserGameplay.findByUsername(username).then((user) => {
+    Gameplay.findByUsername(username).then((user) => {
         if (!user) {
             // Either client's cookie is corrupted or user has been deleted by admin
             // Logging the user out should be appropriate
