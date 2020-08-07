@@ -36,28 +36,24 @@ const StatisticSchema = new mongoose.Schema({
 
 const StrategySchema = new mongoose.Schema({
     economy: {
-        type: String,
-        required: true,
-        trim: true,
-        lowercase: true
+        type: Number,
+        required: false,
+        default: 0,
     },
     order: {
-        type: String,
-        required: true,
-        trim: true,
-        lowercase: true
+        type: Number,
+        required: false,
+        default: 0
     },
     health: {
-        type: String,
-        required: true,
-        trim: true,
-        lowercase: true
+        type: Number,
+        required: false,
+        default: 0
     },
     diplomacy: {
-        type: String,
-        required: true,
-        trim: true,
-        lowercase: true
+        type: Number,
+        required: false,
+        default: 0
     }
 });
 

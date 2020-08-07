@@ -135,8 +135,40 @@ app.post("/api/register", mongoChecker, (req, res) => {
         req.session.username = user.username;
         req.session.email = user.email;
         req.session.is_admin = user.is_admin;
-        // Redirect the (now logged-in) user to the gameplay page ('/gameplay' page)
-        res.redirect('/gameplay');
+
+        // Generate default gameplay data for user
+        const gameplayData = new UserGameplay({
+            username: user.username,
+            statistic: {
+                economy: 50,
+                order: 50,
+                health: 50,
+                diplomacy: 50
+            },
+            establishment: [],
+            log: [],
+            stategy: {
+                economy: "revitalize",
+                order: "iron fist",
+                health: "active prevention",
+                diplomacy: "hawk"
+            }
+        });
+        gameplayData.save().then((data) => {
+            if (!data) {
+                res.status(500).send("500 Internal Server Error");
+            } else {
+                // Redirect the (now logged-in) user to the gameplay page ('/gameplay' page)
+                res.redirect('/gameplay');
+            }
+        }).catch((err) => {
+            if (isMongoError(err)) {
+                res.status(500).redirect('/welcome');
+            } else {
+                res.status(400).redirect('/welcome');
+            }
+        });
+
     }).catch((err) => {
         if (isMongoError(err)) {
             res.status(500).redirect('/welcome');
@@ -215,6 +247,7 @@ app.get("/api/user/gameplay:type", mongoChecker, (req, res) => {
             // Logging the user out should be appropriate
             res.redirect("/api/logout");
         } else {
+            // send document according to user request type
             switch (reqType) {
                 case "all":
                     res.send(user);
@@ -307,6 +340,7 @@ app.post("/api/user/gameplay:strategyType:value", mongoChecker, (req, res) => {
             // Logging the user out should be appropriate
             res.redirect("/api/logout");
         } else {
+            // apply the change of strategy
             switch (type) {
                 case "economy":
                     user.strategy.economy = value;
@@ -324,6 +358,8 @@ app.post("/api/user/gameplay:strategyType:value", mongoChecker, (req, res) => {
                     user.strategy.economy = value;
                     break;
             };
+
+            // save document
             await user.save((err, user) => {
                 if (err) {
                     log(err);
@@ -332,6 +368,95 @@ app.post("/api/user/gameplay:strategyType:value", mongoChecker, (req, res) => {
                     res.send(true);
                 }
             });
+        };
+    }).catch((err) => {
+        log(err);
+        res.send(false);
+    });
+});
+
+/**
+ * Route for submitting a randomEvent choice
+ * Expected request body:
+ * {
+ *  eventName: String,
+ *  choice: string
+ * }
+ * Expected return value:
+ * {
+ *  establishment: String or null,
+ *  log: Object  (see logSchema in /models/UserGameplay)
+ *  newStatistics: [Number]
+ * }
+ */
+app.post("/api/user/gameplay/event", mongoChecker, (req, res) => {
+    const username = req.session.username;
+    const eventName = req.body.eventName;
+    const choice = req.body.choice;
+
+    UserGameplay.findByUsername(username).then((user) => {
+        if (!user) {
+            // Either client's cookie is corrupted or user has been deleted by admin
+            // Logging the user out should be appropriate
+            res.redirect("/api/logout");
+        } else {
+            // TODO: implement following
+
+            // find the event document from database
+
+            // get the corresponding EventChoice document
+
+            // calculate the new statistics (apply statChange in EventChoice document)
+
+            // generate log (should be preset in EventChoice document)
+
+            // Save the new statistic, log, and establishment(if any) in user
+
+            // Send the expected return valueto client
+        };
+    }).catch((err) => {
+        log(err);
+        res.send(false);
+    });
+});
+
+/**
+ * Route for requesting an update
+ * Expected request body: none
+ * Expected return value:
+ * {
+ * new stat:[Number],
+ * log: Object  (see logSchema in /models/UserGameplay)
+ * randomEvent: {
+ *                  name:String,
+ *                  description: String,
+ *                  choiceOne: String,
+ *                  choiceTwo: String
+ *              }
+ * }
+ */
+app.get("/api/user/gameplay/update", mongoChecker, (req, res) => {
+    const username = req.session.username;
+
+    UserGameplay.findByUsername(username).then((user) => {
+        if (!user) {
+            // Either client's cookie is corrupted or user has been deleted by admin
+            // Logging the user out should be appropriate
+            res.redirect("/api/logout");
+        } else {
+            // TODO: implement following
+
+            // Calculate new statistics
+
+            // Generate log
+
+            // Change statistics and add log to user document
+
+            // save user document
+
+            // Determine if a random event occurs, and if so, which one
+
+            // Send new statistics, log and randomEvent to user
         };
     }).catch((err) => {
         log(err);
