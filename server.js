@@ -404,7 +404,7 @@ app.post("/api/user/gameplay/event", mongoChecker, (req, res) => {
             // TODO: implement following
 
             // find the event document from database
-            const evt = await RandomEvent.findByName(eventName);
+            const evt = RandomEvent.findByName(eventName);
             if (!evt) {
                 res.status(500).send();
                 return;
@@ -431,7 +431,7 @@ app.post("/api/user/gameplay/event", mongoChecker, (req, res) => {
 
             // Save the new statistic, log, and establishment(if any) in user
             if (choiceDoc.newEstablishment) {
-                user.establishment.push({ name = choiceDoc.newEstablishment.name });
+                user.establishment.push({ name: choiceDoc.newEstablishment.name });
                 output.establishment = choiceDoc.newEstablishment.name;
             } else {
                 output.establishment = null;
