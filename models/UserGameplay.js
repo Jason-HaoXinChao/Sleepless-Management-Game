@@ -1,0 +1,133 @@
+/* User, establishment, statistics, log, strategies model */
+
+const mongoose = require("mongoose");
+
+const EstablishmentSchema = new mongoose.Schema({
+    name: {
+        type: String,
+        required: true,
+        unique: true,
+        trim: true
+    }
+});
+
+const StatisticSchema = new mongoose.Schema({
+    economy: {
+        type: Number,
+        required: true,
+        min: 0
+    },
+    order: {
+        type: Number,
+        required: true,
+        min: 0
+    },
+    health: {
+        type: Number,
+        required: true,
+        min: 0
+    },
+    diplomacy: {
+        type: Number,
+        required: true,
+        min: 0
+    }
+});
+
+const StrategySchema = new mongoose.Schema({
+    economy: {
+        type: String,
+        required: true,
+        trim: true,
+        lowercase: true
+    },
+    order: {
+        type: String,
+        required: true,
+        trim: true,
+        lowercase: true
+    },
+    health: {
+        type: String,
+        required: true,
+        trim: true,
+        lowercase: true
+    },
+    diplomacy: {
+        type: String,
+        required: true,
+        trim: true,
+        lowercase: true
+    }
+});
+
+const StatChangeSchema = new mongoose.Schema({
+    economy: {
+        type: Number,
+        required: false,
+        default: 0
+    },
+    order: {
+        type: Number,
+        required: false,
+        default: 0
+    },
+    health: {
+        type: Number,
+        required: false,
+        default: 0
+    },
+    diplomacy: {
+        type: Number,
+        required: false,
+        default: 0
+    }
+});
+
+const LogSchema = new mongoose.Schema({
+    time: {
+        type: String,
+        required: true,
+        trim: true
+    },
+    content: {
+        type: String,
+        required: true,
+        trim: true
+    },
+    statChange: {
+        type: StatChangeSchema,
+        required: true
+    }
+});
+
+const UserSchema = new mongoose.Schema({
+    username: {
+        type: String,
+        required: true,
+        unique: true, // Usernames need to be unique
+        minLength: 3,
+        lowercase: true,
+        trim: true
+    },
+    statistic: {
+        type: StatisticSchema,
+        required: true
+    },
+    establishment: {
+        type: [EstablishmentSchema],
+        required: true
+    },
+    log: {
+        type: [LogSchema],
+        required: true
+    },
+    stategy: {
+        type: StrategySchema,
+        required: true
+    }
+});
+
+const UserGameplay = mongoose.model("User", UserSchema);
+
+module.exports = { UserGameplay };
