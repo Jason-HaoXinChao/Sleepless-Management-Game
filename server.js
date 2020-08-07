@@ -240,6 +240,7 @@ app.get("/api/user/gameplay:type", mongoChecker, (req, res) => {
         if (isMongoError(err)) {
             res.status(500).send("Internal Server Error");
         } else {
+            log(err);
             // Either client's cookie is corrupted or user has been deleted by admin
             // Logging the user out should be appropriate
             res.redirect("/api/logout");
@@ -273,15 +274,68 @@ app.get("/api/user/gameplay/EstInfo", mongoChecker, (req, res) => {
                 description: establishment.description,
                 statChange: establishment.statChange.convertToArray()
             };
-            return output;
+            res.send(output);
         }
     }).catch((err) => {
         if (isMongoError(err)) {
             res.status(500).send("Internal Server Error");
         } else {
+            log(err);
             // Something is desync in the client or server side, log the user out and make them reload the page
             res.redirect("/api/logout");
         };
+    });
+});
+
+/**
+ * Route for changing user's strategy
+ * expected request body: none
+ * expected return value: boolean indicating if the change was successful
+ * 
+ * parameters
+ * strategyType: which strategy is being change(economy/order/health/diplomacy)
+ * value: the new choice of strategy for that field
+ */
+app.post("/api/user/gameplay:strategyType:value", mongoChecker, (req, res) => {
+    const type = req.body.strategyType;
+    const value = req.body.value;
+    const username = req.session.username;
+
+    UserGameplay.findByUsername(username).then((user) => {
+        if (!user) {
+            // Either client's cookie is corrupted or user has been deleted by admin
+            // Logging the user out should be appropriate
+            res.redirect("/api/logout");
+        } else {
+            switch (type) {
+                case "economy":
+                    user.strategy.economy = value;
+                    break;
+                case "order":
+                    user.strategy.order = value;
+                    break;
+                case "health":
+                    user.strategy.health = value;
+                    break;
+                case "diplomacy":
+                    user.strategy.diplomacy = value;
+                    break;
+                default:
+                    user.strategy.economy = value;
+                    break;
+            };
+            await user.save((err, user) => {
+                if (err) {
+                    log(err);
+                    res.send(false);
+                } else {
+                    res.send(true);
+                }
+            });
+        };
+    }).catch((err) => {
+        log(err);
+        res.send(false);
     });
 });
 

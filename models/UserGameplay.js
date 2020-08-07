@@ -65,22 +65,27 @@ const StatChangeSchema = new mongoose.Schema({
     economy: {
         type: Number,
         required: false,
-        default: 0
+        default: 0,
+        enum: ["revitalize", "stablize", "hands off"]
+
     },
     order: {
         type: Number,
         required: false,
-        default: 0
+        default: 0,
+        enum: ["iron fist", "strict rule", "weak enforcement"]
     },
     health: {
         type: Number,
         required: false,
-        default: 0
+        default: 0,
+        enum: ["active prevention", "reactive response", "no testing"]
     },
     diplomacy: {
         type: Number,
         required: false,
-        default: 0
+        default: 0,
+        enum: ["hawk", "neutral", "dove"]
     }
 });
 

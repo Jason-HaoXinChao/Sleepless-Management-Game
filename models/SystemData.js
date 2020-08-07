@@ -96,8 +96,15 @@ const EventChoiceSchema = new mongoose.Schema({
         required: true,
         unique: false,
         trim: true
+    },
+    newEstablishment: {
+        type: String,
+        required: false,
+        default: null,
+        trim: true
     }
 });
+
 
 
 const RandomEventSchema = new mongoose.Schema({
@@ -123,6 +130,22 @@ const RandomEventSchema = new mongoose.Schema({
         required: true
     }
 });
+
+
+RandomEventSchema.static.findByName = async function(name) {
+    const RandomEvent = this;
+
+    try {
+        const randomEvent = await RandomEvent.findOne({ name: name });
+        if (!randomEvent) {
+            return Promise.reject(false);
+        } else {
+            return randomEvent;
+        };
+    } catch (err) {
+        console.log(err);
+    }
+}
 
 const EstablishmentInfo = mongoose.model("EstablishmentInfo", EstablishmentInfoSchema);
 
