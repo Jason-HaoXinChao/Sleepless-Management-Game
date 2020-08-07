@@ -52,17 +52,41 @@ function isMongoError(error) {
     return typeof error === 'object' && error !== null && error.name === "MongoNetworkError";
 };
 
-// Middleware for checking if user is currently logged out in order to redirect them to the gameplay page ('/gameplay' route) if necessary
+/**
+ * Middleware for checking a user's session
+ * If the user is an admin user - redirect them to the '/admin_dashboard' route
+ * If the user is currently logged in, but isn't an admin user - redirect them to the '/gameplay' route 
+ */
 const sessionChecker = (req, res, next) => {
-    if (req.session.user) {
+    if (req.session.is_admin) {
+        res.redirect('/admin_dashboard');
+    } else if (req.session.user) {
         res.redirect('/gameplay');
     } else {
         next();
     }
 };
 
+// Middleware that redirects a non-admin user to the '/gameplay' route if they try to access admin specific routes
+const regUserRedirectChecker = (req, res, next) => {
+    if (!req.session.is_admin) {
+        res.redirect('/gameplay');
+    } else {
+        next();
+    }
+}
+
+// Middleware that redirects an admin user to the '/admin_dashboard' route if they try to access a non-admin route
+const adminRedirectChecker = (req, res, next) => {
+    if (req.session.is_admin) {
+        res.redirect('/admin_dashboard');
+    } else {
+        next();
+    }
+}
+
 // Middleware for checking if user is currently logged out in order to redirect them to the login/register page ('/welcome' route) if necessary 
-const loggedOutChecker = (req, res, next) => {
+const loggedOutRedirectChecker = (req, res, next) => {
     // Checks if the user is logged in
     if (req.session.user) {
         // If the user is logged in, proceed
@@ -110,6 +134,7 @@ app.post("/api/register", mongoChecker, (req, res) => {
         req.session.user = user._id;
         req.session.username = user.username;
         req.session.email = user.email;
+        req.session.is_admin = user.is_admin;
         // Redirect the (now logged-in) user to the gameplay page ('/gameplay' page)
         res.redirect('/gameplay');
     }).catch((err) => {
@@ -130,8 +155,8 @@ app.post("/api/register", mongoChecker, (req, res) => {
  *      }
  */
 app.post("/api/login", mongoChecker, (req, res) => {
-    const username = req.body.username
-    const password = req.body.password
+	const username = req.body.username;
+    const password = req.body.password;
 
     // Search for the user credentials in the database based on the user's inputted username and page  
     Credential.findByUsernamePassword(username, password).then((user) => {
@@ -143,7 +168,8 @@ app.post("/api/login", mongoChecker, (req, res) => {
             req.session.user = user._id;
             req.session.username = user.username;
             req.session.email = user.email;
-            // ...and redirect the (now logged-in) user to the gameplay page ('/gameplay' page)
+            req.session.is_admin = user.is_admin;
+             // ...and redirect the (now logged-in) user to the gameplay page ('/gameplay' page)
             res.redirect('/gameplay');
         }
     }).catch((err) => {
@@ -218,28 +244,28 @@ app.get('/', sessionChecker, (req, res) => {
     res.redirect('/welcome');
 });
 
-// '/welcome' route: redirects to '/gameplay' if the user is already logged in
-app.get('/welcome', sessionChecker, (req, res) => {
-    res.render('home_login');
+// '/welcome' route: reirects to '/admin_dashboard' if the user is logged in and is an admin user; redirects to '/gameplay' if the user is already logged in but isn't an admin user
+app.get('/welcome', adminRedirectChecker, sessionChecker, (req, res) => {
+	res.render('home_login');
 });
 
-// '/gameplay' route: redirects to '/login' if the user isn't logged in
-app.get('/gameplay', loggedOutChecker, (req, res) => {
+// '/gameplay' route: redirects to '/welcome' if the user isn't logged in; redirects to '/admin_dashboard' if the user is an admin user
+app.get('/gameplay', loggedOutRedirectChecker, adminRedirectChecker, (req, res) => {
     res.render('gameplay');
 });
 
-// '/diplomacy' route: redirects to '/login' if the user isn't logged in
-app.get('/diplomacy', loggedOutChecker, (req, res) => {
+// '/diplomacy' route: redirects to '/welcome' if the user isn't logged in; redirects to '/admin_dashboard' if the user is an admin user
+app.get('/diplomacy', loggedOutRedirectChecker, adminRedirectChecker, (req, res) => {
     res.render('diplomacy');
 });
 
-// '/contact' route: redirects to '/login' if the user isn't logged in
-app.get('/contact', loggedOutChecker, (req, res) => {
+// '/contact' route: redirects to '/welcome' if the user isn't logged in; redirects to '/admin_dashboard' if the user is an admin user
+app.get('/contact', loggedOutRedirectChecker, adminRedirectChecker, (req, res) => {
     res.render('contact');
 });
 
 // '/leaderboard' route: if the user isn't logged in, the header will only display links to the the patchnotes and the leaderboard (excluding the other links)
-app.get('/leaderboard', (req, res) => {
+app.get('/leaderboard', adminRedirectChecker, (req, res) => {
     if (req.session.user) {
         res.render('leaderboard');
     } else {
@@ -249,9 +275,17 @@ app.get('/leaderboard', (req, res) => {
     }
 });
 
-// '/patchnotes' route: if the user isn't logged in, the header will only display links to the the patchnotes and the leaderboard (excluding the other links)
+/**
+ * '/patchnotes' route
+ * If the user is an admin user - the header will display admin specific links only
+ * If the user isn't logged in - the header will only display links to the the patchnotes and the leaderboard (excluding the other links)
+ */
 app.get('/patchnotes', (req, res) => {
-    if (req.session.user) {
+    if (req.session.is_admin) {
+        res.render('patchnote', {
+            is_admin: true
+        });
+    } else if (req.session.user) {
         res.render('patchnote');
     } else {
         res.render('patchnote', {
@@ -260,8 +294,18 @@ app.get('/patchnotes', (req, res) => {
     }
 });
 
-// '/user_profile' route: redirects to '/login' if the user isn't logged in
-app.get('/user_profile', loggedOutChecker, (req, res) => {
+// '/admin_dashboard' route: redirects to '/welcome' if the user isn't logged in; redirects to '/gameplay' if the user isn't an admin user
+app.get('/admin_dashboard', loggedOutRedirectChecker, regUserRedirectChecker, (req, res) => {
+    res.render('admin_dashboard');
+});
+
+// '/user_feedback' route: redirects to '/welcome' if the user isn't logged in; redirects to '/gameplay' if the user isn't an admin user
+app.get('/user_feedback', loggedOutRedirectChecker, regUserRedirectChecker, (req, res) => {
+    res.render('userfeedback');
+});
+
+// '/user_profile' route: redirects to '/login' if the user isn't logged in; redirects to '/admin_dashboard' if the user is an admin user
+app.get('/user_profile', loggedOutRedirectChecker, adminRedirectChecker, (req, res) => {
     res.render('user_profile');
 });
 
