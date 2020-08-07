@@ -241,7 +241,7 @@ function updateStatistics(statistics) {
 }
 
 
-// Changes the width of the statistic bars to match the value.item
+// Changes the width of the statistic bars to match the value.
 function matchStatBars() {
     const statBars = document.getElementsByClassName("bar");
     let i;

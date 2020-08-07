@@ -16,7 +16,7 @@ mongoose.set('useFindAndModify', false);
 
 // Import our models
 const { Credential } = require("./models/UserCredential");
-const { SystemData } = require("./models/SystemData");
+const { EstablishmentInfo, RandomEvent } = require("./models/SystemData");
 const { UserGameplay } = require("./models/UserGameplay");
 
 // express-session for managing user sessions
@@ -155,7 +155,7 @@ app.post("/api/register", mongoChecker, (req, res) => {
  *      }
  */
 app.post("/api/login", mongoChecker, (req, res) => {
-	const username = req.body.username;
+    const username = req.body.username;
     const password = req.body.password;
 
     // Search for the user credentials in the database based on the user's inputted username and page  
@@ -169,7 +169,7 @@ app.post("/api/login", mongoChecker, (req, res) => {
             req.session.username = user.username;
             req.session.email = user.email;
             req.session.is_admin = user.is_admin;
-             // ...and redirect the (now logged-in) user to the gameplay page ('/gameplay' page)
+            // ...and redirect the (now logged-in) user to the gameplay page ('/gameplay' page)
             res.redirect('/gameplay');
         }
     }).catch((err) => {
@@ -236,13 +236,54 @@ app.get("/api/user/gameplay:type", mongoChecker, (req, res) => {
                     break;
             };
         };
+    }).catch((err) => {
+        if (isMongoError(err)) {
+            res.status(500).send("Internal Server Error");
+        } else {
+            // Either client's cookie is corrupted or user has been deleted by admin
+            // Logging the user out should be appropriate
+            res.redirect("/api/logout");
+        };
     });
 });
 
 /**
- * Route for 
- * 
+ * Route for getting information of specific establishment
+ * expected request body:
+ * {
+ *  name: String
+ * }
+ * expected return:
+ * {
+ * name:String,
+ * description: String,
+ * statChange: [number]
+ * }
  */
+app.get("/api/user/gameplay/EstInfo", mongoChecker, (req, res) => {
+    const establishmentName = req.body.name;
+
+    EstablishmentInfo.findByName(establishmentName).then((establishment) => {
+        if (!establishment) {
+            // Something is desync in the client or server side, log the user out and make them reload the page
+            res.redirect("/logout");
+        } else {
+            const output = {
+                name: establishment.name,
+                description: establishment.description,
+                statChange: establishment.statChange.convertToArray()
+            };
+            return output;
+        }
+    }).catch((err) => {
+        if (isMongoError(err)) {
+            res.status(500).send("Internal Server Error");
+        } else {
+            // Something is desync in the client or server side, log the user out and make them reload the page
+            res.redirect("/api/logout");
+        };
+    });
+});
 
 // Root route: redirects to the '/welcome'
 app.get('/', sessionChecker, (req, res) => {
@@ -251,7 +292,7 @@ app.get('/', sessionChecker, (req, res) => {
 
 // '/welcome' route: reirects to '/admin_dashboard' if the user is logged in and is an admin user; redirects to '/gameplay' if the user is already logged in but isn't an admin user
 app.get('/welcome', adminRedirectChecker, sessionChecker, (req, res) => {
-	res.render('home_login');
+    res.render('home_login');
 });
 
 // '/gameplay' route: redirects to '/welcome' if the user isn't logged in; redirects to '/admin_dashboard' if the user is an admin user

@@ -23,13 +23,17 @@ const StatChangeSchema = new mongoose.Schema({
     }
 });
 
+StatChangeSchema.static.convertToArray = async function() {
+    const stat = this;
+    return [stat.economy, stat.order, stat.health, stat.diplomacy];
+};
+
 const EstablishmentInfoSchema = new mongoose.Schema({
     name: {
         type: String,
         required: true,
         unique: true,
         trim: true
-
     },
     description: {
         type: String,
@@ -43,6 +47,21 @@ const EstablishmentInfoSchema = new mongoose.Schema({
         unique: false
     }
 });
+
+EstablishmentInfoSchema.static.findByName = async function(name) {
+    const Establishment = this;
+
+    try {
+        const establishment = await Establishment.findOne({ name: name });
+        if (!establishment) {
+            return Promise.reject(false);
+        } else {
+            return establishment;
+        };
+    } catch (err) {
+        console.log(err);
+    }
+}
 
 const LogSchema = new mongoose.Schema({
     time: {
