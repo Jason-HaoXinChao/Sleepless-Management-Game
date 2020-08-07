@@ -5,7 +5,8 @@ const mongoose = require("mongoose");
 const ProfileSchema = new mongoose.Schema({
     username: {
         type: String,
-        required: true
+        required: true,
+        unique: true
     },
     countryname: {
         type: String,
@@ -37,6 +38,6 @@ const ProfileSchema = new mongoose.Schema({
     }
 });
 
-const profile = mongoose.model("Profile", ProfileSchema);
+const Profile = mongoose.model("Profile", ProfileSchema);
 
-module.exports = { profile };
+module.exports = { Profile };

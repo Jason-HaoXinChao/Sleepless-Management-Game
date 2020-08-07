@@ -42,7 +42,7 @@ const EstablishmentInfoSchema = new mongoose.Schema({
         trim: true
     },
     statChange: {
-        type: statChangeSchema,
+        type: StatChangeSchema,
         require: true,
         unique: false
     }

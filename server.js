@@ -18,6 +18,7 @@ mongoose.set('useFindAndModify', false);
 const { Credential } = require("./models/UserCredential");
 const { EstablishmentInfo, RandomEvent } = require("./models/SystemData");
 const { UserGameplay } = require("./models/UserGameplay");
+const { Profile } = require("./models/UserProfile");
 
 // express-session for managing user sessions
 const session = require('express-session')
@@ -147,12 +148,7 @@ app.post("/api/register", mongoChecker, (req, res) => {
             },
             establishment: [],
             log: [],
-            stategy: {
-                economy: "revitalize",
-                order: "iron fist",
-                health: "active prevention",
-                diplomacy: "hawk"
-            }
+            stategy: {}
         });
         gameplayData.save().then((data) => {
             if (!data) {
@@ -360,7 +356,7 @@ app.post("/api/user/gameplay:strategyType:value", mongoChecker, (req, res) => {
             };
 
             // save document
-            await user.save((err, user) => {
+            user.save((err, user) => {
                 if (err) {
                     log(err);
                     res.send(false);
@@ -370,8 +366,13 @@ app.post("/api/user/gameplay:strategyType:value", mongoChecker, (req, res) => {
             });
         };
     }).catch((err) => {
-        log(err);
-        res.send(false);
+        if (isMongoError(err)) {
+            res.status(500).send("Internal Server Error");
+        } else {
+            log(err);
+            // Something is desync in the client or server side, log the user out and make them reload the page
+            res.redirect("/api/logout");
+        };
     });
 });
 
@@ -403,20 +404,59 @@ app.post("/api/user/gameplay/event", mongoChecker, (req, res) => {
             // TODO: implement following
 
             // find the event document from database
-
+            const evt = await RandomEvent.findByName(eventName);
+            if (!evt) {
+                res.status(500).send();
+                return;
+            }
             // get the corresponding EventChoice document
+            let choiceDoc;
+            if (evt.choiceOne.description == choice) {
+                choiceDoc = evt.choiceOne;
+            } else {
+                choiceDoc = evt.choiceTwo;
+            }
+
+            const output = {};
 
             // calculate the new statistics (apply statChange in EventChoice document)
+            user.statistic.economy += choiceDoc.statChange.economy;
+            user.statistic.order += choiceDoc.statChange.order;
+            user.statistic.health += choiceDoc.statChange.health;
+            user.statistic.diplomacy += choiceDoc.statChange.diplomacy;
+            output.newStatistic = user.statistic.convertToArray();
 
             // generate log (should be preset in EventChoice document)
+            output.log = choiceDoc.log;
 
             // Save the new statistic, log, and establishment(if any) in user
+            if (choiceDoc.newEstablishment) {
+                user.establishment.push({ name = choiceDoc.newEstablishment.name });
+                output.establishment = choiceDoc.newEstablishment.name;
+            } else {
+                output.establishment = null;
+            }
 
-            // Send the expected return valueto client
-        };
+            user.save().then((user) => {
+                if (!user) {
+                    res.status(500).send("500 Internal Server Error");
+                } else {
+                    // Send the expected return value to client
+                    res.send(output);
+                }
+            }).catch((err) => {
+                // server error can't save
+                res.status(500).send("Internal Server Error");
+            });
+        }
     }).catch((err) => {
-        log(err);
-        res.send(false);
+        if (isMongoError(err)) {
+            res.status(500).send("Internal Server Error");
+        } else {
+            log(err);
+            // Something is desync in the client or server side, log the user out and make them reload the page
+            res.redirect("/api/logout");
+        };
     });
 });
 

@@ -15,45 +15,58 @@ const StatisticSchema = new mongoose.Schema({
     economy: {
         type: Number,
         required: true,
-        min: 0
+        min: 0,
+        max: 100
     },
     order: {
         type: Number,
         required: true,
-        min: 0
+        min: 0,
+        max: 100
     },
     health: {
         type: Number,
         required: true,
-        min: 0
+        min: 0,
+        max: 100
     },
     diplomacy: {
         type: Number,
         required: true,
-        min: 0
+        min: 0,
+        max: 100
     }
 });
 
+StatisticSchema.static.convertToArray = async function() {
+    const stat = this;
+    return [stat.economy, stat.order, stat.health, stat.diplomacy];
+};
+
 const StrategySchema = new mongoose.Schema({
     economy: {
-        type: Number,
+        type: String,
         required: false,
-        default: 0,
+        default: "revitalize",
+        enum: ["revitalize", "stablize", "hands off"]
     },
     order: {
-        type: Number,
+        type: String,
         required: false,
-        default: 0
+        default: "iron fist",
+        enum: ["iron fist", "strict rule", "weak enforcement"]
     },
     health: {
-        type: Number,
+        type: String,
         required: false,
-        default: 0
+        default: "active prevention",
+        enum: ["active prevention", "reactive response", "no testing"]
     },
     diplomacy: {
-        type: Number,
+        type: String,
         required: false,
-        default: 0
+        default: "hawk",
+        enum: ["hawk", "neutral", "dove"]
     }
 });
 
@@ -61,27 +74,22 @@ const StatChangeSchema = new mongoose.Schema({
     economy: {
         type: Number,
         required: false,
-        default: 0,
-        enum: ["revitalize", "stablize", "hands off"]
-
+        default: 0
     },
     order: {
         type: Number,
         required: false,
-        default: 0,
-        enum: ["iron fist", "strict rule", "weak enforcement"]
+        default: 0
     },
     health: {
         type: Number,
         required: false,
-        default: 0,
-        enum: ["active prevention", "reactive response", "no testing"]
+        default: 0
     },
     diplomacy: {
         type: Number,
         required: false,
-        default: 0,
-        enum: ["hawk", "neutral", "dove"]
+        default: 0
     }
 });
 
