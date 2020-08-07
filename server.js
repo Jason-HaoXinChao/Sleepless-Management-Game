@@ -213,6 +213,11 @@ app.get("/api/user/gameplay:type", mongoChecker, (req, res) => {
     });
 });
 
+/**
+ * Route for 
+ * 
+ */
+
 // Root route: redirects to the '/welcome'
 app.get('/', sessionChecker, (req, res) => {
     res.redirect('/welcome');
