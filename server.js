@@ -17,7 +17,7 @@ mongoose.set('useFindAndModify', false);
 // Import our models
 const { Credential } = require("./models/Credential");
 const { EstablishmentInfo, RandomEvent } = require("./models/SystemData");
-const { Gameplay } = require("./models/Gameplay");
+const { Gameplay, Log } = require("./models/Gameplay");
 const { Profile } = require("./models/Profile");
 
 // express-session for managing user sessions
@@ -26,6 +26,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 // handlebars server-side templating engine
 const exphbs = require('express-handlebars');
+const SystemData = require('./models/SystemData');
 // Disable the default layout and change the default handlebars extension to '.html' for simplicity
 const hbs = exphbs.create({
     defaultLayout: null,
@@ -465,7 +466,7 @@ app.post("/api/user/gameplay/event", mongoChecker, (req, res) => {
  * Expected request body: none
  * Expected return value:
  * {
- * new stat:[Number],
+ * newStat:[Number],
  * log: Object  (see logSchema in /models/Gameplay)
  * randomEvent: {
  *                  name:String,
@@ -486,21 +487,83 @@ app.get("/api/user/gameplay/update", mongoChecker, (req, res) => {
         } else {
             // TODO: implement following
 
-            // Calculate new statistics (tally strategy)
+            const statisticChange = {
+                economy: 0,
+                order: 0,
+                health: 0,
+                diplomacy: 0
+            };
+            // Calculate new statistics (tally strategy and establishment)
 
+            // change in statistics due to strategy
+            const stratImpact = user.strategy.calculateStatChange();
+            statisticChange.economy += stratImpact.economy;
+            statisticChange.order += stratImpact.order;
+            statisticChange.health += stratImpact.health;
+            statisticChange.diplomacy += stratImpact.diplomacy;
+
+            // change in statistics due to establishment
+            (user.establishment).forEach(est => {
+                const establishment = EstablishmentInfo.findByName(est.name);
+                const estImpact = establishment.statChange.convertToArray();
+                statisticChange.economy += estImpact[0];
+                statisticChange.order += estImpact[1];
+                statisticChange.health += estImpact[2];
+                statisticChange.diplomacy += estImpact[3];
+            });
+
+            const currTime = new Date();
             // Generate log
+            const log = new Log({
+                time: currTime.getHours() + ":" + currTime.getMinutes(),
+                content: "A week has passed.",
+                statChange: statisticChange
+            });
 
             // Change statistics and add log to user document
+            const stat = user.statistic;
+            stat.economy += statisticChange.economy;
+            stat.order += statisticChange.order;
+            stat.health += statisticChange.health;
+            stat.diplomacy += statisticChange.diplomacy;
+            user.log.push(log);
 
             // save user document
+            user.save().then((user) => {
+                const output = {
+                    newStat: user.statistic.convertToArray(),
+                    log: log,
+                    randomEvent: null
+                };
+                // Determine if a random event occurs, and if so, which one
+                const percentageChance = 5;
+                if (Math.floor(Math.random() * (100 - 0)) + 0 <= percentageChance) {
+                    // chooce a random event
+                    const randomEvent = RandomEvent.getRandom();
+                    if (!randomEvent) {
+                        log("Can't find randomEvent");
+                    } else {
+                        output.randomEvent = {
+                            name: randomEvent.name,
+                            description: randomEvent.description,
+                            choiceOne: randomEvent.choiceOne.description,
+                            choiceTwo: randomEvent.choiceTwo.description
+                        };
+                    }
+                }
 
-            // Determine if a random event occurs, and if so, which one
+                // Send new statistics, log and randomEvent to user
+                res.send(output);
 
-            // Send new statistics, log and randomEvent to user
+            }).catch((err) => {
+                log(err);
+                res.status(500).send("500 Internal Server Error");
+            });
+
         };
     }).catch((err) => {
         log(err);
-        res.send(false);
+        res.status(500).send("500 Internal Server Error");
     });
 });
 

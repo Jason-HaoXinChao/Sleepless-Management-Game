@@ -146,6 +146,17 @@ RandomEventSchema.static.findByName = async function(name) {
     }
 }
 
+RandomEventSchema.static.getRandom = async function(callback) {
+    this.count(function(err, count) {
+        if (err) {
+            return callback(err);
+        }
+        const randomNum = Math.floor(Math.random() * count);
+        this.findOne().skip(randomNum).exec(callback);
+    }.bind(this));
+};
+
+
 const EstablishmentInfo = mongoose.model("EstablishmentInfo", EstablishmentInfoSchema);
 
 const RandomEvent = mongoose.model("RandomEvent", RandomEventSchema);

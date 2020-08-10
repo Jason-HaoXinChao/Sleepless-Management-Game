@@ -225,6 +225,8 @@ const LogSchema = new mongoose.Schema({
     }
 });
 
+
+
 const GameplaySchema = new mongoose.Schema({
     username: {
         type: String,
@@ -269,6 +271,6 @@ GameplaySchema.static.findByUsername = async function(username) {
 };
 
 const Gameplay = mongoose.model("Gameplay", GameplaySchema);
+const Log = mongoose.model("Log", LogSchema);
 
-module.exports = { Gameplay };
-module.exports = { Gameplay };
+module.exports = { Gameplay, Log };
