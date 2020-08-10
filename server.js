@@ -486,7 +486,7 @@ app.get("/api/user/gameplay/update", mongoChecker, (req, res) => {
         } else {
             // TODO: implement following
 
-            // Calculate new statistics
+            // Calculate new statistics (tally strategy)
 
             // Generate log
 
