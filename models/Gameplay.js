@@ -6,7 +6,7 @@ const EstablishmentSchema = new mongoose.Schema({
     name: {
         type: String,
         required: true,
-        unique: true,
+        unique: false,
         trim: true
     }
 });
@@ -125,11 +125,11 @@ const GameplaySchema = new mongoose.Schema({
     },
     establishment: {
         type: [EstablishmentSchema],
-        required: true
+        required: false
     },
     log: {
         type: [LogSchema],
-        required: true
+        required: false
     },
     stategy: {
         type: StrategySchema,

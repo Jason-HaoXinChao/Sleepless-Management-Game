@@ -38,7 +38,7 @@ const EstablishmentInfoSchema = new mongoose.Schema({
     description: {
         type: String,
         required: true,
-        unique: true,
+        unique: false,
         trim: true
     },
     statChange: {
@@ -100,7 +100,6 @@ const EventChoiceSchema = new mongoose.Schema({
     newEstablishment: {
         type: String,
         required: false,
-        default: null,
         trim: true
     }
 });
