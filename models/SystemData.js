@@ -23,7 +23,7 @@ const StatChangeSchema = new mongoose.Schema({
     }
 });
 
-StatChangeSchema.statics.convertToArray = async function() {
+StatChangeSchema.methods.convertToArray = function() {
     const stat = this;
     return [stat.economy, stat.order, stat.health, stat.diplomacy];
 };

@@ -299,10 +299,11 @@ app.get("/api/user/gameplay/stat/:type", mongoChecker, (req, res) => {
  * statChange: [number]
  * }
  */
-app.get("/api/user/gameplay/EstInfo", mongoChecker, (req, res) => {
+app.post("/api/user/gameplay/EstInfo", mongoChecker, (req, res) => {
     const establishmentName = req.body.name;
-
+    log(req.body);
     EstablishmentInfo.findByName(establishmentName).then((establishment) => {
+        log(establishment);
         if (!establishment) {
             // Something is desync in the client or server side, log the user out and make them reload the page
             res.redirect("/logout");

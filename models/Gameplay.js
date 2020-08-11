@@ -40,7 +40,7 @@ const StatisticSchema = new mongoose.Schema({
 
 
 
-StatisticSchema.statics.convertToArray = async function() {
+StatisticSchema.methods.convertToArray = async function() {
     const stat = this;
     return [stat.economy, stat.order, stat.health, stat.diplomacy];
 };
@@ -72,7 +72,7 @@ const StrategySchema = new mongoose.Schema({
     }
 });
 
-StrategySchema.statics.calculateStatChange = async function() {
+StrategySchema.methods.calculateStatChange = async function() {
     const strat = this;
 
     const statChange = {

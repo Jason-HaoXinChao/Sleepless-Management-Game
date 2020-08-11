@@ -10,14 +10,15 @@ let dropdownVisible = false; // toggle to indicate if dropdown menu is visible o
 
 function sendRequest(requestType, URL, data, callback) {
     const xml = new XMLHttpRequest();
+
+    xml.open(requestType, URL, true);
+    xml.setRequestHeader("Content-Type", "application/json");
     xml.onreadystatechange = function() {
         if (this.readyState == 4 && this.status == 200) {
             callback(JSON.parse(this.responseText));
         }
     };
-    xml.open(requestType, URL, true);
-    log(data);
-    xml.send(data);
+    xml.send(JSON.stringify(data));
 }
 
 function initializePage(e) {
@@ -49,7 +50,7 @@ function loadUserData(e) {
     // This function should call the server to get data of the user
     // Then it should display the value in DOM elements
 
-    const user = sendRequest("GET", "/api/user/gameplay/stat/all", {}, (userData) => {
+    sendRequest("GET", "/api/user/gameplay/stat/all", {}, (userData) => {
         updateStatistics(userData.statistic);
         setupStrategyButton(userData.strategy);
 
@@ -102,7 +103,7 @@ function showDescription(e) {
     const title = document.getElementById("titlediv").querySelector("#title");
     const content = document.getElementsByClassName("modalContent")[0].querySelector("p");
     // obtain the title and description of the establishment from server.
-    sendRequest("GET", "/api/user/gameplay/EstInfo", { "name": e.target.innerText }, (establishment) => {
+    sendRequest("POST", "/api/user/gameplay/EstInfo", { "name": e.target.innerText }, (establishment) => {
         title.innerText = establishment.name;
         content.innerText = establishment.description;
     });
