@@ -50,10 +50,9 @@ function loadUserData(e) {
     // Then it should display the value in DOM elements
 
     const user = sendRequest("GET", "/api/user/gameplay/stat/all", {}, (userData) => {
-        const stats = userData.statistic;
-        updateStatistics([stats.economy, stats.order, stats.health, stats.diplomacy]);
-        const strategies = userData.strategy;
-        setupStrategyButton([strategies.economy, strategies.order, strategies.health, strategies.diplomacy]);
+        updateStatistics(userData.statistic);
+        setupStrategyButton(userData.strategy);
+
         (userData.establishment).forEach(est => {
             pushEstablishment(est);
         });
@@ -73,10 +72,10 @@ function setupStrategyButton(strategies) {
     const orderButton = document.getElementById("orderButton");
     const healthButton = document.getElementById("healthButton");
     const diplomacyButton = document.getElementById("diplomacyButton");
-    econButton.innerText = strategies[0];
-    orderButton.innerText = strategies[1];
-    healthButton.innerText = strategies[2];
-    diplomacyButton.innerText = strategies[3];
+    econButton.innerText = strategies.economy;
+    orderButton.innerText = strategies.order;
+    healthButton.innerText = strategies.health;
+    diplomacyButton.innerText = strategies.diplomacy;
 }
 
 // Adds a new establishment to the establishment window
@@ -127,33 +126,33 @@ function pushLog(log) {
     container.appendChild(mainContent);
     mainContent.setAttribute("id", "mainContent")
     mainContent.innerText = log.content;
-    const econ = document.createElement("span");
-    const order = document.createElement("span");
-    const health = document.createElement("span");
-    const diplomacy = document.createElement("span");
-    if (log.statChange[0] != 0) {
+
+    if (log.statChange.economy != 0) {
+        const econ = document.createElement("span");
         econ.setAttribute("id", "econ");
-        econ.innerText = "(" + log.statChange[0] + ")";
+        econ.innerText = "(" + log.statChange.economy + ")";
         container.appendChild(econ);
     }
-    if (log.statChange[1] != 0) {
+    if (log.statChange.order != 0) {
+        const order = document.createElement("span");
         order.setAttribute("id", "order");
-        order.innerText = "(" + log.statChange[1] + ")";
+        order.innerText = "(" + log.statChange.order + ")";
         container.appendChild(order);
     }
-    if (log.statChange[2] != 0) {
+    if (log.statChange.health != 0) {
+        const health = document.createElement("span");
         health.setAttribute("id", "health");
-        health.innerText = "(" + log.statChange[2] + ")";
+        health.innerText = "(" + log.statChange.health + ")";
         container.appendChild(health);
     }
-    if (log.statChange[3] != 0) {
+    if (log.statChange.diplomacy != 0) {
+        const diplomacy = document.createElement("span");
         diplomacy.setAttribute("id", "diplomacy");
-        diplomacy.innerText = "(" + log.statChange[3] + ")";
+        diplomacy.innerText = "(" + log.statChange.diplomacy + ")";
         container.appendChild(diplomacy);
     }
     const logScrollBox = document.getElementById("eventLogBox");
     logScrollBox.appendChild(container);
-    userProfile.log.push(log);
     // Scroll to bottom
     logScrollBox.scrollTop = logScrollBox.scrollHeight - logScrollBox.clientHeight;
 }
@@ -165,10 +164,10 @@ function updateStatistics(statistics) {
     const healthBar = document.getElementById("healthBar").getElementsByClassName("bar")[0];
     const diplomacyBar = document.getElementById("diplomacyBar").getElementsByClassName("bar")[0];
 
-    econBar.innerText = statistics[0];
-    orderBar.innerText = statistics[1];
-    healthBar.innerText = statistics[2];
-    diplomacyBar.innerText = statistics[3];
+    econBar.innerText = statistics.economy;
+    orderBar.innerText = statistics.order;
+    healthBar.innerText = statistics.health;
+    diplomacyBar.innerText = statistics.diplomacy;
     matchStatBars();
 }
 

@@ -17,7 +17,7 @@ mongoose.set('useFindAndModify', false);
 // Import our models
 const { Credential } = require("./models/Credential");
 const { EstablishmentInfo, RandomEvent } = require("./models/SystemData");
-const { Gameplay, Log } = require("./models/Gameplay");
+const { Gameplay, Log, Establishment } = require("./models/Gameplay");
 const { Profile } = require("./models/Profile");
 
 // express-session for managing user sessions
@@ -139,6 +139,7 @@ app.post("/api/register", mongoChecker, (req, res) => {
         req.session.is_admin = user.is_admin;
 
         // Generate default gameplay data for user
+        const curr = new Date();
         const gameplayData = new Gameplay({
             username: user.username,
             statistic: {
@@ -147,11 +148,15 @@ app.post("/api/register", mongoChecker, (req, res) => {
                 health: 50,
                 diplomacy: 50
             },
-            establishment: [],
-            log: [],
-            stategy: {}
+            establishment: [new Establishment({
+                name: "Pandemic Outbreak"
+            })],
+            log: [new Log({
+                time: curr.getHours() + ":" + curr.getMinutes(),
+                content: "You became the ruler your country."
+            })],
+            strategy: {}
         });
-        log(gameplayData);
         gameplayData.save().then((data) => {
             log(data);
             if (!data) {

@@ -38,6 +38,8 @@ const StatisticSchema = new mongoose.Schema({
     }
 });
 
+
+
 StatisticSchema.statics.convertToArray = async function() {
     const stat = this;
     return [stat.economy, stat.order, stat.health, stat.diplomacy];
@@ -208,6 +210,8 @@ const StatChangeSchema = new mongoose.Schema({
     }
 });
 
+const StatChange = mongoose.model("StatChange", StatChangeSchema);
+
 const LogSchema = new mongoose.Schema({
     time: {
         type: String,
@@ -221,7 +225,7 @@ const LogSchema = new mongoose.Schema({
     },
     statChange: {
         type: StatChangeSchema,
-        required: true
+        default: new StatChange()
     }
 });
 
@@ -250,7 +254,7 @@ const GameplaySchema = new mongoose.Schema({
         required: false,
         unique: false
     },
-    stategy: {
+    strategy: {
         type: StrategySchema,
         required: true,
         unique: false
@@ -275,5 +279,6 @@ GameplaySchema.statics.findByUsername = async function(username) {
 
 const Gameplay = mongoose.model("Gameplay", GameplaySchema);
 const Log = mongoose.model("Log", LogSchema);
+const Establishment = mongoose.model("Establishment", EstablishmentSchema)
 
-module.exports = { Gameplay, Log };
+module.exports = { Gameplay, Log, Establishment };
