@@ -12,11 +12,11 @@ function sendRequest(requestType, URL, data, callback) {
     const xml = new XMLHttpRequest();
     xml.onreadystatechange = function() {
         if (this.readyState == 4 && this.status == 200) {
-            log(this.responseText);
             callback(JSON.parse(this.responseText));
         }
     };
     xml.open(requestType, URL, true);
+    log(data);
     xml.send(data);
 }
 
@@ -96,18 +96,16 @@ function pushEstablishment(establishment) {
 
 function showDescription(e) {
     e.preventDefault();
+    log(e.target);
+    log(e.target.innerText);
     let i = 0;
     const title = document.getElementById("titlediv").querySelector("#title");
     const content = document.getElementsByClassName("modalContent")[0].querySelector("p");
-    // The title and ontent shuold've been obtained from the server.
-    while (i < userProfile.establishment.length) {
-        if (userProfile.establishment[i].name == e.target.innerText) {
-            title.innerText = userProfile.establishment[i].name;
-            content.innerText = userProfile.establishment[i].description;
-            break;
-        }
-        i++;
-    }
+    // obtain the title and description of the establishment from server.
+    sendRequest("GET", "/api/user/gameplay/EstInfo", { "name": e.target.innerText }, (establishment) => {
+        title.innerText = establishment.name;
+        content.innerText = establishment.description;
+    });
     document.getElementById("choice1").style.display = "none";
     document.getElementById("choice2").style.display = "none";
     document.getElementById("close").style.display = "block";

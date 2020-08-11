@@ -6,6 +6,9 @@ const express = require('express');
 const app = express();
 const path = require('path');
 const bodyParser = require('body-parser');
+app.use(bodyParser.urlencoded({
+    extended: true
+}));
 app.use(bodyParser.json());
 
 // Mongo and Mongoose
@@ -153,12 +156,11 @@ app.post("/api/register", mongoChecker, (req, res) => {
             })],
             log: [new Log({
                 time: curr.getHours() + ":" + curr.getMinutes(),
-                content: "You became the ruler your country."
+                content: "You became the ruler of your country."
             })],
             strategy: {}
         });
         gameplayData.save().then((data) => {
-            log(data);
             if (!data) {
                 res.status(500).send("500 Internal Server Error");
             } else {
@@ -166,7 +168,6 @@ app.post("/api/register", mongoChecker, (req, res) => {
                 res.redirect('/gameplay');
             }
         }).catch((err) => {
-            log(err);
             if (isMongoError(err)) {
                 res.status(500).redirect('/welcome');
             } else {
@@ -246,11 +247,7 @@ app.get("/api/user/gameplay/stat/:type", mongoChecker, (req, res) => {
     const username = req.session.username;
     const reqType = req.params.type;
 
-    log(username);
-    log(reqType);
-
     Gameplay.findByUsername(username).then((user) => {
-        log(user);
         if (!user) {
             // Either client's cookie is corrupted or user has been deleted by admin
             // Logging the user out should be appropriate
@@ -282,7 +279,6 @@ app.get("/api/user/gameplay/stat/:type", mongoChecker, (req, res) => {
         if (isMongoError(err)) {
             res.status(500).send("Internal Server Error");
         } else {
-            log(err);
             // Either client's cookie is corrupted or user has been deleted by admin
             // Logging the user out should be appropriate
             res.redirect("/api/logout");
@@ -371,7 +367,6 @@ app.post("/api/user/gameplay/strategy/:type/:value", mongoChecker, (req, res) =>
             // save document
             user.save((err, user) => {
                 if (err) {
-                    log(err);
                     res.send(false);
                 } else {
                     res.send(true);
@@ -382,7 +377,6 @@ app.post("/api/user/gameplay/strategy/:type/:value", mongoChecker, (req, res) =>
         if (isMongoError(err)) {
             res.status(500).send("Internal Server Error");
         } else {
-            log(err);
             // Something is desync in the client or server side, log the user out and make them reload the page
             res.redirect("/api/logout");
         };
@@ -466,7 +460,6 @@ app.post("/api/user/gameplay/event", mongoChecker, (req, res) => {
         if (isMongoError(err)) {
             res.status(500).send("Internal Server Error");
         } else {
-            log(err);
             // Something is desync in the client or server side, log the user out and make them reload the page
             res.redirect("/api/logout");
         };
@@ -568,13 +561,11 @@ app.get("/api/user/gameplay/update", mongoChecker, (req, res) => {
                 res.send(output);
 
             }).catch((err) => {
-                log(err);
                 res.status(500).send("500 Internal Server Error");
             });
 
         };
     }).catch((err) => {
-        log(err);
         res.status(500).send("500 Internal Server Error");
     });
 });
