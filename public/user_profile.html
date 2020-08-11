@@ -14,54 +14,59 @@
     {{> header}}
     <!-- user profile -->
     <div class="maincontent">
-        <div user_profile_container>
-            <div class="user-profile">
-                <p class="username">UserName</p>
-                <div>
-                    <img src="./images/logged_in_user_icon.jpg" alt="user_profile_image" class="user_profile_image">
-                    <button id="edit-profile-pic">Edit Profile Pic</button>
-                </div>
-                <form class="profile-info">
-                    <p class="heading"> Personal Information</p>
-                    <div class="box">
-                        <p class="info">Age: 20</p>
-                        <p class="info">Country: Canada</p>
-                        <p class="info">Gender: Female</p>
-                        <p class="info">Email Address: fake@gmail.com</p>
-                        <p class="info">Social Media: Twitter ID</p>
-
-
-                    </div>
-                </form>
+        <!-- <div class="user-profile"> -->
+        <div class="container" id="user-pic">
+            <p class="username">UserName</p>
+            <div id="profile-pic">
+                <img src="./images/logged_in_user_icon.jpg" alt="user_profile_image" class="user_profile_image">
             </div>
-            <div class="country-stat">
-                <p class="countryname">Country Name</p>
-                <div>
-                    <img src="./images/country-flag.png" alt="Country-flag" class="Country-flag">
-                    <button id="edit-flag">Edit Country Flag</button>
+            <div class="button">
+                <button id="edit-profile-pic">Edit Profile Pic</button>
+            </div>
+        </div>
+        <div class="container" id="user-info">
+            <form class="user-info">
+                <p class="heading"> Personal Information</p>
+                <div class="box">
+                    <p class="info">Age: 20</p>
+                    <p class="info">Country: Canada</p>
+                    <p class="info">Gender: Female</p>
+                    <p class="info">Email Address: fake@gmail.com</p>
+                    <p class="info">Social Media: Twitter ID</p>
                 </div>
-                <form class="stats">
-                    <p class="heading"> Country Statistic</p>
-                    <div class="box">
-                        <p class="info">economy: 69</p>
-                        <div class="bar">
-                            <div class="economy">69%</div>
-                        </div>
-                        <p class="info">law and order: 42</p>
-                        <div class="bar">
-                            <div class="law-order">42%</div>
-                        </div>
-                        <p class="info">public health: 88</p>
-                        <div class="bar">
-                            <div class="public-health">88%</div>
-                        </div>
-                        <p class="info">diplomacy: 87</p>
-                        <div class="bar">
-                            <div class="diplomacy">87%</div>
-                        </div>
-                    </div>
-                </form>
-
+            </form>
+            <div class="button">
+                <button id="edit-profile-info">Edit Profile Info</button>
+            </div>
+        </div>
+        <div class="container" id="country-flag">
+            <p class="countryname">Country Name</p>
+            <div id="country-pic">
+                <img src="./images/country-flag.png" alt="country-flag-pic" class="country-flag-pic">
+            </div>
+            <div class="button">
+                <button id="edit-flag">Edit Country Flag</button>
+            </div>
+        </div>
+        <div class="container" id="country-stats">
+            <div class="stats">
+                <p class="heading">Statistics</p>
+                <img src="./images/econ.png" alt="econIcon" id="econIcon">
+                <div class="barContainer" id="econBar">
+                    <div class="bar" id="green">69</div>
+                </div>
+                <img src="./images/order.png" alt="orderIcon" id="orderIcon">
+                <div class="barContainer" id="orderBar">
+                    <div class="bar" id="green">99</div>
+                </div>
+                <img src="./images/health.png" alt="healthIcon" id="healthIcon">
+                <div class="barContainer" id="healthBar">
+                    <div class="bar" id="red">23</div>
+                </div>
+                <img src="./images/diplomacy.png" alt="diplomacyIcon" id="diplomacyIcon">
+                <div class="barContainer" id="diplomacyBar">
+                    <div class="bar" id="green">88</div>
+                </div>
             </div>
         </div>
     </div>

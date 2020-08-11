@@ -15,6 +15,13 @@ $("#edit-flag").on("click", function() {
 });
 
 /*
+* Update profile info
+*/
+$("#edit-profile-info").on("click", function() {
+    $("#popup-module-blackout").addClass("active");
+ });
+
+/*
  * Closes pop up window
  * NOTE: some functionality is not yet present until we access to a server in phase 2 
  */
