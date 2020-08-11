@@ -3,8 +3,6 @@ body {
     margin: 0px;
     width: 100%;
     height: 100%;
-    overflow-x: hidden;
-    overflow-y: scroll;
     font-family: 'Lucida Console', ui-monospace, monospace;
 }
 
@@ -13,15 +11,12 @@ html {
 }
 
 .header {
-    height: 40px;
+    max-height: 5vh;
     background-color: black;
     font-family: 'Lucida Console', ui-monospace, monospace;
     line-height: 40px;
     padding: 10px 5px;
     overflow: hidden;
-    position: sticky;
-    top: 0px;
-    width: 100%;
 }
 
 .header a {
@@ -82,73 +77,96 @@ html {
 
 .maincontent {
     width: 80%;
-    min-height: 100%;
+    min-height: 90vh;
     margin: auto;
     margin-top: 0px;
     padding: 20px;
     background-color: #121212;
-    overflow: hidden;
-    display: flex;
-    justify-items: start;
-    justify-content: flex-start;
-}
-
-.user_profile_container {
-    font-size: 18px;
     color: white;
-    height: 100%;
-    width: 75%;
-    padding: 20px;
-    margin: 0px;
-    overflow: visible;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+    grid-template-areas: "user-pic country-flag" "user-info country-stats";
+    justify-items: center;
+    align-items: center;
+    align-content: space-around;
 }
 
-.user-profile{
-    float: left;
-    width: 50%;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
+.container{
+    width: 80%;
+    height: 80%;
+    background-color: #212121;
+    border: 2px solid #39FF14;
+    border-radius: 5%;
+    position: relative;
+    overflow:hidden;
+}
+
+.container#user-pic{
+    grid-area: user-pic;
+    height: 90%;
+    padding: 5px;
     align-items: center;
-    height: 100%;
-    padding: 20px 150px;
-    overflow: auto;
+    justify-items: center;
+    color: white;
+    margin: auto;
     box-sizing: border-box;
 }
 
-.user-profile img.user_profile_image{
-
-    border: 3px solid #39FF14;
-    border-radius: 50%;
-    width: 250px;
-}
-
-.user-profile p.username {
-    font-size: 24px;
-    font-weight: bold;
-    text-transform: uppercase;
-    text-decoration: none;
-    color: white;
-}
-.user-profile p.heading {
-    font-size: 24px;
-    font-weight: bold;
-    text-transform: uppercase;
-    text-decoration: none;
-    color: white;
-    width: max-content;
-    text-align: center;
+.container #profile-pic{
     margin: auto;
-    margin-top: 30px;
-    margin-bottom: 30px;
-}
-.box{
-    border: 3px solid #39FF14;
-    width: 400px;
-    padding: 5px;
+    height: auto;
+    display: block;
 }
 
-.box p.info{
+.container .user_profile_image{
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    width: 200px;
+    height: 200px;
+}
+
+p.username {
+    font-size: 24px;
+    font-weight: bold;
+    text-transform: uppercase;
+    text-align: center;
+    text-decoration: none;
+    color: white;
+}
+
+.container#user-info{
+    grid-area: user-info;
+    height: 90%;
+    /* width: 90%;
+    height: auto; */
+    padding: 5px;
+    align-items: center;
+    justify-items: center;
+    color: white;
+    margin: auto;
+    box-sizing: border-box;
+}
+.container p.heading {
+    height: auto;
+    width: auto;
+    font-size: 24px;
+    font-weight: bold;
+    text-transform: uppercase;
+    text-align: center;
+    text-decoration: none;
+    color: white;
+}
+.container .box{
+    height: auto;
+    width: auto;
+    margin: auto;
+}
+
+.container .box p.info{
+    height: auto;
+    width: auto;
     font-size: 16px;
     font-weight: normal;
     text-transform: uppercase;
@@ -157,46 +175,20 @@ html {
     margin-left: 10px;
 }
 
-.fixed_menubar p {
-    text-decoration: none;
-    color: white;
-    font-size: 18px;
-    font-weight: bold;
-}
+.container#country-flag{
+    grid-area: country-flag;
 
-#box{
-    display: flex;
-}
-
-.country-stat{    
-    float: right;
-    width: 50%;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
+    height: 90%;
+    /* height: auto; */
+    padding: 5px;
     align-items: center;
-    height: 100%;
-    padding: 20px 150px;
-    box-sizing: border-box;
-    overflow: auto;
-}
-
-.country-stat p.countryname {
-    font-size: 24px;
-    font-weight: bold;
-    text-transform: uppercase;
-    text-decoration: none;
+    justify-items: center;
     color: white;
-    width: max-content;
+    margin: auto;
+    box-sizing: border-box;
 }
 
-.Country-flag{
-    border: 3px solid #39FF14;
-    width: 400px;
-    border-radius: 8px;
-}
-
-.country-stat p.heading {
+.container p.countryname{
     font-size: 24px;
     font-weight: bold;
     text-transform: uppercase;
@@ -207,16 +199,156 @@ html {
     margin: auto;
     margin-top: 30px;
     margin-bottom: 30px;
+    width: auto;
+}
+
+.container #country-pic{
+    margin: auto;
+    height: auto;
+}
+
+.container .country-flag-pic{
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    width: 300px;
+    height: 150px;
+    padding-bottom: 10px;
+}
+
+.container#country-stats{
+    grid-area: country-stats;
+
+    height: 90%;
+    padding: 5px;
+    align-items: center;
+    justify-items: center;
+    color: white;
+    margin: auto;
+    box-sizing: border-box;
+}
+
+.container .stats{
+    height: 100%;
+    width: 90%;
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    grid-template-rows: 30px repeat(4, 1fr);
+    grid-template-areas: "title title title title title" "econIcon econBar econBar econBar econBar" "orderIcon orderBar orderBar orderBar orderBar" "healthIcon healthBar healthBar healthBar healthBar" "diplomacyIcon diplomacyBar diplomacyBar diplomacyBar diplomacyBar";
+    padding: 5px;
+    align-items: center;
+    justify-items: center;
+    color: white;
+    margin: auto;
+}
+
+/* Assigning grid-area to all the components */
+
+.stats .heading {
+    padding-top: 5px;
+    /* align-self: center; */
+    grid-area: title;
+    user-select: none;
+}
+
+.stats #econIcon {
+    grid-area: econIcon;
+    width: auto;
+    height: auto;
+    user-select: none;
+}
+
+.stats #orderIcon {
+    grid-area: orderIcon;
+    width: auto;
+    height: auto;
+    user-select: none;
+}
+
+.stats #healthIcon {
+    grid-area: healthIcon;
+    width: auto;
+    height: auto;
+    user-select: none;
+}
+
+.stats #diplomacyIcon {
+    grid-area: diplomacyIcon;
+    width: auto;
+    height: auto;
+    user-select: none;
+}
+
+.stats #econBar {
+    grid-area: econBar;
+    user-select: none;
+}
+
+.stats #orderBar {
+    grid-area: orderBar;
+    user-select: none;
+}
+
+.stats #healthBar {
+    grid-area: healthBar;
+    user-select: none;
+}
+
+.stats #diplomacyBar {
+    grid-area: diplomacyBar;
+    user-select: none;
+}
+
+
+/* Percentage bar for stats */
+
+.stats .barContainer {
+    border: 1px solid white;
+    background-color: #ccc;
+    position: relative;
+    height: 30px;
+    width: 80%;
+    padding: 0px;
+}
+
+
+/* the width of the bar should be handled by js */
+
+.stats .bar {
+    border: 0px;
+    position: relative;
+    text-align: center;
+    height: 100%;
+    width: auto;
+    font-weight: bold;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: black;
+}
+
+
+/* Doing this prevents the need to hardcode color code in js */
+
+.barContainer .bar#red {
+    background-color: #FF0000;
+}
+
+.barContainer .bar#green {
+    background-color: #00FF00;
 }
 
 .box p{
     color: white;
 }
+.button{
+    position: absolute;
+    margin-bottom: 10px;
+    bottom: 5px;
+}
 
 button{
-    margin: 2px;
-    margin-right: 100px;
-    margin-top: 5px;
+    margin: auto;
     height: auto;
     border: 2px ridge #39FF14;
     background-color: #121212;
@@ -227,44 +359,6 @@ button{
     border-radius: 15px;
     user-select: none;
 } 
-
-.bar {
-    width: 90%;
-    background-color: #ddd; 
-    border-radius: 10px;
-    margin-top: 5px;
-    margin-bottom: 5px;
-    text-align: right; 
-    color: black; 
-}
-
-.economy{
-    width: 69%;
-    background-color: #39FF14;
-    border-radius: 10px;
-    user-select: none;
-}
-
-.law-order{
-    width: 42%;
-    background-color: #39FF14;
-    border-radius: 10px;
-    user-select: none;
-}
-
-.public-health{
-    width: 88%;
-    background-color: #39FF14;
-    border-radius: 10px;
-    user-select: none;
-}
-
-.diplomacy{
-    width: 87%;
-    background-color: #39FF14;
-    border-radius: 10px;
-    user-select: none;
-}
 
 #popup-module-blackout {
     display: none;
