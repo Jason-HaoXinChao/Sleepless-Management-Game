@@ -1,139 +1,71 @@
-class user {
-    constructor(username, icon, stat, establishment, log, strategy) {
-        this.username = username;
-        this.icon = icon;
-        this.stat = stat;
-        this.establishment = establishment;
-        this.log = log;
-        this.strategy = strategy;
-    }
-}
-// An eventLog object represents a log entry
-class eventLog {
-    constructor(time, content, statChange) {
-        // time is the timestamp of the log
-        this.time = time;
-        // content is a string containing a description of event
-        this.content = content;
-        // statChange should be an array containing 4 strings
-        // representing change in econ, order, health, and diplomacy
-        this.statChange = statChange;
-    }
-}
-// A randomEvent object records the content and the result of an event
-class randomEvent {
-    constructor(title, description, choices, logs, establishments) {
-        this.title = title;
-        this.description = description;
-        this.choices = choices;
-        this.logs = logs;
-        this.establishments = establishments;
-    }
-}
+//const { json, request } = require("express");
 
-/*  An establishment is a buff or debuff that the user obtained. 
-    The server version of this class would contain information
-    about its effect on change of statistics and its duration.
-    But locally this class simply contains name and description.
-*/
-class establishment {
-    constructor(name, description) {
-        this.name = name;
-        this.description = description;
-    }
-}
 // onload event listener
 window.addEventListener("load", initializePage);
 
-// Add event listener for strategy buttons
-window.addEventListener("click", closeDropdown);
-document.getElementById("econButton").addEventListener("click", showEconMenu);
-document.getElementById("orderButton").addEventListener("click", showOrderMenu);
-document.getElementById("healthButton").addEventListener("click", showHealthMenu);
-document.getElementById("diplomacyButton").addEventListener("click", showDiplomacyMenu);
-
-// Add event listener for modal window
-document.getElementById("choice1").addEventListener("click", selectChoiceOne);
-document.getElementById("choice2").addEventListener("click", selectChoiceTwo);
-document.getElementById("close").addEventListener("click", hideModal);
+const log = console.log;
 
 // Global variables
 let dropdownVisible = false; // toggle to indicate if dropdown menu is visible or not
-//The following should've been stored and manipulated on server side, we are keeping it here so the functions
-//can pass values without having to call the server. Realistically, to avoid cheating, none of these would be 
-//stored on the client end.
-let userProfile;
-let randomEvents = [];
-let interval;
+
+function sendRequest(requestType, URL, data, callback) {
+    const xml = new XMLHttpRequest();
+    xml.onreadystatechange = function() {
+        if (this.readyState == 4 && this.status == 200) {
+            log(this.responseText);
+            callback(JSON.parse(this.responseText));
+        }
+    };
+    xml.open(requestType, URL, true);
+    xml.send(data);
+}
 
 function initializePage(e) {
+    // Add event listener for strategy buttons
+    window.addEventListener("click", closeDropdown);
+    document.getElementById("econButton").addEventListener("click", showEconMenu);
+    document.getElementById("orderButton").addEventListener("click", showOrderMenu);
+    document.getElementById("healthButton").addEventListener("click", showHealthMenu);
+    document.getElementById("diplomacyButton").addEventListener("click", showDiplomacyMenu);
+
+    // Add event listener for modal window
+    document.getElementById("choice1").addEventListener("click", selectChoiceOne);
+    document.getElementById("choice2").addEventListener("click", selectChoiceTwo);
+    document.getElementById("close").addEventListener("click", hideModal);
+
     // Add event listeners to the dropdown menu items
     const strategies = document.getElementsByClassName("item");
     let i;
     for (i = 0; i < strategies.length; i++) {
         strategies[i].addEventListener("click", changeStrategy, false);
     }
-    // Here should be a server call to get the user's data
+
+    // Call server to get user data
     loadUserData();
-    interval = setInterval(function() {
-        console.log("server tick");
-        calculateStatChange();
-    }, 5000);
-    setTimeout(function() {
-        console.log("random event");
-        showRandomEvent();
-    }, Math.floor(Math.random() * (20000 - (10000))) + (10000));
+
 }
 
 function loadUserData(e) {
     // This function should call the server to get data of the user
     // Then it should display the value in DOM elements
-    // Here we make up some mock data
-    const statisticsSample = [86, 42, 69, 78];
-    let logSamples = [];
-    let establishmentSample = [];
-    let strategies = ["Hands off", "Weak Enforcement", "Reactive Response", "Neutral"];
-    logSamples.push(new eventLog("04:20", "An anti-lockdown protest has started, it's mostly peaceful at the moment.", [0, -1, -5, 0]));
-    logSamples.push(new eventLog("04:25", "Karens around the country has joined the protest, claiming face mask policy is a violation of their rights.", [0, -1, -1, 0]));
-    establishmentSample.push(new establishment("Quarantine Enforcement", "Citizens of the country has been adviced to stay home and avoid human contact to reduce to chance of virus spreading."));
-    establishmentSample.push(new establishment("Face Mask Policy", "Citizens are required to wear face masks when entering stores or public places, reducing the chance of contacting the virus during unavoidable human interactions."));
-    establishmentSample.push(new establishment("Sample Short Establishment", "short description."));
-    establishmentSample.push(new establishment("Sample Long Establishment with a very long title which will take up a lot of spaces and see if it breaks the code.", "description."));
-    establishmentSample.push(new establishment("Medical Bills", "Lack of affordable healthcare causes citizens to be unwilling or unable to get treatments."));
 
-    userProfile = new user("user", "logged_in_user_icon.jpg", statisticsSample, establishmentSample, logSamples, strategies);
-    // Here we put the data into the webpage
-    updateStatistics(statisticsSample);
-    logSamples.forEach(log => {
-        pushLog(log);
+    const user = sendRequest("GET", "/api/user/gameplay/stat/all", {}, (userData) => {
+        const stats = userData.statistic;
+        updateStatistics([stats.economy, stats.order, stats.health, stats.diplomacy]);
+        const strategies = userData.strategy;
+        setupStrategyButton([strategies.economy, strategies.order, strategies.health, strategies.diplomacy]);
+        (userData.establishment).forEach(est => {
+            pushEstablishment(est);
+        });
+
+        (userData.log).forEach(log => {
+            pushLog(log);
+        });
+
     });
-    establishmentSample.forEach(establishment => {
-        pushEstablishment(establishment);
-    });
-    setupStrategyButton(strategies);
-    makeNewEvents();
+
 }
 
-// The data stored in randomEvents should've been obtained from server
-// This function is only for making mock events, it shouldn't exist in the actual game
-function makeNewEvents() {
-    let title;
-    let description;
-    let choices = [];
-    let logs = [];
-    let establishments = [];
-
-    // First event: toilet paper shortage
-    title = "Toilet Paper Shortage";
-    description = "People are buying out all toilet paper rolls from all stores. The shortage of toilet paper is causing panic and outrage.";
-    choices.push("Rationalize toilet paper sales");
-    choices.push("Import toilet paper to satisfy demand");
-    logs.push(new eventLog("", "Toilet paper panic was resolved after government rationalize toilet paper sales.", [-1, 1, -1, 0]));
-    logs.push(new eventLog("", "Grocery store chains made banks thanks to toilet paper craze.", [5, -3, -2, 0]));
-    establishments.push(new establishment("Rational Toilet Paper", "Toilet paper sales has been rationalized, preventing the possibility of another public panic buyout."));
-    establishments.push(null);
-    randomEvents.push(new randomEvent(title, description, choices, logs, establishments));
-}
 
 // Change the current text of the strategy buttons to the strategy chosen by the user previously.
 function setupStrategyButton(strategies) {
@@ -159,7 +91,6 @@ function pushEstablishment(establishment) {
     box.appendChild(wrapper);
     // Scroll to bottom
     box.scrollTop = box.scrollHeight - box.clientHeight;
-    userProfile.establishment.push(establishment);
     // Add onclick eventlistener to show modal window containing description
     content.addEventListener("click", showDescription, false);
 }
@@ -226,6 +157,7 @@ function pushLog(log) {
     // Scroll to bottom
     logScrollBox.scrollTop = logScrollBox.scrollHeight - logScrollBox.clientHeight;
 }
+
 // Reflect the change in statistic by updating it in the bar elements.
 function updateStatistics(statistics) {
     const econBar = document.getElementById("econBar").getElementsByClassName("bar")[0];
@@ -551,6 +483,9 @@ function calculateStatChange() {
         time = hour.toString();
     }
     time = time + ":" + curTime.getMinutes().toString();
+    userProfile.log.push(new eventLog(time, "A week has passed.", statChange));
+    pushLog(userProfile.log[userProfile.log.length - 1]);
+
     userProfile.log.push(new eventLog(time, "A week has passed.", statChange));
     pushLog(userProfile.log[userProfile.log.length - 1]);
 }

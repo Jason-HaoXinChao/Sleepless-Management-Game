@@ -23,7 +23,7 @@ const StatChangeSchema = new mongoose.Schema({
     }
 });
 
-StatChangeSchema.static.convertToArray = async function() {
+StatChangeSchema.statics.convertToArray = async function() {
     const stat = this;
     return [stat.economy, stat.order, stat.health, stat.diplomacy];
 };
@@ -48,7 +48,7 @@ const EstablishmentInfoSchema = new mongoose.Schema({
     }
 });
 
-EstablishmentInfoSchema.static.findByName = async function(name) {
+EstablishmentInfoSchema.statics.findByName = async function(name) {
     const Establishment = this;
 
     try {
@@ -64,11 +64,6 @@ EstablishmentInfoSchema.static.findByName = async function(name) {
 }
 
 const LogSchema = new mongoose.Schema({
-    time: {
-        type: String,
-        required: true,
-        trim: true
-    },
     content: {
         type: String,
         required: true,
@@ -131,7 +126,7 @@ const RandomEventSchema = new mongoose.Schema({
 });
 
 
-RandomEventSchema.static.findByName = async function(name) {
+RandomEventSchema.statics.findByName = async function(name) {
     const RandomEvent = this;
 
     try {
@@ -146,7 +141,7 @@ RandomEventSchema.static.findByName = async function(name) {
     }
 }
 
-RandomEventSchema.static.getRandom = async function(callback) {
+RandomEventSchema.statics.getRandom = async function(callback) {
     this.count(function(err, count) {
         if (err) {
             return callback(err);

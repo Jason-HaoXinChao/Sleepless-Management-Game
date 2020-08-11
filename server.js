@@ -151,7 +151,9 @@ app.post("/api/register", mongoChecker, (req, res) => {
             log: [],
             stategy: {}
         });
+        log(gameplayData);
         gameplayData.save().then((data) => {
+            log(data);
             if (!data) {
                 res.status(500).send("500 Internal Server Error");
             } else {
@@ -159,6 +161,7 @@ app.post("/api/register", mongoChecker, (req, res) => {
                 res.redirect('/gameplay');
             }
         }).catch((err) => {
+            log(err);
             if (isMongoError(err)) {
                 res.status(500).redirect('/welcome');
             } else {
@@ -234,11 +237,15 @@ app.post("/api/logout", (req, res) => {
  * log: send log property
  * strategy: send strategy property
  */
-app.get("/api/user/gameplay:type", mongoChecker, (req, res) => {
+app.get("/api/user/gameplay/stat/:type", mongoChecker, (req, res) => {
     const username = req.session.username;
-    const reqType = req.body.type;
+    const reqType = req.params.type;
+
+    log(username);
+    log(reqType);
 
     Gameplay.findByUsername(username).then((user) => {
+        log(user);
         if (!user) {
             // Either client's cookie is corrupted or user has been deleted by admin
             // Logging the user out should be appropriate
@@ -256,7 +263,7 @@ app.get("/api/user/gameplay:type", mongoChecker, (req, res) => {
                     res.send(user.statistic);
                     break;
                 case "log":
-                    res.send(user.statistic);
+                    res.send(user.log);
                     break;
                 case "strategy":
                     res.send(user.strategy);
@@ -326,9 +333,9 @@ app.get("/api/user/gameplay/EstInfo", mongoChecker, (req, res) => {
  * strategyType: which strategy is being change(economy/order/health/diplomacy)
  * value: the new choice of strategy for that field
  */
-app.post("/api/user/gameplay:strategyType:value", mongoChecker, (req, res) => {
-    const type = req.body.strategyType;
-    const value = req.body.value;
+app.post("/api/user/gameplay/strategy/:type/:value", mongoChecker, (req, res) => {
+    const type = req.params.strategyType;
+    const value = req.params.value;
     const username = req.session.username;
 
     Gameplay.findByUsername(username).then((user) => {
