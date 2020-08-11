@@ -472,6 +472,7 @@ div.blockWrapper {
     font-size: 20px;
     padding: 5px 5px;
     transition: linear 0.1s;
+    text-transform: capitalize;
 }
 
 .strategyGrid .dropdownMenu .item:hover {
@@ -540,10 +541,14 @@ div.blockWrapper {
 .modalGrid .modalContent {
     grid-area: content;
     align-self: center;
-    width: 60%;
+    width: 70%;
     height: 100%;
     text-align: left;
     word-wrap: break-word;
+}
+
+.modalGrid .modalContent p {
+    line-height: 20px;
 }
 
 .modalGrid .modalButton {

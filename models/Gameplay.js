@@ -56,7 +56,7 @@ const StrategySchema = new mongoose.Schema({
         type: String,
         required: false,
         default: "iron fist",
-        enum: ["iron fist", "strict rule", "weak enforcement"]
+        enum: ["iron fist", "strict ruling", "weak enforcement"]
     },
     health: {
         type: String,
@@ -257,7 +257,8 @@ const GameplaySchema = new mongoose.Schema({
     strategy: {
         type: StrategySchema,
         required: true,
-        unique: false
+        unique: false,
+        lowercase: true
     }
 });
 

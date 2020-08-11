@@ -301,9 +301,8 @@ app.get("/api/user/gameplay/stat/:type", mongoChecker, (req, res) => {
  */
 app.post("/api/user/gameplay/EstInfo", mongoChecker, (req, res) => {
     const establishmentName = req.body.name;
-    log(req.body);
+
     EstablishmentInfo.findByName(establishmentName).then((establishment) => {
-        log(establishment);
         if (!establishment) {
             // Something is desync in the client or server side, log the user out and make them reload the page
             res.redirect("/logout");
@@ -329,14 +328,16 @@ app.post("/api/user/gameplay/EstInfo", mongoChecker, (req, res) => {
 /**
  * Route for changing user's strategy
  * expected request body: none
- * expected return value: boolean indicating if the change was successful
- * 
+ * expected return value: 
+ * {
+ *  log: Log object
+ * }
  * parameters
  * strategyType: which strategy is being change(economy/order/health/diplomacy)
  * value: the new choice of strategy for that field
  */
 app.post("/api/user/gameplay/strategy/:type/:value", mongoChecker, (req, res) => {
-    const type = req.params.strategyType;
+    const type = req.params.type;
     const value = req.params.value;
     const username = req.session.username;
 
@@ -344,33 +345,40 @@ app.post("/api/user/gameplay/strategy/:type/:value", mongoChecker, (req, res) =>
         if (!user) {
             // Either client's cookie is corrupted or user has been deleted by admin
             // Logging the user out should be appropriate
-            res.redirect("/api/logout");
+            res.status(404).redirect("/api/logout");
         } else {
             // apply the change of strategy
-            switch (type) {
+            switch (type.toLowerCase()) {
                 case "economy":
-                    user.strategy.economy = value;
+                    user.strategy.economy = value.toLowerCase();
                     break;
                 case "order":
-                    user.strategy.order = value;
+                    user.strategy.order = value.toLowerCase();
                     break;
                 case "health":
-                    user.strategy.health = value;
+                    user.strategy.health = value.toLowerCase();
                     break;
                 case "diplomacy":
-                    user.strategy.diplomacy = value;
+                    user.strategy.diplomacy = value.toLowerCase();
                     break;
                 default:
-                    user.strategy.economy = value;
+                    user.strategy.economy = value.toLowerCase();
                     break;
             };
-
+            const curr = new Date();
+            const timeString = curr.getHours() + ":" + curr.getMinutes();
+            const log = new Log({
+                time: timeString,
+                content: "Your " + type + " strategy has been changed to [" + value + "]."
+            });
+            user.log.push(log);
             // save document
             user.save((err, user) => {
                 if (err) {
-                    res.send(false);
+                    res.status(500).redirect("/api/logout");
                 } else {
-                    res.send(true);
+                    // Send the log to client
+                    res.send({ log: log });
                 }
             });
         };
@@ -379,7 +387,7 @@ app.post("/api/user/gameplay/strategy/:type/:value", mongoChecker, (req, res) =>
             res.status(500).send("Internal Server Error");
         } else {
             // Something is desync in the client or server side, log the user out and make them reload the page
-            res.redirect("/api/logout");
+            res.status(400).redirect("/api/logout");
         };
     });
 });

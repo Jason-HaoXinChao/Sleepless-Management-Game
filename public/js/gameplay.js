@@ -97,20 +97,36 @@ function pushEstablishment(establishment) {
 
 function showDescription(e) {
     e.preventDefault();
-    log(e.target);
-    log(e.target.innerText);
     let i = 0;
     const title = document.getElementById("titlediv").querySelector("#title");
     const content = document.getElementsByClassName("modalContent")[0].querySelector("p");
-    // obtain the title and description of the establishment from server.
+    // obtain the title, description, and effect on statistics of the establishment from server.
     sendRequest("POST", "/api/user/gameplay/EstInfo", { "name": e.target.innerText }, (establishment) => {
         title.innerText = establishment.name;
-        content.innerText = establishment.description;
+        content.innerHTML = "";
+        content.appendChild(document.createTextNode(establishment.description));
+        content.appendChild(document.createElement("br"));
+        const stat = formulateStatChange(establishment.statChange);
+        for (let index = 0; index < 5; index++) {
+            const element = stat[index];
+            content.appendChild(document.createElement("br"));
+            content.appendChild(document.createTextNode(element));
+        }
     });
     document.getElementById("choice1").style.display = "none";
     document.getElementById("choice2").style.display = "none";
     document.getElementById("close").style.display = "block";
     document.getElementById("modalBackground").style.display = "flex";
+}
+
+function formulateStatChange(statChange) {
+    const statText = [];
+    statText.push("Impact on statistics")
+    statText.push("economy: " + statChange[0]);
+    statText.push("order: " + statChange[1]);
+    statText.push("health: " + statChange[2]);
+    statText.push("diplomacy: " + statChange[3]);
+    return statText;
 }
 
 // Adds a new log message to the eventlog window.
@@ -182,7 +198,6 @@ function matchStatBars() {
         } else {
             statBars[i].setAttribute("id", "green");
         }
-
     }
 }
 
@@ -227,46 +242,36 @@ function changeStrategy(e) {
     e.preventDefault();
     const strategyChosen = e.target;
     const mainButton = (strategyChosen.parentNode.parentNode).querySelector("button");
-    // Change the text of the button to the item selected in the dropdown button
-    mainButton.innerText = strategyChosen.innerText;
 
-    // Here should include sending data to server to indicate change of strategy
+    // Get the selected strategy
+    const newStrat = strategyChosen.innerText;
 
-    // Write an event log to indicate the strategy change.
-    // This log message should've been obtained from the server(so time stamp matches server time)
-    // but here we are just making a mock version
-    const curTime = new Date;
-    let time;
-    const hour = curTime.getHours();
-    if (hour < 10) {
-        time = "0" + hour;
-    } else {
-        time = hour.toString();
-    }
-    time = time + ":" + curTime.getMinutes().toString();
+
+    // Identify which strategy is being changed
     let type;
     switch (mainButton.id) {
         case "econButton":
-            type = "[Economy]";
-            userProfile.strategy[0] = mainButton.innerText; //This should've been server manipulation
+            type = "economy";
             break;
         case "orderButton":
-            type = "[Law and Order]";
-            userProfile.strategy[1] = mainButton.innerText; //This should've been server manipulation
+            type = "order";
             break;
         case "healthButton":
-            type = "[Public Health]";
-            userProfile.strategy[2] = mainButton.innerText; //This should've been server manipulation
+            type = "health";
             break;
         case "diplomacyButton":
-            type = "[Diplomacy]";
-            userProfile.strategy[3] = mainButton.innerText; //This should've been server manipulation
+            type = "diplomacy";
             break;
         default:
             break;
     }
-    const mainContent = type + " strategy has been changed to [" + mainButton.innerText + "].";
-    pushLog(new eventLog(time, mainContent, [0, 0, 0, 0]))
+    // send post request to server
+    sendRequest("POST", "/api/user/gameplay/strategy/" + type + "/" + newStrat, {}, (log) => {
+        // Change the text of the button to the item selected in the dropdown button
+        mainButton.innerText = newStrat;
+        // publish log
+        pushLog(log.log);
+    })
 }
 
 // Hide dropdown menu when user clicks somewhere else
@@ -373,117 +378,4 @@ function hideModal(e) {
     e.preventDefault();
     const modalWindow = document.getElementById("modalBackground");
     modalWindow.style.display = "none";
-}
-
-/*  A function to calculate the change in stats for each server tick.'
-    this function should've been entirely server manipulation, the client
-    shouldn't know or care about what the change in stat is. The proper
-    way this works should be: server ticks->server calculate change in stat->
-    server changes stat at server end-> server sends updated stat as well as log
-    to front end-> front end displays stat and pushes log 
- */
-function calculateStatChange() {
-    let statChange = [0, 0, 0, 0];
-
-    // Note that these stat changes are randomly made up to simulate actual gameplay
-    // it's obviously unbalanced and probably doesn't even make much sense
-
-    // Economy change
-    switch (userProfile.strategy[0]) {
-        case "Revitalize":
-            statChange[0] += 4;
-            statChange[1] -= 3;
-            break;
-        case "Stablize":
-            statChange[0] += 1
-            break;
-        case "Hands off":
-            statChange[0] += Math.floor(Math.random() * (5 - (-5))) + (-5);
-        default:
-            break;
-    }
-
-    // order change
-    switch (userProfile.strategy[1]) {
-        case "Iron Fist":
-            statChange[0] -= 8;
-            statChange[1] += 6;
-            statChange[2] += 2;
-            break;
-        case "Strict Ruling":
-            statChange[0] -= 3;
-            statChange[1] += 2;
-            statChange[2] += 1;
-            break;
-        case "Weak Enforcement":
-            statChange[0] += Math.floor(Math.random() * (3));
-            statChange[1] -= 2;
-            statChange[2] -= 1;
-            break;
-        default:
-            break;
-    }
-
-    // health change
-
-    switch (userProfile.strategy[2]) {
-        case "Active Prevention":
-            statChange[2] += 5;
-            statChange[0] -= 4;
-            break;
-        case "Reactive Response":
-            statChange[2] = 0;
-            break;
-
-        case "No Testing":
-            statChange[2] -= 5;
-            break;
-
-        default:
-            break;
-    }
-
-    switch (userProfile.strategy[3]) {
-        case "Hawk":
-            statChange[3] -= 4;
-            statChange[1] += 3;
-            break;
-
-        case "Neutral":
-            statChange[3] += Math.floor(Math.random() * (4 - (-3))) + (-3);
-            break;
-
-        case "Dove":
-            statChange[3] += 1;
-            break;
-        default:
-            break;
-    }
-    let i;
-    for (i = 0; i < 4; i++) {
-        if ((userProfile.stat[i] + statChange[i]) > 100) {
-            statChange[i] = 100 - userProfile.stat[i];
-        } else if ((userProfile.stat[i] + statChange[i]) < 0) {
-            statChange[i] = 0 - userProfile.stat[i];
-        }
-        userProfile.stat[i] += statChange[i];
-    }
-
-    updateStatistics(userProfile.stat);
-
-    // Make a log message to indicate the Change
-    const curTime = new Date;
-    let time;
-    const hour = curTime.getHours();
-    if (hour < 10) {
-        time = "0" + hour;
-    } else {
-        time = hour.toString();
-    }
-    time = time + ":" + curTime.getMinutes().toString();
-    userProfile.log.push(new eventLog(time, "A week has passed.", statChange));
-    pushLog(userProfile.log[userProfile.log.length - 1]);
-
-    userProfile.log.push(new eventLog(time, "A week has passed.", statChange));
-    pushLog(userProfile.log[userProfile.log.length - 1]);
 }
