@@ -462,8 +462,10 @@ app.post("/api/user/gameplay/event", mongoChecker, (req, res) => {
             user.statistic.diplomacy += choiceDoc.statChange.diplomacy;
             output.newStatistic = user.statistic;
 
-            // generate log (should be preset in EventChoice document)
+            // generate log (should be preset in EventChoice document but with no time)
             output.log = choiceDoc.log;
+            const curr = new Date();
+            output.log.time = curr.getHours() + ":" + curr.getMinutes();
 
             // Save the new statistic, log, and establishment(if any) in user
             if (choiceDoc.newEstablishment) {
@@ -531,14 +533,10 @@ app.get("/api/user/gameplay/update", mongoChecker, (req, res) => {
 
             // change in statistics due to strategy
             user.strategy.calculateStatChange().then((stratImpact) => {
-                log("this is stratImpact");
-                log(stratImpact);
                 statisticChange.economy += stratImpact.economy;
                 statisticChange.order += stratImpact.order;
                 statisticChange.health += stratImpact.health;
                 statisticChange.diplomacy += stratImpact.diplomacy;
-                log("this is statisticChange");
-                log(statisticChange);
                 // change in statistics due to establishment
                 (user.establishment).forEach((est) => {
                     EstablishmentInfo.findByName(est.name).then((establishment) => {
@@ -565,9 +563,6 @@ app.get("/api/user/gameplay/update", mongoChecker, (req, res) => {
                         diplomacy: statisticChange.diplomacy
                     })
                 });
-
-                log("this is eventLog");
-                log(eventLog);
 
                 // Change statistics and add log to user document
                 user.statistic.economy += statisticChange.economy;
@@ -604,24 +599,29 @@ app.get("/api/user/gameplay/update", mongoChecker, (req, res) => {
                         randomEvent: null
                     };
                     // Determine if a random event occurs, and if so, which one
-                    const percentageChance = 5;
+                    const percentageChance = 99;
                     if (Math.floor(Math.random() * (100 - 0)) + 0 <= percentageChance) {
                         // chooce a random event
-                        const randomEvent = RandomEvent.getRandom();
-                        if (!randomEvent) {
-                            log("Can't find randomEvent");
-                        } else {
-                            output.randomEvent = {
-                                name: randomEvent.name,
-                                description: randomEvent.description,
-                                choiceOne: randomEvent.choiceOne.description,
-                                choiceTwo: randomEvent.choiceTwo.description
-                            };
-                        }
-                    }
+                        RandomEvent.getRandom().then((randomEvent) => {
+                            log(randomEvent);
+                            if (!randomEvent) {
+                                log("Can't find randomEvent");
+                            } else {
+                                output.randomEvent = {
+                                    name: randomEvent.name,
+                                    description: randomEvent.description,
+                                    choiceOne: randomEvent.choiceOne.description,
+                                    choiceTwo: randomEvent.choiceTwo.description
+                                };
+                                // Send new statistics, log and randomEvent to user
+                                res.send(output);
+                            }
+                        }).catch((err) => {
+                            log(err);
+                            res.status(500).send("500 Internal Server Error");
+                        });
 
-                    // Send new statistics, log and randomEvent to user
-                    res.send(output);
+                    }
 
                 }).catch((err) => {
                     log(err);

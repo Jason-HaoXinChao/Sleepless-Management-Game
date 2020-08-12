@@ -126,6 +126,7 @@ const RandomEventSchema = new mongoose.Schema({
 });
 
 
+
 RandomEventSchema.statics.findByName = async function(name) {
     const RandomEvent = this;
 
@@ -141,15 +142,9 @@ RandomEventSchema.statics.findByName = async function(name) {
     }
 }
 
-RandomEventSchema.statics.getRandom = async function(callback) {
-    this.count(function(err, count) {
-        if (err) {
-            return callback(err);
-        }
-        const randomNum = Math.floor(Math.random() * count);
-        this.findOne().skip(randomNum).exec(callback);
-    }.bind(this));
-};
+RandomEventSchema.statics.findRandom = async function(callback) {
+    // To be fixed
+}
 
 
 const EstablishmentInfo = mongoose.model("EstablishmentInfo", EstablishmentInfoSchema);

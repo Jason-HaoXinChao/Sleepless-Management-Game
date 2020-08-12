@@ -48,9 +48,10 @@ function initializePage(e) {
     // Call server to get user data
     loadUserData();
 
-    interval = setInterval(() => {
-        requestUpdate();
-    }, 15000);
+    // interval = setInterval(() => {
+    //     requestUpdate();
+    // }, 15000);
+    requestUpdate();
 }
 
 function loadUserData(e) {
