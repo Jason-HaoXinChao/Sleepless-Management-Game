@@ -114,6 +114,15 @@ const mongoChecker = (req, res, next) => {
     }
 };
 
+const adminRequestChecker = (req, res, next) => {    
+    if (!req.session.is_admin) {
+        res.status(401).send("Unauthorized");
+        return;
+    } else {
+        next();
+    }
+};
+
 /**
  *  Register Route
  *  Expected body:
@@ -124,7 +133,7 @@ const mongoChecker = (req, res, next) => {
  *          birthday: <a string in the format YYYY-MM-DD>
  *      }
  */
-app.post("/api/register", mongoChecker, (req, res) => {
+app.post("/api/register", mongoChecker, async (req, res) => {
     // Create a Credential model instance for the user's inputted username, email, password, and birthday
     const credentials = new Credential({
         username: req.body.username,
@@ -133,55 +142,64 @@ app.post("/api/register", mongoChecker, (req, res) => {
         birthday: req.body.birthday
     });
 
+    const profile = new Profile({
+        username: req.body.username,
+        email: req.body.email,
+        countryname: `country-${Math.random().toString(36).substr(2, 8)}`
+    });
+
+    const curr = new Date();
+    const gameplayData = new Gameplay({
+        username: req.body.username,
+        statistic: {
+            economy: 50,
+            order: 50,
+            health: 50,
+            diplomacy: 50
+        },
+        establishment: [new Establishment({
+            name: "Pandemic Outbreak"
+        })],
+        log: [new Log({
+            time: curr.getHours() + ":" + curr.getMinutes(),
+            content: "You became the ruler of your country."
+        })],
+        strategy: {}
+    });
+
     // Save the user credentials to the the database
-    credentials.save().then(user => {
-        // Set the session data accordingly
+    try {
+        const user = await credentials.save();
+        if (!user) {
+            res.status(500).send("500 Internal Server Error");
+            return;
+        }
+
+        const userProfile = await profile.save();
+        if (!userProfile) {
+            res.status(500).send("500 Internal Server Error");
+            return;
+        }
+        
+        const data = await gameplayData.save();
+        if (!data) {
+            res.status(500).send("500 Internal Server Error");
+            return;
+        }
+
         req.session.user = user._id;
         req.session.username = user.username;
         req.session.email = user.email;
         req.session.is_admin = user.is_admin;
 
-        // Generate default gameplay data for user
-        const curr = new Date();
-        const gameplayData = new Gameplay({
-            username: user.username,
-            statistic: {
-                economy: 50,
-                order: 50,
-                health: 50,
-                diplomacy: 50
-            },
-            establishment: [new Establishment({
-                name: "Pandemic Outbreak"
-            })],
-            log: [new Log({
-                time: curr.getHours() + ":" + curr.getMinutes(),
-                content: "You became the ruler of your country."
-            })],
-            strategy: {}
-        });
-        gameplayData.save().then((data) => {
-            if (!data) {
-                res.status(500).send("500 Internal Server Error");
-            } else {
-                // Redirect the (now logged-in) user to the gameplay page ('/gameplay' page)
-                res.redirect('/gameplay');
-            }
-        }).catch((err) => {
-            if (isMongoError(err)) {
-                res.status(500).redirect('/welcome');
-            } else {
-                res.status(400).redirect('/welcome');
-            }
-        });
-
-    }).catch((err) => {
+        res.redirect('/gameplay');
+    } catch (err) {
         if (isMongoError(err)) {
             res.status(500).redirect('/welcome');
         } else {
             res.status(400).redirect('/welcome');
         }
-    })
+    }
 });
 
 /**
@@ -200,7 +218,9 @@ app.post("/api/login", mongoChecker, (req, res) => {
     Credential.findByUsernamePassword(username, password).then((user) => {
         // If the user credentials cannot be found, redirect the user back to the welcome page ('/welcome' route)
         if (!user) {
-            res.redirect('/welcome');
+            res.status(404).redirect('/welcome?invalid=credentials');
+        } else if (user.is_banned) {
+            res.status(401).redirect('/welcome?invalid=banned');
         } else {
             // Otherwise, set the session data accordingly...
             req.session.user = user._id;
@@ -570,6 +590,121 @@ app.get("/api/user/gameplay/update", mongoChecker, (req, res) => {
     });
 });
 
+app.get("/api/admin/ban_status/:username", adminRequestChecker, mongoChecker, (req, res) => {
+    const username = req.params.username;
+
+    Credential.getBanStatusByUsername(username).then((is_banned) => {
+        if (!is_banned) {
+            res.status(404).send();
+        } else {
+            res.send(is_banned);
+        };
+    }).catch((err) => {
+        if (isMongoError(err)) {
+            res.status(500).send("Internal Server Error");
+        } else {
+            log(err);
+        };
+    });
+});
+
+app.get("/api/admin/user_info/:username", adminRequestChecker, mongoChecker, (req, res) => {
+    const username = req.params.username;
+
+    Profile.findByUsername(username).then((user) => {
+        if (!user) {
+            res.status(404).send();
+        } else {
+            res.send(user);
+        };
+    }).catch((err) => {
+        if (isMongoError(err)) {
+            res.status(500).send("Internal Server Error");
+        } else {
+            log(err);
+        };
+    });
+});
+
+app.get("/api/admin/gameplay_stat/:username", adminRequestChecker, mongoChecker, (req, res) => {    
+    const username = req.params.username;
+
+    Gameplay.findByUsername(username).then((user) => {
+        if (!user) {
+            res.status(404).send();
+        } else {
+            res.send(user.statistic);
+        };
+    }).catch((err) => {
+        if (isMongoError(err)) {
+            res.status(500).send("Internal Server Error");
+        } else {
+            log(err);
+        };
+    });
+});
+
+app.post("/api/admin/change_ban/:username/:ban_status", adminRequestChecker, mongoChecker, (req, res) => {
+    const username = req.params.username;
+    const ban_status = req.params.ban_status;
+
+    Credential.updateOne({ username: username }, { $set: { is_banned: (ban_status === 'ban') ? true : false } }).then((user) => {
+        if (!user) {
+            res.status(404).send();
+        } else {
+            res.end();
+        };
+    }).catch((err) => {
+        if (isMongoError(err)) {
+            res.status(500).send("Internal Server Error");
+        } else {
+            log(err);
+        };
+    });
+});
+
+app.post("/api/admin/change_stats/:username", adminRequestChecker, mongoChecker, async (req, res) => {
+    const username = req.params.username;
+    
+    Gameplay.findByUsername(username).then((user) => {
+        if (!user) {
+            res.status(404).send();
+            return;
+        }
+        
+        const statisticChange = {
+            economy: req.body.economy - user.statistic.economy,
+            order: req.body.order - user.statistic.order,
+            health: req.body.health - user.statistic.health,
+            diplomacy: req.body.diplomacy - user.statistic.diplomacy
+        };
+
+        const currTime = new Date();
+        // Generate log
+        const log = new Log({
+            time: currTime.getHours() + ":" + currTime.getMinutes(),
+            content: "How mysterious! An otherworldly influence has been bestowed upon you...",
+            statChange: statisticChange
+        });
+
+        // Change statistics and add log to user document
+        const stat = user.statistic;
+        stat.economy = req.body.economy;
+        stat.order = req.body.order;
+        stat.health = req.body.health;
+        stat.diplomacy = req.body.diplomacy;
+        user.log.push(log);
+
+        return user;
+    }).then((user) => {
+        // save user document
+        user.save();
+        res.end();
+    }).catch((err) => {
+        res.status(500).send("Internal Server Error");
+    });
+});
+
 // Root route: redirects to the '/welcome'
 app.get('/', sessionChecker, (req, res) => {
     res.redirect('/welcome');
@@ -577,7 +712,22 @@ app.get('/', sessionChecker, (req, res) => {
 
 // '/welcome' route: reirects to '/admin_dashboard' if the user is logged in and is an admin user; redirects to '/gameplay' if the user is already logged in but isn't an admin user
 app.get('/welcome', adminRedirectChecker, sessionChecker, (req, res) => {
-    res.render('home_login');
+    const invalid = req.query.invalid;
+
+    switch (invalid) {
+        case 'banned':
+            res.render('home_login', {
+                banned: true
+            });
+            break;
+        case 'credentials':            
+            res.render('home_login', {
+                invalid_credentials: true
+            });
+            break;
+        default:
+            res.render('home_login');
+    }
 });
 
 // '/gameplay' route: redirects to '/welcome' if the user isn't logged in; redirects to '/admin_dashboard' if the user is an admin user

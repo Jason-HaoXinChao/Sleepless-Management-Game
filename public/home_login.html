@@ -23,6 +23,8 @@
                     <input id="username-1" type="text" placeholder="Username" name="username" required>
                     <label for="password-1"><b>Password</b></label>
                     <input id="password-1" type="password" placeholder="Password" name="password" required>
+                    {{#if banned}}<div class="form-error">This account has been banned...</div>{{/if}}
+                    {{#if invalid_credentials}}<div class="form-error">Invalid username and/or password...</div>{{/if}}
                     <div>
                         <span class="form-toggle">Create an account!</span>
                         <button type="submit" name="submit">Login</button>

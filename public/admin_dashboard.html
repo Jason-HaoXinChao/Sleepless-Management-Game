@@ -15,12 +15,12 @@
     <!-- content -->
     <div class="maincontent ">
         <h2>Admin Dashboard</h2>
-        <div class="admin-module-header">
+        <form class="admin-module-header">
             <label for="user-search">Search User:</label>
-            <input id="user-search" type="text"></input>
-            <button id="user-search-button">Search</button>
+            <input id="user-search" type="text" />
+            <input id="user-search-button" type="submit" value="Search" />
             <span>User not found...</span>
-        </div>
+        </form>
         <div class="admin-module-main-container">
             <div id="user-icon">
                 <img data-original="./images/ipretendidonotseeit_icon.jpg" src="./images/ipretendidonotseeit_icon.jpg" alt="User icon">
@@ -30,7 +30,6 @@
             <div class="admin-module-main">
                 <p id="user-info">
                     <b>Username: </b> <span id="username" data-original="ipretendidonotseeit" contenteditable="false">ipretendidonotseeit</span>
-                    <button id="edit-username">Edit Username</button>
                     <br>
                     <br>
                     <b>Email:</b> <span id="email">ipretendidonotseeit@gmail.com</span>
@@ -97,13 +96,12 @@
             <h2>Please confirm the following changes:</h2>
             <ul>
                 <li id="ban-user-confirm">The user will be <b><u>banned</u></b></li>
+                <li id="unban-user-confirm">The user will be <b><u>unbanned</u></b></li>
                 <li id="remove-user-icon-confirm">The user's icon will be <b><u>removed</u></b></li>
-                <li id="change-username-confirm">The user's username will be <b><u>changed</u></b></li>
                 <li id="change-stats-confirm">The user's stats will be <b><u>altered</u></b></li>
             </ul>
             <button id="confirm-changes">Confirm</button>
         </div>
     </div>
 </body>
-
 </html>

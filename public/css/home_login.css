@@ -213,6 +213,20 @@ form > div > .form-toggle:hover {
     text-decoration: underline;
 }
 
+.form-error {
+    display: block;
+    margin-bottom: 20px;
+    width: 100%;
+    height: auto;
+    background-color: #000000;
+    color: #39ff14;
+    font-size: 12px;
+    text-align: center;
+    border-radius: 20px;
+    padding: 5px 20px;
+    box-sizing: border-box;
+}
+
 button {
     width: auto;
     height: 40px;

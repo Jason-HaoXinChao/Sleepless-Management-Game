@@ -40,6 +40,10 @@ const CredentialSchema = new mongoose.Schema({
     is_admin: {
         type: Boolean,
         default: false
+    },
+    is_banned: {
+        type: Boolean,
+        default: false
     }
 });
 
@@ -70,7 +74,7 @@ CredentialSchema.statics.findByUsernamePassword = async function(username, passw
         const user = await User.findOne({ username: username });
 
         // If the user cannot be found, simply return a rejected promise
-        if (!user) return Promise.reject(false);
+        if (!user) return false;
         
         // Otherwise verify whether or not the user's inputted password matches the (argon2id) hashed password stored in the database
         if (await argon2.verify(user.password, password)) {
@@ -78,7 +82,26 @@ CredentialSchema.statics.findByUsernamePassword = async function(username, passw
             return user;
         } else {
             // Otherwise, simply return a rejected promise
-            return Promise.reject(false);
+            return false;
+        }
+    } catch (err) {
+        console.log(err);
+    }
+}
+
+// Static method for finding a user's ban status based on their username
+CredentialSchema.statics.getBanStatusByUsername = async function(username) {
+    const User = this;
+
+    try {
+        // Attempt to find the user by their username
+        const user = await User.findOne({ username: username });
+
+        // If the user cannot be found, simply return a rejected promise
+        if (!user) {
+            return false;
+        } else {
+            return user.is_banned;
         }
     } catch (err) {
         console.log(err);
