@@ -75,16 +75,16 @@ const StrategySchema = new mongoose.Schema({
 StrategySchema.methods.calculateStatChange = async function() {
     const strat = this;
 
-    const statChange = {
+    let statChange = {
         economy: 0,
         order: 0,
         health: 0,
         diplomacy: 0
     };
 
-    const flattenEcon = false;
-    const flattenDiplomacy = false;
-    const flattenHealth = false
+    let flattenEcon = false;
+    let flattenDiplomacy = false;
+    let flattenHealth = false
 
     switch (strat.economy) {
         case "revitalize": // sacrifice order and health to increase economy
@@ -170,13 +170,13 @@ StrategySchema.methods.calculateStatChange = async function() {
             break;
     }
     if (flattenEcon && statChange.economy < 0) {
-        statChange.economy = statChange.economy / 2;
+        statChange.economy = Math.floor(statChange.economy / 2);
     }
     if (flattenDiplomacy && statChange.diplomacy < 0) {
-        statChange.diplomacy = statChange.diplomacy / 2;
+        statChange.diplomacy = Math.floor(statChange.diplomacy / 2);
     }
     if (flattenHealth && statChange.health < 0) {
-        statChange.health = statChange.health / 2;
+        statChange.health = Math.floor(statChange.health / 2);
     }
 
     return statChange;
@@ -282,4 +282,4 @@ const Gameplay = mongoose.model("Gameplay", GameplaySchema);
 const Log = mongoose.model("Log", LogSchema);
 const Establishment = mongoose.model("Establishment", EstablishmentSchema)
 
-module.exports = { Gameplay, Log, Establishment };
+module.exports = { Gameplay, Log, Establishment, StatChange };

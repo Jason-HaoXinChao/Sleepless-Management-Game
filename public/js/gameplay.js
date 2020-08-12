@@ -1,5 +1,3 @@
-//const { json, request } = require("express");
-
 // onload event listener
 window.addEventListener("load", initializePage);
 
@@ -7,6 +5,7 @@ const log = console.log;
 
 // Global variables
 let dropdownVisible = false; // toggle to indicate if dropdown menu is visible or not
+let interval; // global timer variable
 
 function sendRequest(requestType, URL, data, callback) {
     const xml = new XMLHttpRequest();
@@ -15,7 +14,12 @@ function sendRequest(requestType, URL, data, callback) {
     xml.setRequestHeader("Content-Type", "application/json");
     xml.onreadystatechange = function() {
         if (this.readyState == 4 && this.status == 200) {
-            callback(JSON.parse(this.responseText));
+            try {
+                callback(JSON.parse(this.responseText));
+            } catch (error) {
+                log(error);
+                window.open("/api/logout");
+            }
         }
     };
     xml.send(JSON.stringify(data));
@@ -44,6 +48,11 @@ function initializePage(e) {
     // Call server to get user data
     loadUserData();
 
+    // interval = setInterval(() => {
+    //     requestUpdate();
+    // }, 1500);
+    requestUpdate();
+
 }
 
 function loadUserData(e) {
@@ -61,7 +70,6 @@ function loadUserData(e) {
         (userData.log).forEach(log => {
             pushLog(log);
         });
-
     });
 
 }
@@ -100,6 +108,7 @@ function showDescription(e) {
     let i = 0;
     const title = document.getElementById("titlediv").querySelector("#title");
     const content = document.getElementsByClassName("modalContent")[0].querySelector("p");
+
     // obtain the title, description, and effect on statistics of the establishment from server.
     sendRequest("POST", "/api/user/gameplay/EstInfo", { "name": e.target.innerText }, (establishment) => {
         title.innerText = establishment.name;
@@ -117,6 +126,11 @@ function showDescription(e) {
     document.getElementById("choice2").style.display = "none";
     document.getElementById("close").style.display = "block";
     document.getElementById("modalBackground").style.display = "flex";
+}
+
+function hideModal(e) {
+    e.preventDefault();
+    document.getElementById("modalBackground").style.display = "false";
 }
 
 function formulateStatChange(statChange) {
@@ -238,6 +252,7 @@ function showDiplomacyMenu(e) {
     dropdownVisible = true;
 }
 
+// Send a request to server to change the request
 function changeStrategy(e) {
     e.preventDefault();
     const strategyChosen = e.target;
@@ -287,14 +302,22 @@ function closeDropdown(e) {
                 document.getElementById("diplomacyMenu").style.display = "none";
                 dropdownVisible = !dropdownVisible;
             }
-
         }
     }
-
 }
 
 // Modal Window related manipulations
 
+/**
+ * Display the random event
+ * expected parameter format:
+ * {
+ *  name:String,
+ *  description: String,
+ *  choiceOne: String,
+ *  choiceTwo: String
+ * }
+ */
 function showRandomEvent(eventToShow) {
     const modalWindow = document.getElementById("modalBackground");
     const modalTitle = document.getElementById("titlediv").querySelector("#title");
@@ -307,10 +330,10 @@ function showRandomEvent(eventToShow) {
 
     // The following should've been using the eventToShow parameter which should've
     // been obtained from the server
-    modalTitle.innerText = randomEvents[0].title;
-    content.innerText = randomEvents[0].description;
-    button1.innerText = randomEvents[0].choices[0];
-    button2.innerText = randomEvents[0].choices[1];
+    modalTitle.innerText = eventToShow.name;
+    content.innerText = eventToShow.description;
+    button1.innerText = eventToShow.choiceOne;
+    button2.innerText = eventToShow.choiceTwo;
     modalWindow.style.display = "flex";
 
     // pause updating during a random event
@@ -319,63 +342,62 @@ function showRandomEvent(eventToShow) {
 
 function selectChoiceOne(e) {
     e.preventDefault();
-    // The information being displayed should've been obtained from server.
-    const curTime = new Date;
-    let time;
-    const hour = curTime.getHours();
-    if (hour < 10) {
-        time = "0" + hour;
-    } else {
-        time = hour.toString();
-    }
-    time = time + ":" + curTime.getMinutes().toString();
-    randomEvents[0].logs[0].time = time;
-    pushLog(randomEvents[0].logs[0]);
-    userProfile.stat[0] += randomEvents[0].logs[0].statChange[0];
-    userProfile.stat[1] += randomEvents[0].logs[0].statChange[1];
-    userProfile.stat[2] += randomEvents[0].logs[0].statChange[2];
-    userProfile.stat[3] += randomEvents[0].logs[0].statChange[3];
-    updateStatistics(userProfile.stat);
-    if (randomEvents[0].establishments[0] != null) {
-        pushEstablishment(randomEvents[0].establishments[0])
-    }
+    // Post a request to the server
+    const eventName = document.getElementById("titlediv").querySelector("#title").innerText;
+    const choice = document.getElementById("choice1").innerText;
+    const input = {
+        "eventName": eventName,
+        "choice": choice
+    };
+
+    sendRequest("POST", "/api/user/gameplay/event", input, (data) => {
+        if (data.establishment) {
+            pushEstablishment(data.establishment);
+        }
+        pushLog(data.log);
+        updateStatistics(data.newStatistics);
+    });
+
     document.getElementById("modalBackground").style.display = "none";
 
     interval = setInterval(function() {
-        calculateStatChange();
-    }, 5000);
+        requestUpdate();
+    }, 1500);
 }
 
 function selectChoiceTwo(e) {
     e.preventDefault();
-    // The information being displayed should've been obtained from server.
-    const curTime = new Date;
-    let time;
-    const hour = curTime.getHours();
-    if (hour < 10) {
-        time = "0" + hour;
-    } else {
-        time = hour.toString();
-    }
-    time = time + ":" + curTime.getMinutes().toString();
-    randomEvents[0].logs[1].time = time;
-    pushLog(randomEvents[0].logs[1]);
-    userProfile.stat[0] += randomEvents[0].logs[1].statChange[0];
-    userProfile.stat[1] += randomEvents[0].logs[1].statChange[1];
-    userProfile.stat[2] += randomEvents[0].logs[1].statChange[2];
-    userProfile.stat[3] += randomEvents[0].logs[1].statChange[3];
-    updateStatistics(userProfile.stat);
-    if (randomEvents[0].establishments[1] != null) {
-        pushEstablishment(randomEvents[0].establishments[1])
-    }
+    // Post a request to the server
+    const eventName = document.getElementById("titlediv").querySelector("#title").innerText;
+    const choice = document.getElementById("choice2").innerText;
+    const input = {
+        "eventName": eventName,
+        "choice": choice
+    };
+
+    sendRequest("POST", "/api/user/gameplay/event", input, (data) => {
+        if (data.establishment) {
+            pushEstablishment(data.establishment);
+        }
+        pushLog(data.log);
+        updateStatistics(data.newStatistics);
+    });
+
     document.getElementById("modalBackground").style.display = "none";
+
     interval = setInterval(function() {
-        calculateStatChange();
-    }, 5000);
+        requestUpdate();
+    }, 1500);
 }
 
-function hideModal(e) {
-    e.preventDefault();
-    const modalWindow = document.getElementById("modalBackground");
-    modalWindow.style.display = "none";
+// Request for an update from the server
+function requestUpdate() {
+    sendRequest("GET", "/api/user/gameplay/update", {}, (data) => {
+        updateStatistics(data.statChange);
+        pushLog(data.log);
+        // display randomEvent if there is one
+        if (data.randomEvent) {
+            showRandomEvent(data.randomEvent);
+        }
+    });
 }

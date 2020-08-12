@@ -444,6 +444,7 @@ div.blockWrapper {
     transition: linear 0.1s;
     user-select: none;
     outline: none;
+    text-transform: capitalize;
 }
 
 .strategyGrid .dropdownButton:hover {

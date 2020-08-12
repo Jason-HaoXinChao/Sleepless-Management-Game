@@ -20,7 +20,7 @@ mongoose.set('useFindAndModify', false);
 // Import our models
 const { Credential } = require("./models/Credential");
 const { EstablishmentInfo, RandomEvent } = require("./models/SystemData");
-const { Gameplay, Log, Establishment } = require("./models/Gameplay");
+const { Gameplay, Log, Establishment, StatChange } = require("./models/Gameplay");
 const { Profile } = require("./models/Profile");
 
 // express-session for managing user sessions
@@ -403,7 +403,7 @@ app.post("/api/user/gameplay/strategy/:type/:value", mongoChecker, (req, res) =>
  * {
  *  establishment: String or null,
  *  log: Object  (see logSchema in /models/Gameplay)
- *  newStatistics: [Number]
+ *  newStatistics: object (see StatisticSchema)
  * }
  */
 app.post("/api/user/gameplay/event", mongoChecker, (req, res) => {
@@ -440,7 +440,7 @@ app.post("/api/user/gameplay/event", mongoChecker, (req, res) => {
             user.statistic.order += choiceDoc.statChange.order;
             user.statistic.health += choiceDoc.statChange.health;
             user.statistic.diplomacy += choiceDoc.statChange.diplomacy;
-            output.newStatistic = user.statistic.convertToArray();
+            output.newStatistic = user.statistic;
 
             // generate log (should be preset in EventChoice document)
             output.log = choiceDoc.log;
@@ -480,7 +480,7 @@ app.post("/api/user/gameplay/event", mongoChecker, (req, res) => {
  * Expected request body: none
  * Expected return value:
  * {
- * newStat:[Number],
+ * newStat: Object  (see StatisticSchema in /models/Gameplay),
  * log: Object  (see logSchema in /models/Gameplay)
  * randomEvent: {
  *                  name:String,
@@ -501,7 +501,7 @@ app.get("/api/user/gameplay/update", mongoChecker, (req, res) => {
         } else {
             // TODO: implement following
 
-            const statisticChange = {
+            let statisticChange = {
                 economy: 0,
                 order: 0,
                 health: 0,
@@ -510,43 +510,57 @@ app.get("/api/user/gameplay/update", mongoChecker, (req, res) => {
             // Calculate new statistics (tally strategy and establishment)
 
             // change in statistics due to strategy
-            const stratImpact = user.strategy.calculateStatChange();
-            statisticChange.economy += stratImpact.economy;
-            statisticChange.order += stratImpact.order;
-            statisticChange.health += stratImpact.health;
-            statisticChange.diplomacy += stratImpact.diplomacy;
+            user.strategy.calculateStatChange().then((stratImpact) => {
+                statisticChange.economy += stratImpact.economy;
+                statisticChange.order += stratImpact.order;
+                statisticChange.health += stratImpact.health;
+                statisticChange.diplomacy += stratImpact.diplomacy;
+            });
+
+            log(statisticChange);
 
             // change in statistics due to establishment
-            (user.establishment).forEach(est => {
-                const establishment = EstablishmentInfo.findByName(est.name);
-                const estImpact = establishment.statChange.convertToArray();
-                statisticChange.economy += estImpact[0];
-                statisticChange.order += estImpact[1];
-                statisticChange.health += estImpact[2];
-                statisticChange.diplomacy += estImpact[3];
+            (user.establishment).forEach((est) => {
+                EstablishmentInfo.findByName(est.name).then((establishment) => {
+                    const estImpact = establishment.statChange.convertToArray();
+                    log(estImpact);
+                    statisticChange.economy += estImpact[0];
+                    statisticChange.order += estImpact[1];
+                    statisticChange.health += estImpact[2];
+                    statisticChange.diplomacy += estImpact[3];
+                }).catch((err) => {
+                    res.status(500).send();
+                });
+
             });
 
             const currTime = new Date();
             // Generate log
-            const log = new Log({
+            log(statisticChange);
+            const eventLog = new Log({
                 time: currTime.getHours() + ":" + currTime.getMinutes(),
                 content: "A week has passed.",
-                statChange: statisticChange
+                statChange: new StatChange({
+                    economy: statisticChange.economy,
+                    health: statisticChange.health,
+                    order: statisticChange.order,
+                    diplomacy: statisticChange.diplomacy
+                })
             });
+            log(eventLog);
 
             // Change statistics and add log to user document
-            const stat = user.statistic;
-            stat.economy += statisticChange.economy;
-            stat.order += statisticChange.order;
-            stat.health += statisticChange.health;
-            stat.diplomacy += statisticChange.diplomacy;
-            user.log.push(log);
+            user.statistic.economy += statisticChange.economy;
+            user.statistic.order += statisticChange.order;
+            user.statistic.health += statisticChange.health;
+            user.statistic.diplomacy += statisticChange.diplomacy;
+            user.log.push(eventLog);
 
             // save user document
             user.save().then((user) => {
                 const output = {
-                    newStat: user.statistic.convertToArray(),
-                    log: log,
+                    newStat: user.statistic,
+                    log: eventLog,
                     randomEvent: null
                 };
                 // Determine if a random event occurs, and if so, which one
@@ -570,11 +584,13 @@ app.get("/api/user/gameplay/update", mongoChecker, (req, res) => {
                 res.send(output);
 
             }).catch((err) => {
+                log(err);
                 res.status(500).send("500 Internal Server Error");
             });
 
         };
     }).catch((err) => {
+        log(err);
         res.status(500).send("500 Internal Server Error");
     });
 });
