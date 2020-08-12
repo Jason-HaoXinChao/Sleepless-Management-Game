@@ -27,6 +27,21 @@ const { Profile } = require("./models/Profile");
 const session = require('express-session')
 app.use(bodyParser.urlencoded({ extended: true }));
 
+// import the mongoose model
+const { Image } = require("./models/UserIcon");
+
+// multipart middleware: allows you to access uploaded file from req.file
+const multipart = require('connect-multiparty');
+const multipartMiddleware = multipart();
+
+// cloudinary configurations
+const cloudinary = require('cloudinary').v2;
+cloudinary.config({
+    cloud_name: 'team32',
+    api_key: '923645855641674',
+    api_secret: 'sGmSqdECgf6T7XSMYxDGGj4kSRo'
+});
+
 // handlebars server-side templating engine
 const exphbs = require('express-handlebars');
 const SystemData = require('./models/SystemData');
