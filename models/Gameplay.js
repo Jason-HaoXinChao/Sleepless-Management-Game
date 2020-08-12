@@ -269,7 +269,7 @@ GameplaySchema.statics.findByUsername = async function(username) {
     try {
         const user = await User.findOne({ username: username });
         if (!user) {
-            return Promise.reject(false);
+            return false;
         } else {
             return user;
         };

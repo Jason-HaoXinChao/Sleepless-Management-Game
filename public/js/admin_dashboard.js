@@ -1,17 +1,69 @@
 'use strict';
 
+const changes = {
+    user: "",
+    banUser: false,
+    unbanUser: false,
+    removeUserIcon: false,
+    changeStats: false,
+}
+
+$("form.admin-module-header").submit(function() {
+    const username = $(this).children("#user-search").val();
+
+    $("#user-info").removeClass("active");
+    $("#user-stats").removeClass("active");
+    $(this).children("span").removeClass("active");
+    $("#ban-user").removeClass("active");
+    $("#save-changes").removeClass("active");
+
+    $.get(`/api/admin/ban_status/${username}`, (is_banned) => {
+        $("#ban-user-checkbox").attr("data-original", is_banned);
+        $("#ban-user-checkbox").attr("checked", is_banned);
+
+        $("#ban-user").addClass("active");   
+    }).fail(() => {
+        $(this).children("span").addClass("active");
+        return;
+    });
+
+    $.get(`/api/admin/user_info/${username}`, (data) => {
+        $("#username").attr("data-original", data.username);
+        $("#username").text(data.username);
+        $("#email").attr("data-original", data.email);
+        $("#email").text(data.email);
+
+        $("#user-info").addClass("active");
+        $("#save-changes").addClass("active");
+    }).fail(() => {
+        $(this).children("span").addClass("active");
+        return;
+    });
+
+    $.get(`/api/admin/gameplay_stat/${username}`, (data) => {
+        const stats = ["economy", "order", "health", "diplomacy"];
+        
+        for (let i = 0; i < 4; i++) {
+            $(".stat").eq(i).attr("data-original", data[stats[i]]);
+            $(".stat").eq(i).text(data[stats[i]]);
+        }
+
+        $("#user-stats").addClass("active");
+        $("#ban-user").addClass("active");
+        $("#save-changes").addClass("active");
+    }).fail(() => {
+        $(this).children("span").addClass("active");
+        return;
+    });
+
+    return false;
+});
+
 /*
  * Removes a user's icon and replaces it with a temporary icon 
  */
 $("#remove-user-icon").on("click", function() {
     $(this).prev("#user-icon").children("img").attr("src", "../images/visitor_icon.png")
-});
-
-/*
- * When the "Edit Username" button is clicked, make the username text editable via the contenteditable attr 
- */
-$("#edit-username").on("click", function() {
-    $("#username").attr("contenteditable", $(this).prev("span").attr("contenteditable") == 'false');
 });
 
 /*
@@ -25,30 +77,36 @@ $(".change-stat").on("click", function() {
  * Checks what changes to a user's info has been made by the admin user (which will display the relevant bullet points in the confirm changes popup)
  */
 $("#save-changes").on("click", function() {
+    changes.user = $("#user-search").val();
+
     // Check to see if the admin user intends to ban the user. If so, the bullet point corresponding to that will be displayed in the comfirm changes popup
-    if ($("input#ban-user-checkbox").is(":checked")) {
-        $("li#ban-user-confirm").addClass("active");
+    if ($("#ban-user-checkbox").is(":checked") && !$("#ban-user-checkbox").attr("data-original")) {
+        changes.banUser = true;
+        $("#ban-user-confirm").addClass("active");
+    }
+
+    // Check to see if the admin user intends to ban the user. If so, the bullet point corresponding to that will be displayed in the comfirm changes popup
+    if (!$("#ban-user-checkbox").is(":checked") && $("#ban-user-checkbox").attr("data-original")) {
+        changes.unbanUser = true;
+        $("#unban-user-confirm").addClass("active");
     }
 
     // Check to see if the admin user intends on removing the user's avatar. If so, the bullet point corresponding to that will be displayed in the comfirm changes popup
-    if ($("#user-icon > img").attr("src") != $("#user-icon > img").attr("data-original")) {
-        $("li#remove-user-icon-confirm").addClass("active");
-    }
-
-    // Check to see if the admin user intends on changing the user's username. If so, the bullet point corresponding to that will be displayed in the comfirm changes popup
-    if ($("#username").text() != $("#username").attr("data-original")) {
-        $("li#change-username-confirm").addClass("active");
+    if ($("#user-icon > img").attr("src") !== $("#user-icon > img").attr("data-original")) {
+        changes.removeUserIcon = true;
+        $("#remove-user-icon-confirm").addClass("active");
     }
 
     // Check to see if the admin user intends on changing one or more of the user's stats. If so, the bullet point corresponding to that will be displayed in the comfirm changes popup
     $(".stat").each(function() {
-        if ($(this).text() != $(this).attr("data-original")) {
-            $("li#change-stats-confirm").addClass("active");
+        if ($(this).text() !== $(this).attr("data-original")) {
+            $("#change-stats-confirm").addClass("active");
+            changes.changeStats = true;
         }
     });
 
     // Display the confirm changes popup if changes has been made. Otherwise, display a text indicator indicating that no changes have been made.
-    if ($("li.active").length) {
+    if (Object.values(changes).filter(change => change).length) {
         $("#popup-module-blackout").addClass("active");
     } else {
         $("#no-changes").addClass("active");
@@ -65,15 +123,26 @@ $("#save-changes").on("click", function() {
  */
 $("#confirm-changes").on("click", function() {
     // In phase 2, once the admin user confirms the changes, the updated user info should be sent to the server and override the existing info of the user
+    if (changes.banUser) {
+        $.post(`/api/admin/change_ban/${changes.user}/ban`);
+    }
 
-    // Upon confirming the changes, update the data-original attribute values with the new user info values
-    $("*[data-original]").each(function() {
-        if ($(this).is("img")) {
-            $(this).attr("data-original", $(this).attr("src"));
-        } else {
-            $(this).attr("data-original", $(this).text());
-        }
-    });
+    if (changes.unbanUser) {
+        $.post(`/api/admin/change_ban/${changes.user}/unban`);
+    }
+
+    if (changes.removeUserIcon) {
+
+    }
+
+    if (changes.changeStats) {
+        $.post(`/api/admin/change_stats/${changes.user}`, {
+            economy: parseInt($(".stat").eq(0).text()),
+            order: parseInt($(".stat").eq(1).text()),
+            health: parseInt($(".stat").eq(2).text()),
+            diplomacy: parseInt($(".stat").eq(3).text()),
+        });
+    }
 
     // Close the confirm changes popup
     $(this).closest("#popup-module-blackout").removeClass("active");

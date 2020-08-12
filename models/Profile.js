@@ -8,9 +8,15 @@ const ProfileSchema = new mongoose.Schema({
         required: true,
         unique: true
     },
+    email: {
+        type: String,
+        required: true,
+        unique: true
+    },
     countryname: {
         type: String,
-        required: true
+        required: true,
+        unique: true
     },
     profilePic: {
         type: String,
@@ -37,6 +43,25 @@ const ProfileSchema = new mongoose.Schema({
         required: false
     }
 });
+
+// Static method for finding a user's profile based on their username
+ProfileSchema.statics.findByUsername = async function(username, password) {
+    const UserProfile = this;
+
+    try {
+        // Attempt to find the user by their username
+        const user = await UserProfile.findOne({ username: username });
+
+        // If the user cannot be found, simply return a rejected promise
+        if (!user) {
+            return false;
+        } else {
+            return user;
+        }
+    } catch (err) {
+        console.log(err);
+    }
+}
 
 const Profile = mongoose.model("Profile", ProfileSchema);
 

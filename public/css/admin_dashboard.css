@@ -146,7 +146,7 @@ body {
     display: grid;
     grid-gap: 20px;
     flex-grow: 1;
-    grid-template: "user-info user-info" min-content
+    grid-template: "user-info user-info" minmax(min-content, 75px)
                    "user-stats ." 125px
                    "user-stats ." 25px
                    "user-stats ban-user" 25px
@@ -257,11 +257,17 @@ input[type="submit"] {
 
 #user-info {
     grid-area: user-info;
+    display: none;
+}
+
+#user-info.active {
+    display: block;
 }
 
 #user-info > span {
     display: inline-block;
     width: auto;
+    max-width: calc(100% - 110px);
     word-break: break-all;
     box-sizing: border-box;
 }
@@ -271,26 +277,6 @@ input[type="submit"] {
     width: 100px;
 }
 
-#username {    
-    max-width: calc(100% - 275px);
-}
-
-#email {
-    max-width: calc(100% - 100px);
-}
-
-#user-info > span[contenteditable='true'] {
-    border: 2px solid #39FF14;
-    background-color: #121212;
-    padding: 5px;
-}
-
-#user-info > span[contenteditable='true']:focus {
-    border: 2px solid #39FF14;
-    background-color: #121212;
-    padding: 5px;
-}
-
 #user-info > button {
     float: right;
     width: 150px;
@@ -298,7 +284,7 @@ input[type="submit"] {
 
 #user-stats {
     grid-area: user-stats;
-    display: grid;
+    display: none;
     grid-template-columns: 50px 1fr 50px 50px;
     grid-template-rows: repeat(4, 50px);
     justify-items: center;
@@ -311,6 +297,10 @@ input[type="submit"] {
     border-radius: 5px;
     padding: 10px;
     box-sizing: border-box;
+}
+
+#user-stats.active {
+    display: grid;
 }
 
 #user-stats > span {
@@ -344,10 +334,20 @@ input[type="submit"] {
 
 #ban-user {
     grid-area: ban-user;
+    display: none;
+}
+
+#ban-user.active {
+    display: block;
 }
 
 #save-changes {
     grid-area: save-changes;
+    display: none;
+}
+
+#save-changes.active {
+    display: block;
 }
 
 .confirm-ban {
@@ -380,23 +380,23 @@ input[type="submit"] {
     display: block;
 }
 
-form > input[type="text"],
-form > textarea {
+form#event-form > input[type="text"],
+form#event-form > textarea {
     grid-column: 2 / span 2;
 }
 
-form {
+form#event-form {
     display: grid;
     grid-template-columns: 300px 1fr 75px;
     grid-gap: 20px;
 }
 
-form > span {
+form#event-form > span {
     align-self: center;
     text-align: center;
 }
 
-form > input[type="submit"] {
+form#event-form > input[type="submit"] {
     grid-column: 3 / span 1;
 }
 
@@ -420,12 +420,12 @@ input[type="range"]::-webkit-slider-thumb {
     border-radius: 50%;
 }
 
-button + span {
+input[type="submit"] + span {
     display: none;
     font-size: 12px;
 }
 
-button + span.active {
+input[type="submit"] + span.active {
     display: inline;
 }
 
