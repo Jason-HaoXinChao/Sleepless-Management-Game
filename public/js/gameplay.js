@@ -18,7 +18,7 @@ function sendRequest(requestType, URL, data, callback) {
                 callback(JSON.parse(this.responseText));
             } catch (error) {
                 log(error);
-                window.open("/api/logout");
+                //window.open("/api/logout");
             }
         }
     };
@@ -48,11 +48,9 @@ function initializePage(e) {
     // Call server to get user data
     loadUserData();
 
-    // interval = setInterval(() => {
-    //     requestUpdate();
-    // }, 1500);
-    requestUpdate();
-
+    interval = setInterval(() => {
+        requestUpdate();
+    }, 15000);
 }
 
 function loadUserData(e) {
@@ -130,7 +128,7 @@ function showDescription(e) {
 
 function hideModal(e) {
     e.preventDefault();
-    document.getElementById("modalBackground").style.display = "false";
+    document.getElementById("modalBackground").style.display = "none";
 }
 
 function formulateStatChange(statChange) {
@@ -362,7 +360,7 @@ function selectChoiceOne(e) {
 
     interval = setInterval(function() {
         requestUpdate();
-    }, 1500);
+    }, 15000);
 }
 
 function selectChoiceTwo(e) {
@@ -387,13 +385,13 @@ function selectChoiceTwo(e) {
 
     interval = setInterval(function() {
         requestUpdate();
-    }, 1500);
+    }, 15000);
 }
 
 // Request for an update from the server
 function requestUpdate() {
     sendRequest("GET", "/api/user/gameplay/update", {}, (data) => {
-        updateStatistics(data.statChange);
+        updateStatistics(data.newStat);
         pushLog(data.log);
         // display randomEvent if there is one
         if (data.randomEvent) {

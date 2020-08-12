@@ -114,7 +114,7 @@ const mongoChecker = (req, res, next) => {
     }
 };
 
-const adminRequestChecker = (req, res, next) => {    
+const adminRequestChecker = (req, res, next) => {
     if (!req.session.is_admin) {
         res.status(401).send("Unauthorized");
         return;
@@ -133,7 +133,7 @@ const adminRequestChecker = (req, res, next) => {
  *          birthday: <a string in the format YYYY-MM-DD>
  *      }
  */
-app.post("/api/register", mongoChecker, async (req, res) => {
+app.post("/api/register", mongoChecker, async(req, res) => {
     // Create a Credential model instance for the user's inputted username, email, password, and birthday
     const credentials = new Credential({
         username: req.body.username,
@@ -180,7 +180,7 @@ app.post("/api/register", mongoChecker, async (req, res) => {
             res.status(500).send("500 Internal Server Error");
             return;
         }
-        
+
         const data = await gameplayData.save();
         if (!data) {
             res.status(500).send("500 Internal Server Error");
@@ -531,78 +531,102 @@ app.get("/api/user/gameplay/update", mongoChecker, (req, res) => {
 
             // change in statistics due to strategy
             user.strategy.calculateStatChange().then((stratImpact) => {
+                log("this is stratImpact");
+                log(stratImpact);
                 statisticChange.economy += stratImpact.economy;
                 statisticChange.order += stratImpact.order;
                 statisticChange.health += stratImpact.health;
                 statisticChange.diplomacy += stratImpact.diplomacy;
-            });
+                log("this is statisticChange");
+                log(statisticChange);
+                // change in statistics due to establishment
+                (user.establishment).forEach((est) => {
+                    EstablishmentInfo.findByName(est.name).then((establishment) => {
+                        const estImpact = establishment.statChange.convertToArray();
+                        statisticChange.economy += estImpact[0];
+                        statisticChange.order += estImpact[1];
+                        statisticChange.health += estImpact[2];
+                        statisticChange.diplomacy += estImpact[3];
+                    }).catch((err) => {
+                        res.status(500).send();
+                    });
 
-            log(statisticChange);
-
-            // change in statistics due to establishment
-            (user.establishment).forEach((est) => {
-                EstablishmentInfo.findByName(est.name).then((establishment) => {
-                    const estImpact = establishment.statChange.convertToArray();
-                    log(estImpact);
-                    statisticChange.economy += estImpact[0];
-                    statisticChange.order += estImpact[1];
-                    statisticChange.health += estImpact[2];
-                    statisticChange.diplomacy += estImpact[3];
-                }).catch((err) => {
-                    res.status(500).send();
                 });
 
-            });
+                const currTime = new Date();
+                // Generate log
+                const eventLog = new Log({
+                    time: currTime.getHours() + ":" + currTime.getMinutes(),
+                    content: "A week has passed.",
+                    statChange: new StatChange({
+                        economy: statisticChange.economy,
+                        health: statisticChange.health,
+                        order: statisticChange.order,
+                        diplomacy: statisticChange.diplomacy
+                    })
+                });
 
-            const currTime = new Date();
-            // Generate log
-            log(statisticChange);
-            const eventLog = new Log({
-                time: currTime.getHours() + ":" + currTime.getMinutes(),
-                content: "A week has passed.",
-                statChange: new StatChange({
-                    economy: statisticChange.economy,
-                    health: statisticChange.health,
-                    order: statisticChange.order,
-                    diplomacy: statisticChange.diplomacy
-                })
-            });
-            log(eventLog);
+                log("this is eventLog");
+                log(eventLog);
 
-            // Change statistics and add log to user document
-            user.statistic.economy += statisticChange.economy;
-            user.statistic.order += statisticChange.order;
-            user.statistic.health += statisticChange.health;
-            user.statistic.diplomacy += statisticChange.diplomacy;
-            user.log.push(eventLog);
-
-            // save user document
-            user.save().then((user) => {
-                const output = {
-                    newStat: user.statistic,
-                    log: eventLog,
-                    randomEvent: null
-                };
-                // Determine if a random event occurs, and if so, which one
-                const percentageChance = 5;
-                if (Math.floor(Math.random() * (100 - 0)) + 0 <= percentageChance) {
-                    // chooce a random event
-                    const randomEvent = RandomEvent.getRandom();
-                    if (!randomEvent) {
-                        log("Can't find randomEvent");
-                    } else {
-                        output.randomEvent = {
-                            name: randomEvent.name,
-                            description: randomEvent.description,
-                            choiceOne: randomEvent.choiceOne.description,
-                            choiceTwo: randomEvent.choiceTwo.description
-                        };
-                    }
+                // Change statistics and add log to user document
+                user.statistic.economy += statisticChange.economy;
+                if (user.statistic.economy > 100) {
+                    user.statistic.economy = 100;
+                } else if (user.statistic.economy < 0) {
+                    user.statistic.economy = 0;
                 }
+                user.statistic.order += statisticChange.order;
+                if (user.statistic.order > 100) {
+                    user.statistic.order = 100;
+                } else if (user.statistic.order < 0) {
+                    user.statistic.order = 0;
+                }
+                user.statistic.health += statisticChange.health;
+                if (user.statistic.health > 100) {
+                    user.statistic.health = 100;
+                } else if (user.statistic.health < 0) {
+                    user.statistic.health = 0;
+                }
+                user.statistic.diplomacy += statisticChange.diplomacy;
+                if (user.statistic.diplomacy > 100) {
+                    user.statistic.diplomacy = 100;
+                } else if (user.statistic.diplomacy < 0) {
+                    user.statistic.diplomacy = 0;
+                }
+                user.log.push(eventLog);
 
-                // Send new statistics, log and randomEvent to user
-                res.send(output);
+                // save user document
+                user.save().then((user) => {
+                    const output = {
+                        newStat: user.statistic,
+                        log: eventLog,
+                        randomEvent: null
+                    };
+                    // Determine if a random event occurs, and if so, which one
+                    const percentageChance = 5;
+                    if (Math.floor(Math.random() * (100 - 0)) + 0 <= percentageChance) {
+                        // chooce a random event
+                        const randomEvent = RandomEvent.getRandom();
+                        if (!randomEvent) {
+                            log("Can't find randomEvent");
+                        } else {
+                            output.randomEvent = {
+                                name: randomEvent.name,
+                                description: randomEvent.description,
+                                choiceOne: randomEvent.choiceOne.description,
+                                choiceTwo: randomEvent.choiceTwo.description
+                            };
+                        }
+                    }
 
+                    // Send new statistics, log and randomEvent to user
+                    res.send(output);
+
+                }).catch((err) => {
+                    log(err);
+                    res.status(500).send("500 Internal Server Error");
+                });
             }).catch((err) => {
                 log(err);
                 res.status(500).send("500 Internal Server Error");
@@ -651,7 +675,7 @@ app.get("/api/admin/user_info/:username", adminRequestChecker, mongoChecker, (re
     });
 });
 
-app.get("/api/admin/gameplay_stat/:username", adminRequestChecker, mongoChecker, (req, res) => {    
+app.get("/api/admin/gameplay_stat/:username", adminRequestChecker, mongoChecker, (req, res) => {
     const username = req.params.username;
 
     Gameplay.findByUsername(username).then((user) => {
@@ -688,15 +712,15 @@ app.post("/api/admin/change_ban/:username/:ban_status", adminRequestChecker, mon
     });
 });
 
-app.post("/api/admin/change_stats/:username", adminRequestChecker, mongoChecker, async (req, res) => {
+app.post("/api/admin/change_stats/:username", adminRequestChecker, mongoChecker, async(req, res) => {
     const username = req.params.username;
-    
+
     Gameplay.findByUsername(username).then((user) => {
         if (!user) {
             res.status(404).send();
             return;
         }
-        
+
         const statisticChange = {
             economy: req.body.economy - user.statistic.economy,
             order: req.body.order - user.statistic.order,
@@ -745,7 +769,7 @@ app.get('/welcome', adminRedirectChecker, sessionChecker, (req, res) => {
                 banned: true
             });
             break;
-        case 'credentials':            
+        case 'credentials':
             res.render('home_login', {
                 invalid_credentials: true
             });
