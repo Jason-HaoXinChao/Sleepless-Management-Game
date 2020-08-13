@@ -148,7 +148,7 @@ RandomEventSchema.statics.findRandom = async function(callback) {
 
 
 const EstablishmentInfo = mongoose.model("EstablishmentInfo", EstablishmentInfoSchema);
-
+const EventChoice = mongoose.model("EventChoice", EventChoiceSchema);
 const RandomEvent = mongoose.model("RandomEvent", RandomEventSchema);
 
-module.exports = { EstablishmentInfo, RandomEvent };
+module.exports = { EstablishmentInfo, EventChoice, RandomEvent };

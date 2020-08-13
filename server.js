@@ -19,7 +19,7 @@ mongoose.set('useFindAndModify', false);
 
 // Import our models
 const { Credential } = require("./models/Credential");
-const { EstablishmentInfo, RandomEvent } = require("./models/SystemData");
+const { EstablishmentInfo, EventChoice, RandomEvent } = require("./models/SystemData");
 const { Gameplay, Log, Establishment, StatChange } = require("./models/Gameplay");
 const { Profile } = require("./models/Profile");
 
@@ -1047,6 +1047,85 @@ app.post("/api/admin/change_stats/:username", adminRequestChecker, mongoChecker,
     }).catch((err) => {
         res.status(500).send("Internal Server Error");
     });
+});
+
+app.post("/api/admin/create_event", adminRequestChecker, mongoChecker, async(req, res) => {
+    try {
+        const choice_one_stat_change = new StatChange({
+            economy: req.body["choice-one-econ"],
+            order: req.body["choice-one-order"],
+            health: req.body["choice-one-health"],
+            diplomacy: req.body["choice-one-diplomacy"]
+        });
+
+        const choice_two_stat_change = new StatChange({
+            economy: req.body["choice-two-econ"],
+            order: req.body["choice-two-order"],
+            health: req.body["choice-two-health"],
+            diplomacy: req.body["choice-two-diplomacy"]
+        });
+
+        const event = new RandomEvent({
+            name: req.body["event-name"],
+            description: req.body["event-description"],
+            choiceOne: new EventChoice({
+                description: req.body["choice-one-description"],
+                statChange: choice_one_stat_change,
+                log: new Log({
+                    content: req.body["choice-one-log-content"],
+                    statChange: choice_one_stat_change
+                })
+            }),
+            choiceTwo: new EventChoice({
+                description: req.body["choice-two-description"],
+                statChange: choice_two_stat_change,
+                log: new Log({
+                    content: req.body["choice-two-log-content"],
+                    statChange: choice_two_stat_change
+                })
+            })
+        });
+
+        if (req.body["choice-one-establishment-toggle"]) {
+            const choice_one_establishment = new EstablishmentInfo({
+                name: req.body["choice-one-establishment-name"],
+                description: req.body["choice-one-establishment-description"],
+                statChange: new StatChange({
+                    economy: req.body["choice-one-establishment-econ"],
+                    order: req.body["choice-one-establishment-order"],
+                    health: req.body["choice-one-establishment-health"],
+                    diplomacy: req.body["choice-one-establishment-diplomacy"]
+                })
+            });
+
+            event.choiceOne.newEstablishment = req.body["choice-one-establishment-name"];
+
+            await choice_one_establishment.save();
+        }
+
+        if (req.body["choice-two-establishment-toggle"]) {
+            const choice_two_establishment = new EstablishmentInfo({
+                name: req.body["choice-two-establishment-name"],
+                description: req.body["choice-two-establishment-description"],
+                statChange: new StatChange({
+                    economy: req.body["choice-two-establishment-econ"],
+                    order: req.body["choice-two-establishment-order"],
+                    health: req.body["choice-two-establishment-health"],
+                    diplomacy: req.body["choice-two-establishment-diplomacy"]
+                })
+            });
+
+            event.choiceTwo.newEstablishment = req.body["choice-two-establishment-name"];
+
+            await choice_two_establishment.save();
+        }
+
+        await event.save();
+        res.redirect("/admin_dashboard?event_create=success");
+    } catch (err) {
+        console.log(err);
+        res.status(500).redirect("/admin_dashboard?event_create=failed");
+    }
 });
 
 // Root route: redirects to the '/welcome'
