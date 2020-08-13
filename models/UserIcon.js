@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-const UserIconSchema = mongooseSchema({
+const UserIconSchema = new mongoose.Schema({
     image_id: {
         type: String,
         required: true
@@ -9,16 +9,37 @@ const UserIconSchema = mongooseSchema({
         type: String,
         required: true
     },
-    last_modified: {
+    format: {
         type: String,
         required: true
     },
-    last_modified_by: {
+    uploader: {
+        type: String,
+        required: true
+    },
+    created_at: {
         type: String,
         required: true
     }
 });
 
+UserIconSchema.statics.findByUsername = async function(username) {
+    const UserIcon = this;
+
+    try {
+        // Attempt to find the user by their username
+        const userIcon = await UserIcon.findOne({ uploader: username });
+
+        if (!userIcon) {
+            return false;
+        } else {
+            return userIcon;
+        }
+    } catch (err) {
+        console.log(err);
+    }
+}
+
 const UserIcon = mongoose.model('UserIcon', UserIconSchema);
 
-modules.exports = { UserIcon };
+module.exports = { UserIcon };

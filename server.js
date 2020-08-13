@@ -28,7 +28,7 @@ const session = require('express-session')
 app.use(bodyParser.urlencoded({ extended: true }));
 
 // import the mongoose model
-const { Image } = require("./models/UserIcon");
+const { UserIcon } = require("./models/UserIcon");
 
 // multipart middleware: allows you to access uploaded file from req.file
 const multipart = require('connect-multiparty');
@@ -129,6 +129,17 @@ const mongoChecker = (req, res, next) => {
     }
 };
 
+// Middleware for checking to ensure that regular user requests are only made by a logged-in user
+const regUserRequestChecker = (req, res, next) => {
+    if (!req.session.user) {
+        res.status(401).send("Unauthorized");
+        return;
+    } else {
+        next();
+    }
+};
+
+// Middleware for checking to ensure that admin-only request are only made by an admin user 
 const adminRequestChecker = (req, res, next) => {
     if (!req.session.is_admin) {
         res.status(401).send("Unauthorized");
@@ -654,6 +665,86 @@ app.get("/api/user/gameplay/update", mongoChecker, (req, res) => {
     });
 });
 
+app.post('/api/user/upload_icon', multipartMiddleware, (req, res) => {
+    cloudinary.uploader.upload(req.files.image.path, {
+        eager: [
+            { width: 200, height: 200, crop: "fill", gravity: "face" }, 
+            { width: 40, height: 40, crop: "fill", gravity: "face"}
+        ]
+    }).then(image => {
+        var userIcon = new UserIcon({
+            image_id: image.public_id, // image id on cloudinary server
+            image_url: image.url,
+            format: image.format,
+            uploader: req.session.username, // keeps track of the user who uploaded this image
+            created_at: image.created_at // keeps track of when the user icon was created
+        });
+
+        userIcon.save().then(result => {
+            res.redirect("/user_profile?upload=success");
+        }).catch(err => {
+            console.log(err);
+            res.status(500).redirect("/user_profile?upload=failed");
+        });
+    }).catch(err => {
+        console.log(err);
+        res.status(500).redirect("/user_profile?upload=failed");        
+    });
+});
+
+app.get('/api/user/user_icon', (req, res) => {
+    const username = req.session.username;
+    
+    UserIcon.findByUsername(username).then((userIcon) => {
+        if (userIcon) {
+            res.send({
+                avatar: cloudinary.image(`${userIcon.image_id}.${userIcon.format}`, {
+                    transformation: [
+                        {
+                            height: 40,
+                            width: 40,
+                            crop: "fill",
+                            gravity: "face"
+                        }
+                    ]
+                }),
+                large: cloudinary.image(`${userIcon.image_id}.${userIcon.format}`, {
+                    transformation: [
+                        {
+                            height: 200,
+                            width: 200,
+                            crop: "fill",
+                            gravity: "face"
+                        }
+                    ]
+                })
+            });
+        } else {
+            res.status(404).end();
+        }
+    }).catch(err => {
+        res.status(500).send("Internal Server Error");
+    });
+});
+
+app.delete('/api/admin/delete_icon/:username', mongoChecker, adminRequestChecker, (req, res) => {
+    const username = req.params.username;
+
+    // Find the user icon according to the provided username
+    UserIcon.findOne({ uploader: username }).then(userIcon => {
+        // Get the user icon's image ID
+        const imageId = userIcon.image_id;
+
+        // Delete the user icon (by imageId) from the cloudinary server
+        cloudinary.uploader.destroy(imageId, function(res) {
+            // Remove the user icon from the database
+            userIcon.remove();
+        });
+    }).catch(err => {
+        res.status(500).send("Internal Server Error");
+    });
+});
+
 app.get("/api/admin/ban_status/:username", adminRequestChecker, mongoChecker, (req, res) => {
     const username = req.params.username;
 
@@ -851,7 +942,22 @@ app.get('/user_feedback', loggedOutRedirectChecker, regUserRedirectChecker, (req
 
 // '/user_profile' route: redirects to '/login' if the user isn't logged in; redirects to '/admin_dashboard' if the user is an admin user
 app.get('/user_profile', loggedOutRedirectChecker, adminRedirectChecker, (req, res) => {
-    res.render('user_profile');
+    const uploadStatus = req.query.uploadStatus;
+
+    switch (uploadStatus) {
+        case 'success':
+            res.render('user_profile', {
+                uploadSuccess: true
+            });
+            break;
+        case 'failed':
+            res.render('user_profile', {
+                uploadFailed: true
+            });
+            break;
+        default:
+            res.render('user_profile');
+    }
 });
 
 // Set up the routes for the '/css', '/images/, and '/js' static directories
