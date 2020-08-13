@@ -1,0 +1,260 @@
+[{
+        "name": "Public Panic",
+        "description": "Your country is not prepared for the pandemic. The news of an unknown deadly virus being spread around the country has caused people to panic. People are asking the gvoernment to put a stop to the chaos.",
+        "choiceOne": {
+            "description": "Make public speechs and educate the public about the virus",
+            "statChange": {
+                "economy": 0,
+                "order": 2,
+                "health": -5,
+                "diplomacy": 0
+            },
+            "log": {
+                "content": "The public calmed down after the government's education campaign, but many people has already potentially contacted the virus amid the chaos.",
+                "statChange": {
+                    "economy": 0,
+                    "order": 2,
+                    "health": -5,
+                    "diplomacy": 0
+                }
+            },
+            "newEstablishment": "Educated Public"
+        },
+        "choiceTwo": {
+            "description": "Arrest people on the street and enforce curfew",
+            "statChange": {
+                "economy": -3,
+                "order": 6,
+                "health": -1,
+                "diplomacy": -3
+            },
+            "log": {
+                "content": "People stopped panicking and started staying home after many has been arrested. Foreign governments condemn your country for your strict enforcement.",
+                "statChange": {
+                    "economy": -3,
+                    "order": 6,
+                    "health": -1,
+                    "diplomacy": -3
+                }
+            },
+            "newEstablishment": "Curfew"
+        }
+    }
+
+    ,
+
+    {
+        "name": "Karen's Outrage",
+        "description": "A group of Karens are claiming that quarantine rules are an infringement to their rights, and they are taking it on the streets to protest against the government.",
+        "choiceOne": {
+            "description": "Loose up quarantine rules",
+            "statChange": {
+                "economy": 5,
+                "order": -3,
+                "health": -3,
+                "diplomacy": 0
+            },
+            "log": {
+                "content": "The Karens are satisfied and stopped protesting. Business owners are happy that the rules are less strict, but it comes with the risk of spreading the virus with more human contact.",
+                "statChange": {
+                    "economy": 5,
+                    "order": -3,
+                    "health": -3,
+                    "diplomacy": 0
+                }
+            }
+        },
+        "choiceTwo": {
+            "description": "Screw it, arrest the Karens",
+            "statChange": {
+                "economy": 0,
+                "order": 10,
+                "health": 5,
+                "diplomacy": -10
+            },
+            "log": {
+                "content": "The Karens are cleaned off the street, foreign governments are denouncing your action as oppression.",
+                "statChange": {
+                    "economy": 0,
+                    "order": 10,
+                    "health": 5,
+                    "diplomacy": -10
+                }
+            },
+            "newEstablishment": "Foreign Influence"
+        }
+    }
+
+    ,
+
+    {
+        "name": "Cry For Help",
+        "description": "A poor neighbouring country is asking for your assistance to help them combat the pandemic.",
+        "choiceOne": {
+            "description": "Send medical supplies over",
+            "statChange": {
+                "economy": -5,
+                "order": 0,
+                "health": -5,
+                "diplomacy": 10
+            },
+            "log": {
+                "content": "Your neighbouring country is very thankful of your help, your diplomatic relationship has improved significantly, with the cost being quite a bit of money and supply.",
+                "statChange": {
+                    "economy": -5,
+                    "order": 0,
+                    "health": -5,
+                    "diplomacy": 10
+                }
+            },
+            "newEstablishment": "Friendly Neighbour"
+        },
+        "choiceTwo": {
+            "description": "Reject the request",
+            "statChange": {
+                "economy": 3,
+                "order": 0,
+                "health": 5,
+                "diplomacy": -10
+            },
+            "log": {
+                "content": "Your diplomatic relationship with your neighbouring country has worsen.",
+                "statChange": {
+                    "economy": 3,
+                    "order": 0,
+                    "health": 5,
+                    "diplomacy": -10
+                }
+            }
+        }
+    }
+
+    ,
+
+    {
+        "name": "Misinformation",
+        "description": "Conspiracy theorists are spreading misinformation on the internet, leading to many people refusing to wear masks and claim that 5G towers are the cause of the pandemic. If this isn't dealt with quickly, it could lead to serious consequences.",
+        "choiceOne": {
+            "description": "Arrest those who are spreading misinformation",
+            "statChange": {
+                "economy": 0,
+                "order": 4,
+                "health": 2,
+                "diplomacy": -5
+            },
+            "log": {
+                "content": "Those who are spreading false information on the internet are arrested. Their supporters claim that them being arrested was a government cover up. Foreign enemies claim this is 'suppression of free speech'.",
+                "statChange": {
+                    "economy": 0,
+                    "order": 4,
+                    "health": 2,
+                    "diplomacy": -5
+                }
+            },
+            "newEstablishment": "Foreign Influence"
+        },
+        "choiceTwo": {
+            "description": "Run an anti-misinformation campaign",
+            "statChange": {
+                "economy": -4,
+                "order": 3,
+                "health": 3,
+                "diplomacy": 0
+            },
+            "log": {
+                "content": "You spent quite a budget to run an anti-misinformation campaign to educate the public, it was successful for the most part, but you can't wake up someone who's pretending to sleep.",
+                "statChange": {
+                    "economy": -4,
+                    "order": 3,
+                    "health": 3,
+                    "diplomacy": 0
+                }
+            }
+        }
+    }
+
+    ,
+
+    {
+        "name": "Toilet Paper Crisis",
+        "description": "People are panick buying toilet paper for some reason. The toilet paper supply chain is getting overwhelmed and asking you for direction.",
+        "choiceOne": {
+            "description": "Rationalize toilet paper sales",
+            "statChange": {
+                "economy": 2,
+                "order": 2,
+                "health": 0,
+                "diplomacy": 0
+            },
+            "log": {
+                "content": "You released an order limiting the sales of toilet paper to a maximum of 1 roll per person per day.",
+                "statChange": {
+                    "economy": -2,
+                    "order": 2,
+                    "health": 0,
+                    "diplomacy": 0
+                }
+            },
+            "newEstablishment": "Rationalized Toiler Paper"
+        },
+        "choiceTwo": {
+            "description": "Mass produce low quality toilet paper",
+            "statChange": {
+                "economy": 5,
+                "order": -3,
+                "health": -3,
+                "diplomacy": 0
+            },
+            "log": {
+                "content": "The increased supply of toilet paper still couldn't satisfy the overwhelming demand, many people rush to stores to hoard up toilet paper, without regard for the risk of contacting the virus.",
+                "statChange": {
+                    "economy": 5,
+                    "order": -3,
+                    "health": -3,
+                    "diplomacy": 0
+                }
+            }
+        }
+    },
+
+    {
+        "name": "Karen's Outrage II: Electric Boogaloo",
+        "description": "Karens are throwing a tantrum because stores are denying them from entering without wearing a mask, claiming that it is an infringement of their rights.",
+        "choiceOne": {
+            "description": "Force the stores to let the Karens in",
+            "statChange": {
+                "economy": 3,
+                "order": -4,
+                "health": -2,
+                "diplomacy": 0
+            },
+            "log": {
+                "content": "Stores are now forced to open their doors to people with no masks on.",
+                "statChange": {
+                    "economy": 3,
+                    "order": -4,
+                    "health": -2,
+                    "diplomacy": 0
+                }
+            }
+        },
+        "choiceTwo": {
+            "description": "Support the store owners",
+            "statChange": {
+                "economy": -1,
+                "order": 3,
+                "health": 2,
+                "diplomacy": 0
+            },
+            "log": {
+                "content": "New laws are released allowing store owners to refuse service to customers with no masks on. Karens are very upset and used this oppurtunity to bash your government with foreign media.",
+                "statChange": {
+                    "economy": -2,
+                    "order": 3,
+                    "health": 3,
+                    "diplomacy": -3
+                }
+            }
+        }
+    }
+]

@@ -1,0 +1,58 @@
+[{
+        "name": "Educated Public",
+        "description": "The public is more educated about the virus, making them less likely to panic, and take precaution against the virus.",
+        "statChange": {
+            "economy": 0,
+            "order": 2,
+            "health": 2,
+            "diplomacy": 0
+        }
+    },
+    {
+        "name": "Curfew",
+        "description": "Rules are layed out requiring people to stay indoor at night. This reduction in human activity and interaction reduces the risk of virus spreading, but will cause many industries to take a hit financially.",
+        "statChange": {
+            "economy": -5,
+            "order": 3,
+            "health": 3,
+            "diplomacy": 0
+        }
+    }
+
+    ,
+    {
+        "name": "Foreign Influence",
+        "description": "Some foreign countires are using the situation as a way to attack your government's reputation.",
+        "statChange": {
+            "economy": -1,
+            "order": 0,
+            "health": 0,
+            "diplomacy": -2
+        }
+    }
+
+    ,
+    {
+        "name": "Friendly Neighbour",
+        "description": "Your neighbouring country holds a friendly attitude towards your government, leading to improved trades.",
+        "statChange": {
+            "economy": 2,
+            "order": 0,
+            "health": 0,
+            "diplomacy": 1
+        }
+    }
+
+    ,
+
+    {
+        "name": "Rationalized Toiler Paper",
+        "description": "Toilet paper sale is limited to 1 roll per person per day to prevent hoarding.",
+        "statChange": {
+            "economy": -2,
+            "order": 2,
+            "health": 2,
+            "diplomacy": 0
+        }
+    }
+]
