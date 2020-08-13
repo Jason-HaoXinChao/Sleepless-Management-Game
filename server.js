@@ -846,19 +846,38 @@ app.post('/api/user/upload_icon', multipartMiddleware, (req, res) => {
             { width: 40, height: 40, crop: "fill", gravity: "face" }
         ]
     }).then(image => {
-        var userIcon = new UserIcon({
-            image_id: image.public_id, // image id on cloudinary server
-            image_url: image.url,
-            format: image.format,
-            uploader: req.session.username, // keeps track of the user who uploaded this image
-            created_at: image.created_at // keeps track of when the user icon was created
-        });
+        UserIcon.findByUsername(req.session.username).then((userIcon) => {
+            if (userIcon) {
+                cloudinary.uploader.destroy(userIcon.image_id);
 
-        userIcon.save().then(result => {
-            res.redirect("/user_profile?upload=success");
-        }).catch(err => {
-            console.log(err);
-            res.status(500).redirect("/user_profile?upload=failed");
+                userIcon.image_id = image.public_id;
+                userIcon.url = image.url;
+                userIcon.format = image.format;
+                userIcon.uploader = req.session.username;
+                userIcon.created_at = image.created_at;
+
+                userIcon.save().then(result => {
+                    res.redirect("/user_profile?upload=success");
+                }).catch(err => {
+                    console.log(err);
+                    res.status(500).redirect("/user_profile?upload=failed");
+                });
+            } else {
+                var userIcon = new UserIcon({
+                    image_id: image.public_id, // image id on cloudinary server
+                    image_url: image.url,
+                    format: image.format,
+                    uploader: req.session.username, // keeps track of the user who uploaded this image
+                    created_at: image.created_at // keeps track of when the user icon was created
+                });
+
+                userIcon.save().then(result => {
+                    res.redirect("/user_profile?upload=success");
+                }).catch(err => {
+                    console.log(err);
+                    res.status(500).redirect("/user_profile?upload=failed");
+                });
+            }
         });
     }).catch(err => {
         console.log(err);
