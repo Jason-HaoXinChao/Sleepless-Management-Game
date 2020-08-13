@@ -13,6 +13,9 @@ function sendRequest(requestType, URL, data, callback) {
     xml.open(requestType, URL, true);
     xml.setRequestHeader("Content-Type", "application/json");
     xml.onreadystatechange = function() {
+        log("received update");
+        log(this.readyState);
+        log(this.status);
         if (this.readyState == 4 && this.status == 200) {
             try {
                 callback(JSON.parse(this.responseText));
@@ -413,6 +416,7 @@ function selectChoiceTwo(e) {
 
 // Request for an update from the server
 function requestUpdate() {
+    log("requesting update");
     sendRequest("GET", "/api/user/gameplay/update", {}, (data) => {
         updateStatistics(data.newStat);
         pushLog(data.log);

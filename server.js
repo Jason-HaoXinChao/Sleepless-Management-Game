@@ -538,9 +538,6 @@ app.post("/api/user/gameplay/event", mongoChecker, (req, res) => {
                     output.establishment = null;
                 }
 
-                log("this is the output:");
-                log(output);
-
                 user.save().then((user) => {
                     if (!user) {
                         log(err);
@@ -588,6 +585,7 @@ app.get("/api/user/gameplay/update", mongoChecker, (req, res) => {
     const username = req.session.username;
 
     Gameplay.findByUsername(username).then((user) => {
+        log("updating");
         if (!user) {
             // Either client's cookie is corrupted or user has been deleted by admin
             // Logging the user out should be appropriate
@@ -702,7 +700,8 @@ app.get("/api/user/gameplay/update", mongoChecker, (req, res) => {
                                     });
                             }
                         });
-
+                    } else {
+                        res.send(output);
                     }
 
                 }).catch((err) => {
@@ -839,8 +838,8 @@ app.post("/api/admin/change_stats/:username", adminRequestChecker, mongoChecker,
 app.post('/api/user/upload_icon', multipartMiddleware, (req, res) => {
     cloudinary.uploader.upload(req.files.image.path, {
         eager: [
-            { width: 200, height: 200, crop: "fill", gravity: "face" }, 
-            { width: 40, height: 40, crop: "fill", gravity: "face"}
+            { width: 200, height: 200, crop: "fill", gravity: "face" },
+            { width: 40, height: 40, crop: "fill", gravity: "face" }
         ]
     }).then(image => {
         var userIcon = new UserIcon({
@@ -859,35 +858,31 @@ app.post('/api/user/upload_icon', multipartMiddleware, (req, res) => {
         });
     }).catch(err => {
         console.log(err);
-        res.status(500).redirect("/user_profile?upload=failed");        
+        res.status(500).redirect("/user_profile?upload=failed");
     });
 });
 
 app.get('/api/user/user_icon', (req, res) => {
     const username = req.session.username;
-    
+
     UserIcon.findByUsername(username).then((userIcon) => {
         if (userIcon) {
             res.send({
                 avatar: cloudinary.image(`${userIcon.image_id}.${userIcon.format}`, {
-                    transformation: [
-                        {
-                            height: 40,
-                            width: 40,
-                            crop: "fill",
-                            gravity: "face"
-                        }
-                    ]
+                    transformation: [{
+                        height: 40,
+                        width: 40,
+                        crop: "fill",
+                        gravity: "face"
+                    }]
                 }),
                 large: cloudinary.image(`${userIcon.image_id}.${userIcon.format}`, {
-                    transformation: [
-                        {
-                            height: 200,
-                            width: 200,
-                            crop: "fill",
-                            gravity: "face"
-                        }
-                    ]
+                    transformation: [{
+                        height: 200,
+                        width: 200,
+                        crop: "fill",
+                        gravity: "face"
+                    }]
                 })
             });
         } else {
