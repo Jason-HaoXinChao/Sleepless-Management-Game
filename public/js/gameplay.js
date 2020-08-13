@@ -18,7 +18,7 @@ function sendRequest(requestType, URL, data, callback) {
                 callback(JSON.parse(this.responseText));
             } catch (error) {
                 log(error);
-                //window.open("/api/logout");
+                window.open(__dirname + "/api/logout", "_self");
             }
         }
     };
@@ -48,10 +48,10 @@ function initializePage(e) {
     // Call server to get user data
     loadUserData();
 
-    // interval = setInterval(() => {
-    //     requestUpdate();
-    // }, 15000);
-    requestUpdate();
+    // Periodically request update from server
+    interval = setInterval(() => {
+        requestUpdate();
+    }, 15000);
 }
 
 function loadUserData(e) {
@@ -102,9 +102,9 @@ function pushEstablishment(establishment) {
     content.addEventListener("click", showDescription, false);
 }
 
+// Retrieve information about an establishment from server and display it on the webpage.
 function showDescription(e) {
     e.preventDefault();
-    let i = 0;
     const title = document.getElementById("titlediv").querySelector("#title");
     const content = document.getElementsByClassName("modalContent")[0].querySelector("p");
 
@@ -125,13 +125,20 @@ function showDescription(e) {
     document.getElementById("choice2").style.display = "none";
     document.getElementById("close").style.display = "block";
     document.getElementById("modalBackground").style.display = "flex";
+    // Stop updating while user is reading the description
+    window.clearInterval(interval);
 }
 
+// Hide the modal window
 function hideModal(e) {
     e.preventDefault();
     document.getElementById("modalBackground").style.display = "none";
+    interval = setInterval(function() {
+        requestUpdate();
+    }, 15000);
 }
 
+// Helper function that formulates statistic change into an array of string to be displayed
 function formulateStatChange(statChange) {
     const statText = [];
     statText.push("Impact on statistics")
@@ -339,6 +346,10 @@ function showRandomEvent(eventToShow) {
     clearInterval(interval);
 }
 
+/**
+ * Sends request to server about user's decision on the random event choice, then displays the server's response
+ * @param {*} e the onclick event
+ */
 function selectChoiceOne(e) {
     e.preventDefault();
     // Post a request to the server
@@ -348,13 +359,16 @@ function selectChoiceOne(e) {
         "eventName": eventName,
         "choice": choice
     };
-
+    log(input);
     sendRequest("POST", "/api/user/gameplay/event", input, (data) => {
+        log(data);
         if (data.establishment) {
-            pushEstablishment(data.establishment);
+            pushEstablishment({
+                "name": data.establishment
+            });
         }
         pushLog(data.log);
-        updateStatistics(data.newStatistics);
+        updateStatistics(data.newStatistic);
     });
 
     document.getElementById("modalBackground").style.display = "none";
@@ -364,6 +378,10 @@ function selectChoiceOne(e) {
     }, 15000);
 }
 
+/**
+ * Sends request to server about user's decision on the random event choice, then displays the server's response
+ * @param {*} e the onclick event
+ */
 function selectChoiceTwo(e) {
     e.preventDefault();
     // Post a request to the server
@@ -373,14 +391,18 @@ function selectChoiceTwo(e) {
         "eventName": eventName,
         "choice": choice
     };
-
+    log(input);
     sendRequest("POST", "/api/user/gameplay/event", input, (data) => {
+        log(data);
         if (data.establishment) {
-            pushEstablishment(data.establishment);
+            pushEstablishment({
+                "name": data.establishment
+            });
         }
         pushLog(data.log);
         updateStatistics(data.newStatistics);
     });
+
 
     document.getElementById("modalBackground").style.display = "none";
 

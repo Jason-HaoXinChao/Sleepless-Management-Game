@@ -27,21 +27,6 @@ const { Profile } = require("./models/Profile");
 const session = require('express-session')
 app.use(bodyParser.urlencoded({ extended: true }));
 
-// import the mongoose model
-const { Image } = require("./models/UserIcon");
-
-// multipart middleware: allows you to access uploaded file from req.file
-const multipart = require('connect-multiparty');
-const multipartMiddleware = multipart();
-
-// cloudinary configurations
-const cloudinary = require('cloudinary').v2;
-cloudinary.config({
-    cloud_name: 'team32',
-    api_key: '923645855641674',
-    api_secret: 'sGmSqdECgf6T7XSMYxDGGj4kSRo'
-});
-
 // handlebars server-side templating engine
 const exphbs = require('express-handlebars');
 const SystemData = require('./models/SystemData');
@@ -438,7 +423,7 @@ app.post("/api/user/gameplay/strategy/:type/:value", mongoChecker, (req, res) =>
  * {
  *  establishment: String or null,
  *  log: Object  (see logSchema in /models/Gameplay)
- *  newStatistics: object (see StatisticSchema)
+ *  newStatistic: object (see StatisticSchema)
  * }
  */
 app.post("/api/user/gameplay/event", mongoChecker, (req, res) => {
@@ -446,66 +431,112 @@ app.post("/api/user/gameplay/event", mongoChecker, (req, res) => {
     const eventName = req.body.eventName;
     const choice = req.body.choice;
 
+
     Gameplay.findByUsername(username).then((user) => {
         if (!user) {
             // Either client's cookie is corrupted or user has been deleted by admin
             // Logging the user out should be appropriate
-            res.redirect("/api/logout");
+            log("event choice: failed to find user");
         } else {
             // TODO: implement following
 
             // find the event document from database
-            const evt = RandomEvent.findByName(eventName);
-            if (!evt) {
-                res.status(500).send();
-                return;
-            }
-            // get the corresponding EventChoice document
-            let choiceDoc;
-            if (evt.choiceOne.description == choice) {
-                choiceDoc = evt.choiceOne;
-            } else {
-                choiceDoc = evt.choiceTwo;
-            }
-
-            const output = {};
-
-            // calculate the new statistics (apply statChange in EventChoice document)
-            user.statistic.economy += choiceDoc.statChange.economy;
-            user.statistic.order += choiceDoc.statChange.order;
-            user.statistic.health += choiceDoc.statChange.health;
-            user.statistic.diplomacy += choiceDoc.statChange.diplomacy;
-            output.newStatistic = user.statistic;
-
-            // generate log (should be preset in EventChoice document but with no time)
-            output.log = choiceDoc.log;
-            const curr = new Date();
-            output.log.time = curr.getHours() + ":" + curr.getMinutes();
-
-            // Save the new statistic, log, and establishment(if any) in user
-            if (choiceDoc.newEstablishment) {
-                user.establishment.push({ name: choiceDoc.newEstablishment.name });
-                output.establishment = choiceDoc.newEstablishment.name;
-            } else {
-                output.establishment = null;
-            }
-
-            user.save().then((user) => {
-                if (!user) {
-                    res.status(500).send("500 Internal Server Error");
-                } else {
-                    // Send the expected return value to client
-                    res.send(output);
+            RandomEvent.findByName(eventName).then((evt) => {
+                if (!evt) {
+                    res.status(500).send();
+                    return;
                 }
-            }).catch((err) => {
-                // server error can't save
-                res.status(500).send("Internal Server Error");
+                // get the corresponding EventChoice document
+                let choiceDoc;
+
+                if (evt.choiceOne.description == choice) {
+                    choiceDoc = evt.choiceOne;
+                } else {
+                    choiceDoc = evt.choiceTwo;
+                }
+
+                const output = {};
+
+                // calculate the new statistics (apply statChange in EventChoice document)
+                user.statistic.economy += choiceDoc.statChange.economy;
+                if (user.statistic.economy > 100) {
+                    user.statistic.economy = 100;
+                } else if (user.statistic.economy < 0) {
+                    user.statistic.economy = 0;
+                }
+                user.statistic.order += choiceDoc.statChange.order;
+                if (user.statistic.order > 100) {
+                    user.statistic.order = 100;
+                } else if (user.statistic.order < 0) {
+                    user.statistic.order = 0;
+                }
+                user.statistic.health += choiceDoc.statChange.health;
+                if (user.statistic.health > 100) {
+                    user.statistic.health = 100;
+                } else if (user.statistic.health < 0) {
+                    user.statistic.health = 0;
+                }
+                user.statistic.diplomacy += choiceDoc.statChange.diplomacy;
+                if (user.statistic.diplomacy > 100) {
+                    user.statistic.diplomacy = 100;
+                } else if (user.statistic.diplomacy < 0) {
+                    user.statistic.diplomacy = 0;
+                }
+                output.newStatistic = user.statistic;
+
+                // generate log (should be preset in EventChoice document but with no time)
+                const curr = new Date();
+                output.log = {
+                    time: curr.getHours() + ":" + curr.getMinutes(),
+                    content: choiceDoc.log.content,
+                    statChange: choiceDoc.log.statChange
+                }
+
+                // Save the new statistic, log, and establishment(if any) in user
+                if (choiceDoc.newEstablishment) {
+                    // Check if the user already have this establishment
+                    //don't add it to the user's establishment collection if the user already have it.
+                    let exist = false;
+                    user.establishment.forEach(est => {
+                        if (est.name == choiceDoc.newEstablishment) {
+                            exist = true;
+                        }
+                    });
+                    if (!exist) {
+                        user.establishment.push({ "name": choiceDoc.newEstablishment });
+                        output.establishment = choiceDoc.newEstablishment;
+                    } else {
+                        output.establishment = null;
+                    }
+                } else {
+                    output.establishment = null;
+                }
+
+                log("this is the output:");
+                log(output);
+
+                user.save().then((user) => {
+                    if (!user) {
+                        log(err);
+                        res.status(500).send("500 Internal Server Error");
+                    } else {
+                        // Send the expected return value to client
+                        res.send(output);
+                    }
+                }).catch((err) => {
+                    log(err);
+                    // server error can't save
+                    res.status(500).send("Internal Server Error");
+                });
             });
+
         }
     }).catch((err) => {
         if (isMongoError(err)) {
+            log(err);
             res.status(500).send("Internal Server Error");
         } else {
+            log(err);
             // Something is desync in the client or server side, log the user out and make them reload the page
             res.redirect("/api/logout");
         };
@@ -613,27 +644,37 @@ app.get("/api/user/gameplay/update", mongoChecker, (req, res) => {
                         log: eventLog,
                         randomEvent: null
                     };
+
                     // Determine if a random event occurs, and if so, which one
-                    const percentageChance = 99;
+                    const percentageChance = 10;
                     if (Math.floor(Math.random() * (100 - 0)) + 0 <= percentageChance) {
                         // chooce a random event
-                        RandomEvent.getRandom().then((randomEvent) => {
-                            log(randomEvent);
-                            if (!randomEvent) {
-                                log("Can't find randomEvent");
+                        RandomEvent.countDocuments().exec(function(err, count) {
+                            if (err) {
+                                log(err);
                             } else {
-                                output.randomEvent = {
-                                    name: randomEvent.name,
-                                    description: randomEvent.description,
-                                    choiceOne: randomEvent.choiceOne.description,
-                                    choiceTwo: randomEvent.choiceTwo.description
-                                };
-                                // Send new statistics, log and randomEvent to user
-                                res.send(output);
+                                const random = Math.floor(Math.random() * count);
+
+                                RandomEvent.findOne().skip(random).exec(
+                                    function(err, randomEvent) {
+                                        if (err) {
+                                            log(err);
+                                        }
+
+                                        if (!randomEvent) {
+                                            log("Can't find randomEvent due to server issue");
+                                        } else {
+                                            output.randomEvent = {
+                                                name: randomEvent.name,
+                                                description: randomEvent.description,
+                                                choiceOne: randomEvent.choiceOne.description,
+                                                choiceTwo: randomEvent.choiceTwo.description
+                                            };
+                                        }
+                                        // Send new statistics, log and randomEvent(if any) to user
+                                        res.send(output);
+                                    });
                             }
-                        }).catch((err) => {
-                            log(err);
-                            res.status(500).send("500 Internal Server Error");
                         });
 
                     }
