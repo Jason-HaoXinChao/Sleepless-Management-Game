@@ -2,103 +2,32 @@ body {
     background-color: #212121;
     margin: 0px;
     width: 100%;
+    min-height: 100vh;
     height: 100%;
     overflow-x: hidden;
     overflow-y: scroll;
     font-family: 'Lucida Console', ui-monospace, monospace;
 }
 
-html {
-    scroll-padding-top: 60px;
-}
-
-.header {
-    height: 40px;
-    background-color: black;
-    font-family: 'Lucida Console', ui-monospace, monospace;
-    line-height: 40px;
-    padding: 10px 5px;
-    overflow: hidden;
-    position: sticky;
-    top: 0px;
-    width: 100%;
-}
-
-.header a {
-    margin-left: 20px;
-    color: white;
-    font-size: 18px;
-    font-weight: bold;
-    padding: 5px;
-    text-decoration: none;
-    vertical-align: middle;
-}
-
-.header a.logo {
-    font-size: 28px;
-}
-
-.header a.currentpage {
-    background-color: #39FF14;
-    color: black;
-    border-radius: 4px;
-    box-sizing: border-box;
-}
-
-.header a.otherpage:hover {
-    border-bottom: 2px solid white;
-}
-
-.right_header {
-    float: right;
-    margin-right: 30px;
-    height: 40px;
-    line-height: 40px;
-}
-
-.right_header img.user_icon {
-    width: 40px;
-    height: 40px;
-    vertical-align: middle;
-}
-
-.right_header form {
-    display: inline-block;
-}
-
-.right_header button.logout {
-    margin: 0 0 0 10px;
-    border: none;
-    background-color: yellow;
-    color: black;
-    font-size: 18px;
-    font-weight: bold;
-    text-align: center;
-    padding: 4px;
-    border-radius: 4px;
-    text-decoration: none;
-    vertical-align: middle;
-}
-
 .maincontent {
     width: 80%;
-    min-height: 100%;
-    margin: auto;
-    margin-top: 0px;
-    padding: 20px;
+    min-height: calc(100% - 60px);
+    margin: 0 auto;
+    padding: 40px;
     background-color: #121212;
     overflow: visible;
     display: flex;
+    grid-gap: 20px;
+    gap: 20px;
     justify-items: start;
-    justify-content: flex-start;
+    box-sizing: border-box;
 }
 
 .patchnote_container {
     font-size: 18px;
     color: white;
     height: 100%;
-    width: 75%;
-    padding: 20px;
+    flex-grow: 1;
     margin: 0px;
     overflow: visible;
 }
@@ -128,9 +57,9 @@ html {
 }
 
 .menubar_container {
-    width: 15%;
+    width: 290px;
+    flex-shrink: 0;
     height: auto;
-    padding-top: 20px;
     margin: 0px;
     text-align: left;
 }

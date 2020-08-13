@@ -646,7 +646,7 @@ app.get("/api/user/gameplay/update", mongoChecker, (req, res) => {
                     };
 
                     // Determine if a random event occurs, and if so, which one
-                    const percentageChance = 10;
+                    const percentageChance = 5;
                     if (Math.floor(Math.random() * (100 - 0)) + 0 <= percentageChance) {
                         // chooce a random event
                         RandomEvent.countDocuments().exec(function(err, count) {

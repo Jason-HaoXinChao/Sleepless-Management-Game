@@ -1,5 +1,17 @@
 'use strict';
 
+$(window).on('load', function() {
+    fetch('/api/user/user_icon').then(res => {
+        return res.json();
+    }).then(json => {
+        $(".user-icon").attr("src", $(json.large).attr("src"));
+    }).catch(err => {
+        console.log(err);
+    }).finally(() => {
+        $(".user-icon").addClass("loaded");
+    });
+});
+
 /*
  * Change profile pic
  */

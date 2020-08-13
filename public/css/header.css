@@ -1,0 +1,79 @@
+/* Styling for header bar */
+#header {
+    position: sticky;
+    top: 0;
+    z-index: 999;
+    height: 60px;
+    background-color: black;
+    font-family: 'Lucida Console', ui-monospace, monospace;
+    line-height: 40px;
+    padding: 10px 5px;
+    overflow: hidden;
+    box-sizing: border-box;
+}
+
+#header > a {
+    margin-left: 20px;
+    color: white;
+    font-size: 18px;
+    font-weight: bold;
+    padding: 5px;
+    text-decoration: none;
+    vertical-align: middle;
+    box-sizing: border-box;
+}
+
+#header > a.logo {
+    font-size: 28px;
+}
+
+#header > a.current_page {
+    background-color: #39FF14;
+    color: black;
+    border-radius: 4px;
+}
+
+#header > a.other_page:hover {
+    border-bottom: 2px solid white;
+}
+
+.right_header {
+    float: right;
+    margin-right: 30px;
+    height: 40px;
+    line-height: 40px;
+}
+
+.right_header > a {
+    display: inline-block;
+}
+
+.right_header img.user_icon {
+    visibility: hidden;
+    width: 40px;
+    height: 40px;
+    vertical-align: middle;
+    border-radius: 50%;
+}
+
+.right_header img.user_icon.loaded {
+    visibility: visible;
+}
+
+.right_header form {
+    display: inline-block;
+}
+
+.right_header button.logout {
+    margin: 0 0 0 10px;
+    border: none;
+    background-color: yellow;
+    color: black;
+    font-size: 18px;
+    font-weight: bold;
+    text-align: center;
+    text-decoration: none;
+    vertical-align: middle;
+    padding: 4px;
+    border-radius: 4px;
+}
