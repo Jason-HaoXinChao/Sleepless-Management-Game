@@ -1086,6 +1086,11 @@ app.post("/api/admin/create_event", adminRequestChecker, mongoChecker, async(req
             })
         });
 
+        if (RandomEvent.findByName(req.body["event-name"])) {
+            res.status(400).redirect('/admin_dashboard?event_create=duplicate');
+            return;
+        }
+
         if (req.body["choice-one-establishment-toggle"]) {
             const choice_one_establishment = new EstablishmentInfo({
                 name: req.body["choice-one-establishment-name"],

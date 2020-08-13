@@ -133,7 +133,7 @@ RandomEventSchema.statics.findByName = async function(name) {
     try {
         const randomEvent = await RandomEvent.findOne({ name: name });
         if (!randomEvent) {
-            return Promise.reject(false);
+            return false;
         } else {
             return randomEvent;
         };
