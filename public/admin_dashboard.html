@@ -72,7 +72,7 @@
             <button id="new-event">New Event</button>
         </div>
         <div class="admin-module-main">
-            <form id="event-form">
+            <form id="event-form" action="/api/admin/create_event" method="post">
                 <label for="event-name"><b>Event Name:</b></label>
                 <input id="event-name" type="text" name="event-name">
                 <label for="event-description"><b>Event Description:</b></label>
