@@ -187,7 +187,7 @@ app.post("/api/register", mongoChecker, async(req, res) => {
             name: "Pandemic Outbreak"
         })],
         log: [new Log({
-            time: curr.getHours() + ":" + curr.getMinutes(),
+            time: ("0" + curr.getHours()).slice(-2) + ":" + ("0" + curr.getMinutes()).slice(-2),
             content: "You became the ruler of your country."
         })],
         strategy: {}
@@ -412,7 +412,7 @@ app.post("/api/user/gameplay/strategy/:type/:value", mongoChecker, (req, res) =>
                     break;
             };
             const curr = new Date();
-            const timeString = curr.getHours() + ":" + curr.getMinutes();
+            const timeString = ("0" + curr.getHours()).slice(-2) + ":" + ("0" + curr.getMinutes()).slice(-2);
             const log = new Log({
                 time: timeString,
                 content: "Your " + type + " strategy has been changed to [" + value + "]."
@@ -513,7 +513,7 @@ app.post("/api/user/gameplay/event", mongoChecker, (req, res) => {
                 // generate log (should be preset in EventChoice document but with no time)
                 const curr = new Date();
                 output.log = {
-                    time: curr.getHours() + ":" + curr.getMinutes(),
+                    time: ("0" + curr.getHours()).slice(-2) + ":" + ("0" + curr.getMinutes()).slice(-2),
                     content: choiceDoc.log.content,
                     statChange: choiceDoc.log.statChange
                 }
@@ -537,6 +537,9 @@ app.post("/api/user/gameplay/event", mongoChecker, (req, res) => {
                 } else {
                     output.establishment = null;
                 }
+
+                log("this is the output");
+                log(output);
 
                 user.save().then((user) => {
                     if (!user) {
@@ -585,7 +588,7 @@ app.get("/api/user/gameplay/update", mongoChecker, (req, res) => {
     const username = req.session.username;
 
     Gameplay.findByUsername(username).then((user) => {
-        log("updating");
+        log("updating for user:" + username);
         if (!user) {
             // Either client's cookie is corrupted or user has been deleted by admin
             // Logging the user out should be appropriate
@@ -624,7 +627,7 @@ app.get("/api/user/gameplay/update", mongoChecker, (req, res) => {
                 const currTime = new Date();
                 // Generate log
                 const eventLog = new Log({
-                    time: currTime.getHours() + ":" + currTime.getMinutes(),
+                    time: ("0" + currTime.getHours()).slice(-2) + ":" + ("0" + currTime.getMinutes()).slice(-2),
                     content: "A week has passed.",
                     statChange: new StatChange({
                         economy: statisticChange.economy,
@@ -701,6 +704,7 @@ app.get("/api/user/gameplay/update", mongoChecker, (req, res) => {
                             }
                         });
                     } else {
+                        // Send response with no random event
                         res.send(output);
                     }
 
@@ -812,7 +816,7 @@ app.post("/api/admin/change_stats/:username", adminRequestChecker, mongoChecker,
         const currTime = new Date();
         // Generate log
         const log = new Log({
-            time: currTime.getHours() + ":" + currTime.getMinutes(),
+            time: ("0" + currTime.getHours()).slice(-2) + ":" + ("0" + currTime.getMinutes()).slice(-2),
             content: "How mysterious! An otherworldly influence has been bestowed upon you...",
             statChange: statisticChange
         });
@@ -1003,7 +1007,7 @@ app.post("/api/admin/change_stats/:username", adminRequestChecker, mongoChecker,
         const currTime = new Date();
         // Generate log
         const log = new Log({
-            time: currTime.getHours() + ":" + currTime.getMinutes(),
+            time: ("0" + currTime.getHours()).slice(-2) + ":" + ("0" + currTime.getMinutes()).slice(-2),
             content: "How mysterious! An otherworldly influence has been bestowed upon you...",
             statChange: statisticChange
         });

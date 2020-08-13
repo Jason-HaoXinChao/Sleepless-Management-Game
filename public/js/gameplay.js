@@ -123,13 +123,13 @@ function showDescription(e) {
             content.appendChild(document.createElement("br"));
             content.appendChild(document.createTextNode(element));
         }
+        document.getElementById("choice1").style.display = "none";
+        document.getElementById("choice2").style.display = "none";
+        document.getElementById("close").style.display = "block";
+        document.getElementById("modalBackground").style.display = "flex";
+        // Stop updating while user is reading the description
+        window.clearInterval(interval);
     });
-    document.getElementById("choice1").style.display = "none";
-    document.getElementById("choice2").style.display = "none";
-    document.getElementById("close").style.display = "block";
-    document.getElementById("modalBackground").style.display = "flex";
-    // Stop updating while user is reading the description
-    window.clearInterval(interval);
 }
 
 // Hide the modal window
@@ -403,7 +403,7 @@ function selectChoiceTwo(e) {
             });
         }
         pushLog(data.log);
-        updateStatistics(data.newStatistics);
+        updateStatistics(data.newStatistic);
     });
 
 
