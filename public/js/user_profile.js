@@ -2,7 +2,9 @@
 
 $(window).on('load', function() {
     fetch('/api/user/user_icon').then(res => {
-        return res.json();
+        if (res) {
+            return res.json();
+        }
     }).then(json => {
         $(".user-icon").attr("src", $(json.large).attr("src"));
     }).catch(err => {

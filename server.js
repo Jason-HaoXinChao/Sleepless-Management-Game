@@ -891,7 +891,7 @@ app.get('/api/user/user_icon', (req, res) => {
                 })
             });
         } else {
-            res.status(404).end();
+            res.send(false);
         }
     }).catch(err => {
         res.status(500).send("Internal Server Error");
