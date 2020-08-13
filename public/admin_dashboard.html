@@ -74,21 +74,77 @@
         <div class="admin-module-main">
             <form id="event-form">
                 <label for="event-name"><b>Event Name:</b></label>
-                <input id="event-name" type="text">
+                <input id="event-name" type="text" name="event-name">
                 <label for="event-description"><b>Event Description:</b></label>
-                <textarea id="event-description" cols="50" rows="10"></textarea>
-                <label for="econ-stat-effect"><b>Econ Stat Effect:</b></label>
-                <input id="econ-stat-effect" type="range" min="-10" max="10" value="0">
+                <textarea id="event-description" cols="50" rows="10" name="event-description"></textarea>
+                <!-- Choice One -->
+                <h2>Choice One</h2>
+                <label for="choice-one-econ"><b>Econ Stat Effect:</b></label>
+                <input id="choice-one-econ" type="range" min="-10" max="10" value="0" name="choice-one-econ">
                 <span class="stat-effect-value">0</span>
-                <label for="order-stat-effect"><b>Order Stat Effect:</b></label>
-                <input id="order-stat-effect" type="range" min="-10" max="10" value="0">
+                <label for="choice-one-order"><b>Order Stat Effect:</b></label>
+                <input id="choice-one-order" type="range" min="-10" max="10" value="0">
                 <span class="stat-effect-value">0</span>
-                <label for="health-stat-effect"><b>Health Stat Effect:</b></label>
-                <input id="health-stat-effect" type="range" min="-10" max="10" value="0">
+                <label for="choice-one-health"><b>Health Stat Effect:</b></label>
+                <input id="choice-one-health" type="range" min="-10" max="10" value="0">
                 <span class="stat-effect-value">0</span>
-                <label for="diplomacy-stat-effect"><b>Diplomacy Stat Effect:</b></label>
-                <input id="diplomacy-stat-effect" type="range" min="-10" max="10" value="0">
+                <label for="choice-one-diplomacy"><b>Diplomacy Stat Effect:</b></label>
+                <input id="choice-one-diplomacy" type="range" min="-10" max="10" value="0">
                 <span class="stat-effect-value">0</span>
+                <label for="choice-one-establishment-toggle"><b>Enable an establishment for Choice One?</b></label>
+                <input id="choice-one-establishment-toggle" type="checkbox">
+                <div>
+                    <label for="choice-one-establishment-name"><b>Establishment Name:</b></label>
+                    <input id="choice-one-establishment-name" type="text">
+                    <label for="choice-one-establishment-description"><b>Establishment Description:</b></label>
+                    <textarea id="choice-one-establishment-description" cols="50" rows="10" name="event-description"></textarea>
+                    <label for="choice-one-establishment-econ"><b>Establishment Econ Stat Effect:</b></label>
+                    <input id="choice-one-establishment-econ" type="range" min="-10" max="10" value="0" name="choice-one-econ">
+                    <span class="stat-effect-value">0</span>
+                    <label for="choice-one-establishment-order"><b>Establishment Order Stat Effect:</b></label>
+                    <input id="choice-one-establishment-order" type="range" min="-10" max="10" value="0">
+                    <span class="stat-effect-value">0</span>
+                    <label for="choice-one-establishment-health"><b>Establishment Health Stat Effect:</b></label>
+                    <input id="choice-one-establishment-health" type="range" min="-10" max="10" value="0">
+                    <span class="stat-effect-value">0</span>
+                    <label for="choice-one-establishment-diplomacy"><b>Establishment Diplomacy Stat Effect:</b></label>
+                    <input id="choice-one-establishment-diplomacy" type="range" min="-10" max="10" value="0">
+                    <span class="stat-effect-value">0</span>
+                </div>
+                <!-- Choice Two -->
+                <h2>Choice Two</h2>
+                <label for="choice-two-econ"><b>Econ Stat Effect:</b></label>
+                <input id="choice-two-econ" type="range" min="-10" max="10" value="0" name="choice-one-econ">
+                <span class="stat-effect-value">0</span>
+                <label for="choice-two-order"><b>Order Stat Effect:</b></label>
+                <input id="choice-two-order" type="range" min="-10" max="10" value="0">
+                <span class="stat-effect-value">0</span>
+                <label for="choice-two-health"><b>Health Stat Effect:</b></label>
+                <input id="choice-two-health" type="range" min="-10" max="10" value="0">
+                <span class="stat-effect-value">0</span>
+                <label for="choice-two-diplomacy"><b>Diplomacy Stat Effect:</b></label>
+                <input id="choice-two-diplomacy" type="range" min="-10" max="10" value="0">
+                <span class="stat-effect-value">0</span>
+                <label for="choice-two-establishment-toggle"><b>Enable an establishment for Choice Two?</b></label>
+                <input id="choice-two-establishment-toggle" type="checkbox">
+                <div>
+                    <label for="choice-two-establishment-name"><b>Establishment Name:</b></label>
+                    <input id="choice-two-establishment-name" type="text">
+                    <label for="choice-two-establishment-description"><b>Establishment Description:</b></label>
+                    <textarea id="choice-two-establishment-description" cols="50" rows="10" name="event-description"></textarea>
+                    <label for="choice-two-establishment-econ"><b>Establishment Econ Stat Effect:</b></label>
+                    <input id="choice-two-establishment-econ" type="range" min="-10" max="10" value="0" name="choice-one-econ">
+                    <span class="stat-effect-value">0</span>
+                    <label for="choice-two-establishment-order"><b>Establishment Order Stat Effect:</b></label>
+                    <input id="choice-two-establishment-order" type="range" min="-10" max="10" value="0">
+                    <span class="stat-effect-value">0</span>
+                    <label for="choice-two-establishment-health"><b>Establishment Health Stat Effect:</b></label>
+                    <input id="choice-two-establishment-health" type="range" min="-10" max="10" value="0">
+                    <span class="stat-effect-value">0</span>
+                    <label for="choice-two-establishment-diplomacy"><b>Establishment Diplomacy Stat Effect:</b></label>
+                    <input id="choice-two-establishment-diplomacy" type="range" min="-10" max="10" value="0">
+                    <span class="stat-effect-value">0</span>
+                </div>
                 <input type="submit" value="Save">
             </form>
         </div>
