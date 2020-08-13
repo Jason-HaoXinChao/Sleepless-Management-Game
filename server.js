@@ -1100,7 +1100,9 @@ app.post("/api/admin/create_event", adminRequestChecker, mongoChecker, async(req
 
             event.choiceOne.newEstablishment = req.body["choice-one-establishment-name"];
 
-            await choice_one_establishment.save();
+            if (!EstablishmentInfo.findByName(req.body["choice-one-establishment-name"])) {
+                await choice_one_establishment.save();
+            }
         }
 
         if (req.body["choice-two-establishment-toggle"]) {
@@ -1117,7 +1119,9 @@ app.post("/api/admin/create_event", adminRequestChecker, mongoChecker, async(req
 
             event.choiceTwo.newEstablishment = req.body["choice-two-establishment-name"];
 
-            await choice_two_establishment.save();
+            if (!EstablishmentInfo.findByName(req.body["choice-two-establishment-name"])) {
+                await choice_two_establishment.save();
+            }
         }
 
         await event.save();

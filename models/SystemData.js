@@ -54,7 +54,7 @@ EstablishmentInfoSchema.statics.findByName = async function(name) {
     try {
         const establishment = await Establishment.findOne({ name: name });
         if (!establishment) {
-            return Promise.reject(false);
+            return false;
         } else {
             return establishment;
         };
