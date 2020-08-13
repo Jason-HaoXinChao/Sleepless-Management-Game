@@ -179,6 +179,19 @@ $("input[type='range']").on("change", function() {
 });
 
 /*
+ * Makes the establishment input fields required if their respective checkbox has been checked
+ */
+$("input[type='checkbox']").change(function() {
+    $(this).next().children("input[type='text'], textarea").each(function() {
+        if ($(this).attr("required")) {
+            $(this).removeAttr('required');
+        } else {
+            $(this).attr('required', true);
+        }
+    });
+});
+
+/*
  * Displays the new event creation module when the user clicks on the "New Event" button
  */
 $("#new-event").on("click", function() {

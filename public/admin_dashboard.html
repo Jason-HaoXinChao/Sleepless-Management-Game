@@ -74,11 +74,13 @@
         <div class="admin-module-main">
             <form id="event-form" action="/api/admin/create_event" method="post">
                 <label for="event-name"><b>Event Name:</b></label>
-                <input id="event-name" type="text" name="event-name">
-                <label for="event-description"><b>Event Description:</b></label>
-                <textarea id="event-description" cols="50" rows="10" name="event-description"></textarea>
+                <input id="event-name" type="text" name="event-name" required>
+                <label for="event-description" required><b>Event Description:</b></label>
+                <textarea id="event-description" cols="50" rows="10" name="event-description" required></textarea>
                 <!-- Choice One -->
                 <h2>Choice One</h2>
+                <label for="choice-one-description"><b>Choice One Description:</b></label>
+                <textarea id="choice-one-description" cols="50" rows="2" name="choice-one-description" required></textarea>
                 <label for="choice-one-econ"><b>Econ Stat Effect:</b></label>
                 <input id="choice-one-econ" type="range" min="-10" max="10" value="0" name="choice-one-econ">
                 <span class="stat-effect-value">0</span>
@@ -113,6 +115,8 @@
                 </div>
                 <!-- Choice Two -->
                 <h2>Choice Two</h2>
+                <label for="choice-two-description"><b>Choice Two Description:</b></label>
+                <textarea id="choice-two-description" cols="50" rows="2" name="choice-two-description" required></textarea>
                 <label for="choice-two-econ"><b>Econ Stat Effect:</b></label>
                 <input id="choice-two-econ" type="range" min="-10" max="10" value="0" name="choice-one-econ">
                 <span class="stat-effect-value">0</span>
