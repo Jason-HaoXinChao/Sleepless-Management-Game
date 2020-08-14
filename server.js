@@ -1105,7 +1105,7 @@ app.post("/api/admin/create_event", adminRequestChecker, mongoChecker, async(req
             })
         });
 
-        if (RandomEvent.findByName(req.body["event-name"])) {
+        if (await RandomEvent.findByName(req.body["event-name"])) {
             res.status(400).redirect('/admin_dashboard?event_create=duplicate');
             return;
         }
