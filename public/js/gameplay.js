@@ -49,15 +49,28 @@ function fetchRequest(requestType, URL, data, callback) {
                 redirect: "follow"
             })
             .then(response => {
-                return response.json();
+                if (!response.ok) { // server sending non-200 codes
+                    log("Error status:", response.status);
+                    log("Logging user out...");
+                    document.getElementsByClassName("logout")[0].click();
+                    return;
+                } else {
+                    return response.json();
+                }
             })
             .then(data => {
-                console.log("Request Successful");
-                callback(data);
+                if (data) {
+                    log("Request Successful");
+                    callback(data);
+                } else {
+                    log("Request Failed");
+                    document.getElementsByClassName("logout")[0].click();
+                }
             })
             .catch((error) => {
                 console.error('Encountered error:', error);
                 console.error("Redirecting user to logout.");
+                document.getElementsByClassName("logout")[0].click();
             });
 
     } else {
@@ -71,15 +84,28 @@ function fetchRequest(requestType, URL, data, callback) {
                 body: JSON.stringify(data)
             })
             .then(response => {
-                return response.json();
+                if (!response.ok) { // server sending non-200 codes
+                    log("Error status:", response.status);
+                    log("Logging user out...");
+                    document.getElementsByClassName("logout")[0].click();
+                    return;
+                } else {
+                    return response.json();
+                }
             })
             .then(data => {
-                console.log("Request Successful");
-                callback(data);
+                if (data) {
+                    log("Request Successful");
+                    callback(data);
+                } else {
+                    log("Request Failed");
+                    document.getElementsByClassName("logout")[0].click();
+                }
             })
             .catch((error) => {
                 console.error('Encountered error:', error);
                 console.error("Redirecting user to logout.");
+                document.getElementsByClassName("logout")[0].click();
             });
     }
 }

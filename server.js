@@ -297,7 +297,7 @@ app.get("/api/user/gameplay/stat/:type", mongoChecker, (req, res) => {
         if (!user) {
             // Either client's cookie is corrupted or user has been deleted by admin
             // Logging the user out should be appropriate
-            res.status(500).redirect("/api/logout");
+            res.status(500).send();
         } else {
             // send document according to user request type
             switch (reqType) {
@@ -323,11 +323,11 @@ app.get("/api/user/gameplay/stat/:type", mongoChecker, (req, res) => {
         };
     }).catch((err) => {
         if (isMongoError(err)) {
-            res.status(500).redirect("/api/logout");
+            res.status(500).send();
         } else {
             // Either client's cookie is corrupted or user has been deleted by admin
             // Logging the user out should be appropriate
-            res.status(400).redirect("/api/logout");
+            res.status(400).send();
         };
     });
 });
@@ -351,7 +351,7 @@ app.post("/api/user/gameplay/EstInfo", mongoChecker, (req, res) => {
     EstablishmentInfo.findByName(establishmentName).then((establishment) => {
         if (!establishment) {
             // Something is desync in the client or server side, log the user out and make them reload the page
-            res.status(400).redirect("/api/logout");
+            res.status(400).send();
         } else {
             const output = {
                 name: establishment.name,
@@ -362,11 +362,11 @@ app.post("/api/user/gameplay/EstInfo", mongoChecker, (req, res) => {
         }
     }).catch((err) => {
         if (isMongoError(err)) {
-            res.status(500).redirect("/api/logout");
+            res.status(500).send();
         } else {
             log(err);
             // Something is desync in the client or server side, log the user out and make them reload the page
-            res.status(400).redirect("/api/logout");
+            res.status(400).send();
         };
     });
 });
@@ -391,7 +391,7 @@ app.post("/api/user/gameplay/strategy/:type/:value", mongoChecker, (req, res) =>
         if (!user) {
             // Either client's cookie is corrupted or user has been deleted by admin
             // Logging the user out should be appropriate
-            res.status(404).redirect("/api/logout");
+            res.status(404).send();
         } else {
             // apply the change of strategy
             switch (type.toLowerCase()) {
@@ -421,7 +421,7 @@ app.post("/api/user/gameplay/strategy/:type/:value", mongoChecker, (req, res) =>
             // save document
             user.save((err, user) => {
                 if (err) {
-                    res.status(500).redirect("/api/logout");
+                    res.status(500).send();
                 } else {
                     // Send the log to client
                     res.status(200).send({ log: log });
@@ -430,10 +430,10 @@ app.post("/api/user/gameplay/strategy/:type/:value", mongoChecker, (req, res) =>
         };
     }).catch((err) => {
         if (isMongoError(err)) {
-            res.status(500).redirect("/api/logout");
+            res.status(500).send();
         } else {
             // Something is desync in the client or server side, log the user out and make them reload the page
-            res.status(500).redirect("/api/logout");
+            res.status(500).send();
         };
     });
 });
@@ -462,15 +462,14 @@ app.post("/api/user/gameplay/event", mongoChecker, (req, res) => {
         if (!user) {
             // Either client's cookie is corrupted or user has been deleted by admin
             // Logging the user out should be appropriate
-            log("event choice: failed to find user");
-            res.status(404).redirect("/api/logout");
+            res.status(404).send();
         } else {
             // TODO: implement following
 
             // find the event document from database
             RandomEvent.findByName(eventName).then((evt) => {
                 if (!evt) {
-                    res.status(500).redirect("/api/logout");
+                    res.status(500).send();
                     return;
                 } else if (evt.name == "Game Over") {
                     // This is the game over event.
@@ -490,13 +489,13 @@ app.post("/api/user/gameplay/event", mongoChecker, (req, res) => {
                         user.log = user.log.slice(0, 1);
                         user.save().then((user) => {
                             if (!user) {
-                                res.status(404).redirect("/api/logout");
+                                res.status(404).send();
                             } else {
                                 res.status(200).send({});
                             }
                         }).catch((err) => {
                             log(err);
-                            res.status(500).redirect("/api/logout");
+                            res.status(500).send();
                         });
                     } else { // choice 2
                         let gameAlreadyOver = false;
@@ -521,13 +520,13 @@ app.post("/api/user/gameplay/event", mongoChecker, (req, res) => {
                             user.establishment.push({ name: output.establishment });
                             user.save().then((user) => {
                                 if (!user) {
-                                    res.status(404).redirect("/api/logout");
+                                    res.status(404).send();
                                 } else {
                                     res.status(200).send(output);
                                 }
                             }).catch((err) => {
                                 log(err);
-                                res.status(500).redirect("/api/logout");
+                                res.status(500).send();
                             });
                         }
                     }
@@ -602,7 +601,7 @@ app.post("/api/user/gameplay/event", mongoChecker, (req, res) => {
                     user.save().then((user) => {
                         if (!user) {
                             log(err);
-                            res.status(404).redirect("/api/logout");
+                            res.status(404).send();
                         } else {
                             // Send the expected return value to client
                             res.send(output);
@@ -610,7 +609,7 @@ app.post("/api/user/gameplay/event", mongoChecker, (req, res) => {
                     }).catch((err) => {
                         log(err);
                         // server error can't save
-                        res.status(500).redirect("/api/logout");
+                        res.status(500).send();
                     });
                 }
             });
@@ -619,11 +618,11 @@ app.post("/api/user/gameplay/event", mongoChecker, (req, res) => {
     }).catch((err) => {
         if (isMongoError(err)) {
             log(err);
-            res.status(500).redirect("/api/logout");
+            res.status(500).send();
         } else {
             log(err);
             // Something is desync in the client or server side, log the user out and make them reload the page
-            res.status(500).redirect("/api/logout");
+            res.status(500).send();
         };
     });
 });
@@ -651,7 +650,7 @@ app.get("/api/user/gameplay/update", mongoChecker, (req, res) => {
         if (!user) {
             // Either client's cookie is corrupted or user has been deleted by admin
             // Logging the user out should be appropriate
-            res.status(404).redirect("/api/logout");
+            res.status(404).send();
         } else {
             // TODO: implement following
             log("updating for user: " + username);
@@ -820,16 +819,16 @@ app.get("/api/user/gameplay/update", mongoChecker, (req, res) => {
                                 }
                             }).catch((err) => {
                                 log(err);
-                                res.status(500).redirect("/api/logout");
+                                res.status(500).send();
                             });
                         }
                     }).catch((err) => {
                         log(err);
-                        res.status(500).redirect("/api/logout");
+                        res.status(500).send();
                     });
                 }).catch((err) => {
                     log(err);
-                    res.status(500).redirect("/api/logout");
+                    res.status(500).send();
                 });
             }
 
@@ -838,7 +837,7 @@ app.get("/api/user/gameplay/update", mongoChecker, (req, res) => {
         };
     }).catch((err) => {
         log(err);
-        res.status(500).redirect("/api/logout");
+        res.status(500).send();
     });
 });
 
