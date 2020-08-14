@@ -266,7 +266,7 @@
         "name": "Game Over",
         "description": "Your country has collapsed because one of the statistic has fallen to 0. You were able to escape the group of rebels and rioters who attempted to murder you, but only to watch the country you once ruled fall into hands of revolutionists and foreign powers.",
         "choiceOne": {
-            "description": "Start a new game",
+            "description": "Give me another chance (this will start a new game for you)",
             "statChange": {
                 "economy": 0,
                 "order": 0,
@@ -274,7 +274,7 @@
                 "diplomacy": 0
             },
             "log": {
-                "content": "Give me another chance (this will start a new game for you)",
+                "content": "Your rule ended here.",
                 "statChange": {
                     "economy": 0,
                     "order": 0,

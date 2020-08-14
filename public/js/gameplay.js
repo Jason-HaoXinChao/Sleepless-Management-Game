@@ -6,6 +6,7 @@ const log = console.log;
 // Global variables
 let dropdownVisible = false; // toggle to indicate if dropdown menu is visible or not
 let interval; // global timer variable
+const updateInterval = 15000;
 
 function sendRequest(requestType, URL, data, callback) {
     const xml = new XMLHttpRequest();
@@ -13,16 +14,19 @@ function sendRequest(requestType, URL, data, callback) {
     xml.open(requestType, URL, true);
     xml.setRequestHeader("Content-Type", "application/json");
     xml.onreadystatechange = function() {
-        log("received update");
-        log(this.readyState);
-        log(this.status);
+
         if (this.readyState == 4 && this.status == 200) {
+            log("received update");
             try {
                 callback(JSON.parse(this.responseText));
             } catch (error) {
+                log("Logging out with the error below");
                 log(error);
-                window.open(__dirname + "/api/logout", "_self");
+                window.open(location.host + "/api/logout", "_self");
             }
+        } else if (this.status == 500 || this.status == 400 || this.status == 404) {
+            log("Logging out with error code: " + this.status);
+            window.open(location.host + "/api/logout", "_self");
         }
     };
     xml.send(JSON.stringify(data));
@@ -54,7 +58,7 @@ function initializePage(e) {
     // Periodically request update from server
     interval = setInterval(() => {
         requestUpdate();
-    }, 15000);
+    }, updateInterval);
 }
 
 function loadUserData(e) {
@@ -138,7 +142,7 @@ function hideModal(e) {
     document.getElementById("modalBackground").style.display = "none";
     interval = setInterval(function() {
         requestUpdate();
-    }, 15000);
+    }, updateInterval);
 }
 
 // Helper function that formulates statistic change into an array of string to be displayed
@@ -355,30 +359,39 @@ function showRandomEvent(eventToShow) {
  */
 function selectChoiceOne(e) {
     e.preventDefault();
-    // Post a request to the server
+
+    // Formulate request body
     const eventName = document.getElementById("titlediv").querySelector("#title").innerText;
     const choice = document.getElementById("choice1").innerText;
     const input = {
         "eventName": eventName,
         "choice": choice
     };
-    log(input);
-    sendRequest("POST", "/api/user/gameplay/event", input, (data) => {
-        log(data);
-        if (data.establishment) {
-            pushEstablishment({
-                "name": data.establishment
-            });
-        }
-        pushLog(data.log);
-        updateStatistics(data.newStatistic);
-    });
+
+    // Send request
+    if (eventName == "Game Over") {
+        sendRequest("POST", "/api/user/gameplay/event", input, (data) => {
+            // Simply reload the page, then the onload event will load the new DOM elements
+            location.reload();
+        });
+    } else {
+        sendRequest("POST", "/api/user/gameplay/event", input, (data) => {
+            if (data.establishment) {
+                pushEstablishment({
+                    "name": data.establishment
+                });
+            }
+            pushLog(data.log);
+            updateStatistics(data.newStatistic);
+        });
+    }
+
 
     document.getElementById("modalBackground").style.display = "none";
 
     interval = setInterval(function() {
         requestUpdate();
-    }, 15000);
+    }, updateInterval);
 }
 
 /**
@@ -387,42 +400,84 @@ function selectChoiceOne(e) {
  */
 function selectChoiceTwo(e) {
     e.preventDefault();
-    // Post a request to the server
+
+    // Formulate request body
     const eventName = document.getElementById("titlediv").querySelector("#title").innerText;
     const choice = document.getElementById("choice2").innerText;
     const input = {
         "eventName": eventName,
         "choice": choice
     };
-    log(input);
-    sendRequest("POST", "/api/user/gameplay/event", input, (data) => {
-        log(data);
-        if (data.establishment) {
-            pushEstablishment({
-                "name": data.establishment
+
+    // Send request
+    if (eventName == "Game Over") {
+        if (isGameOver()) {
+            // If this is not the first time the user is seeing this window (as the "Failed State" Establishment is already there), there is no establishment or log to add, so just do nothing.
+        } else {
+            sendRequest("POST", "/api/user/gameplay/event", input, (data) => {
+                if (data.establishment) {
+                    pushEstablishment({
+                        "name": data.establishment
+                    });
+                }
+                pushLog(data.log);
+                //updateStatistics(data.newStatistic);  There is no statistic change
             });
         }
-        pushLog(data.log);
-        updateStatistics(data.newStatistic);
-    });
-
+    } else {
+        sendRequest("POST", "/api/user/gameplay/event", input, (data) => {
+            if (data.establishment) {
+                pushEstablishment({
+                    "name": data.establishment
+                });
+            }
+            pushLog(data.log);
+            updateStatistics(data.newStatistic);
+        });
+    }
 
     document.getElementById("modalBackground").style.display = "none";
 
     interval = setInterval(function() {
         requestUpdate();
-    }, 15000);
+    }, updateInterval);
 }
 
 // Request for an update from the server
 function requestUpdate() {
     log("requesting update");
     sendRequest("GET", "/api/user/gameplay/update", {}, (data) => {
-        updateStatistics(data.newStat);
-        pushLog(data.log);
+        let gameOver = false;
+        const establishments = document.getElementsByClassName("boxedItem");
+        for (let index = 0; index < establishments.length; index++) {
+            const element = establishments[index];
+            if (element.innerText == "Failed State") {
+                gameOver = true;
+                index = establishments.length;
+            }
+        }
+        if (!gameOver) {
+            updateStatistics(data.newStat);
+            pushLog(data.log);
+        }
+
         // display randomEvent if there is one
         if (data.randomEvent) {
             showRandomEvent(data.randomEvent);
         }
     });
+}
+
+// Helper function that checks if "Failed State" is one of the establishment the user has
+function isGameOver() {
+    let gameOver = false;
+    const establishments = document.getElementsByClassName("boxedItem");
+    for (let index = 0; index < establishments.length; index++) {
+        const element = establishments[index];
+        if (element.innerText == "Failed State") {
+            gameOver = true;
+            break;
+        }
+    }
+    return gameOver;
 }

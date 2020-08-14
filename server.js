@@ -463,6 +463,7 @@ app.post("/api/user/gameplay/event", mongoChecker, (req, res) => {
             // Either client's cookie is corrupted or user has been deleted by admin
             // Logging the user out should be appropriate
             log("event choice: failed to find user");
+            res.status(500).send();
         } else {
             // TODO: implement following
 
@@ -471,89 +472,147 @@ app.post("/api/user/gameplay/event", mongoChecker, (req, res) => {
                 if (!evt) {
                     res.status(500).send();
                     return;
-                }
-                // get the corresponding EventChoice document
-                let choiceDoc;
+                } else if (evt.name == "Game Over") {
+                    // This is the game over event.
+                    // Choice 1 means the user's gameplay data gets wiped and restarts the game
+                    // Choice 2 means proceed as usual but don't add new log if user already has that log
+                    const output = {};
+                    if (evt.choiceOne.description == choice) { // choice 1
+                        // Reset the user's gameplay data to the initial state (except strategy)
 
-                if (evt.choiceOne.description == choice) {
-                    choiceDoc = evt.choiceOne;
-                } else {
-                    choiceDoc = evt.choiceTwo;
-                }
-
-                const output = {};
-
-                // calculate the new statistics (apply statChange in EventChoice document)
-                user.statistic.economy += choiceDoc.statChange.economy;
-                if (user.statistic.economy > 100) {
-                    user.statistic.economy = 100;
-                } else if (user.statistic.economy < 0) {
-                    user.statistic.economy = 0;
-                }
-                user.statistic.order += choiceDoc.statChange.order;
-                if (user.statistic.order > 100) {
-                    user.statistic.order = 100;
-                } else if (user.statistic.order < 0) {
-                    user.statistic.order = 0;
-                }
-                user.statistic.health += choiceDoc.statChange.health;
-                if (user.statistic.health > 100) {
-                    user.statistic.health = 100;
-                } else if (user.statistic.health < 0) {
-                    user.statistic.health = 0;
-                }
-                user.statistic.diplomacy += choiceDoc.statChange.diplomacy;
-                if (user.statistic.diplomacy > 100) {
-                    user.statistic.diplomacy = 100;
-                } else if (user.statistic.diplomacy < 0) {
-                    user.statistic.diplomacy = 0;
-                }
-                output.newStatistic = user.statistic;
-
-                // generate log (should be preset in EventChoice document but with no time)
-                const curr = new Date();
-                output.log = {
-                    time: ("0" + curr.getHours()).slice(-2) + ":" + ("0" + curr.getMinutes()).slice(-2),
-                    content: choiceDoc.log.content,
-                    statChange: choiceDoc.log.statChange
-                }
-
-                // Save the new statistic, log, and establishment(if any) in user
-                if (choiceDoc.newEstablishment) {
-                    // Check if the user already have this establishment
-                    //don't add it to the user's establishment collection if the user already have it.
-                    let exist = false;
-                    user.establishment.forEach(est => {
-                        if (est.name == choiceDoc.newEstablishment) {
-                            exist = true;
+                        // Set all statistics to 50
+                        user.statistic.economy = 50;
+                        user.statistic.order = 50;
+                        user.statistic.health = 50;
+                        user.statistic.diplomacy = 50;
+                        // Remove all establishment and log except for the first one
+                        user.establishment = user.establishment.slice(0, 1);
+                        user.log = user.log.slice(0, 1);
+                        user.save().then((user) => {
+                            if (!user) {
+                                res.status(500).send();
+                            } else {
+                                res.status(200).send({});
+                            }
+                        }).catch((err) => {
+                            log(err);
+                            res.status(500).send();
+                        });
+                    } else { // choice 2
+                        let gameAlreadyOver = false;
+                        user.establishment.forEach(est => {
+                            if (est.name == "Failed State") {
+                                gameAlreadyOver = true;
+                            }
+                        });
+                        if (gameAlreadyOver) {
+                            // This means the user already have the "Game Over" establishment and corresponding log, so just send nothing and let client handle it.
+                            res.status(200).send({});
+                        } else {
+                            // generate log (should be preset in EventChoice document but with no time)
+                            const curr = new Date();
+                            output.log = {
+                                time: ("0" + curr.getHours()).slice(-2) + ":" + ("0" + curr.getMinutes()).slice(-2),
+                                content: evt.choiceTwo.log.content,
+                                statChange: evt.choiceTwo.log.statChange
+                            };
+                            output.establishment = evt.choiceTwo.newEstablishment;
+                            user.log.push(output.log);
+                            user.establishment.push({ name: output.establishment });
+                            user.save().then((user) => {
+                                if (!user) {
+                                    res.status(500).send();
+                                } else {
+                                    res.status(200).send(output);
+                                }
+                            }).catch((err) => {
+                                log(err);
+                                res.status(500).send();
+                            });
                         }
-                    });
-                    if (!exist) {
-                        user.establishment.push({ "name": choiceDoc.newEstablishment });
-                        output.establishment = choiceDoc.newEstablishment;
+                    }
+
+                } else {
+                    // get the corresponding EventChoice document
+                    let choiceDoc;
+
+                    if (evt.choiceOne.description == choice) {
+                        choiceDoc = evt.choiceOne;
+                    } else {
+                        choiceDoc = evt.choiceTwo;
+                    }
+
+                    const output = {};
+
+                    // calculate the new statistics (apply statChange in EventChoice document)
+                    user.statistic.economy += choiceDoc.statChange.economy;
+                    if (user.statistic.economy > 100) {
+                        user.statistic.economy = 100;
+                    } else if (user.statistic.economy < 0) {
+                        user.statistic.economy = 0;
+                    }
+                    user.statistic.order += choiceDoc.statChange.order;
+                    if (user.statistic.order > 100) {
+                        user.statistic.order = 100;
+                    } else if (user.statistic.order < 0) {
+                        user.statistic.order = 0;
+                    }
+                    user.statistic.health += choiceDoc.statChange.health;
+                    if (user.statistic.health > 100) {
+                        user.statistic.health = 100;
+                    } else if (user.statistic.health < 0) {
+                        user.statistic.health = 0;
+                    }
+                    user.statistic.diplomacy += choiceDoc.statChange.diplomacy;
+                    if (user.statistic.diplomacy > 100) {
+                        user.statistic.diplomacy = 100;
+                    } else if (user.statistic.diplomacy < 0) {
+                        user.statistic.diplomacy = 0;
+                    }
+                    output.newStatistic = user.statistic;
+
+                    // generate log (should be preset in EventChoice document but with no time)
+                    const curr = new Date();
+                    output.log = {
+                        time: ("0" + curr.getHours()).slice(-2) + ":" + ("0" + curr.getMinutes()).slice(-2),
+                        content: choiceDoc.log.content,
+                        statChange: choiceDoc.log.statChange
+                    }
+
+                    // Save the new statistic, log, and establishment(if any) in user
+                    if (choiceDoc.newEstablishment) {
+                        // Check if the user already have this establishment
+                        //don't add it to the user's establishment collection if the user already have it.
+                        let exist = false;
+                        user.establishment.forEach(est => {
+                            if (est.name == choiceDoc.newEstablishment) {
+                                exist = true;
+                            }
+                        });
+                        if (!exist) {
+                            user.establishment.push({ "name": choiceDoc.newEstablishment });
+                            output.establishment = choiceDoc.newEstablishment;
+                        } else {
+                            output.establishment = null;
+                        }
                     } else {
                         output.establishment = null;
                     }
-                } else {
-                    output.establishment = null;
-                }
 
-                log("this is the output");
-                log(output);
-
-                user.save().then((user) => {
-                    if (!user) {
+                    user.save().then((user) => {
+                        if (!user) {
+                            log(err);
+                            res.status(500).send("500 Internal Server Error");
+                        } else {
+                            // Send the expected return value to client
+                            res.send(output);
+                        }
+                    }).catch((err) => {
                         log(err);
-                        res.status(500).send("500 Internal Server Error");
-                    } else {
-                        // Send the expected return value to client
-                        res.send(output);
-                    }
-                }).catch((err) => {
-                    log(err);
-                    // server error can't save
-                    res.status(500).send("Internal Server Error");
-                });
+                        // server error can't save
+                        res.status(500).send("Internal Server Error");
+                    });
+                }
             });
 
         }
@@ -602,139 +661,179 @@ app.get("/api/user/gameplay/update", mongoChecker, (req, res) => {
                 health: 0,
                 diplomacy: 0
             };
-            // Calculate new statistics (tally strategy and establishment)
+            let failedState = false;
+            let i = 0;
+            while (!failedState && i < user.establishment.length) {
+                if (user.establishment[i].name == "Failed State") {
+                    failedState = true;
+                }
+                i++;
+            }
 
-            // change in statistics due to strategy
-            user.strategy.calculateStatChange().then((stratImpact) => {
-                statisticChange.economy += stratImpact.economy;
-                statisticChange.order += stratImpact.order;
-                statisticChange.health += stratImpact.health;
-                statisticChange.diplomacy += stratImpact.diplomacy;
-                // change in statistics due to establishment
-                (user.establishment).forEach((est) => {
-                    EstablishmentInfo.findByName(est.name).then((establishment) => {
-                        const estImpact = establishment.statChange.convertToArray();
-                        statisticChange.economy += estImpact[0];
-                        statisticChange.order += estImpact[1];
-                        statisticChange.health += estImpact[2];
-                        statisticChange.diplomacy += estImpact[3];
-                    }).catch((err) => {
-                        log(err);
-                        res.status(500).send();
+            if (failedState) { // Game ended, skip checking for stats, send Game Over event.
+                const output = {};
+                RandomEvent.findByName("Game Over").then((evt) => {
+                    if (!evt) {
+                        log("Can't find randomEvent due to server issue");
+                    } else {
+                        output.randomEvent = {
+                            name: evt.name,
+                            description: evt.description,
+                            choiceOne: evt.choiceOne.description,
+                            choiceTwo: evt.choiceTwo.description
+                        };
+                        // Since statistic of gameover player doesn't change, there is no newStat or log to save processing power.
+                        res.send(output);
+                    }
+                }).catch((err) => {
+                    log(err);
+                    res.status(500).send();
+                });
+
+            } else { // Normal player, game haven't ended
+
+                // Calculate new statistics (tally strategy and establishment)
+
+                // change in statistics due to strategy
+                user.strategy.calculateStatChange().then((stratImpact) => {
+                    statisticChange.economy += stratImpact.economy;
+                    statisticChange.order += stratImpact.order;
+                    statisticChange.health += stratImpact.health;
+                    statisticChange.diplomacy += stratImpact.diplomacy;
+                    // change in statistics due to establishment
+                    (user.establishment).forEach((est) => {
+                        EstablishmentInfo.findByName(est.name).then((establishment) => {
+                            const estImpact = establishment.statChange.convertToArray();
+                            statisticChange.economy += estImpact[0];
+                            statisticChange.order += estImpact[1];
+                            statisticChange.health += estImpact[2];
+                            statisticChange.diplomacy += estImpact[3];
+                        }).catch((err) => {
+                            log(err);
+                            res.status(500).send();
+                        });
+
                     });
 
-                });
+                    // Formulate log
+                    const currTime = new Date();
+                    // Generate log
+                    const eventLog = new Log({
+                        time: ("0" + currTime.getHours()).slice(-2) + ":" + ("0" + currTime.getMinutes()).slice(-2),
+                        content: "A week has passed.",
+                        statChange: new StatChange({
+                            economy: statisticChange.economy,
+                            health: statisticChange.health,
+                            order: statisticChange.order,
+                            diplomacy: statisticChange.diplomacy
+                        })
+                    });
+                    let gameOver = false;
+                    // Change statistics and add log to user document
+                    user.statistic.economy += statisticChange.economy;
+                    if (user.statistic.economy > 100) {
+                        user.statistic.economy = 100;
+                    } else if (user.statistic.economy <= 0) {
+                        user.statistic.economy = 0;
+                        gameOver = true;
+                    }
+                    user.statistic.order += statisticChange.order;
+                    if (user.statistic.order > 100) {
+                        user.statistic.order = 100;
+                    } else if (user.statistic.order <= 0) {
+                        user.statistic.order = 0;
+                        gameOver = true;
+                    }
+                    user.statistic.health += statisticChange.health;
+                    if (user.statistic.health > 100) {
+                        user.statistic.health = 100;
+                    } else if (user.statistic.health <= 0) {
+                        user.statistic.health = 0;
+                        gameOver = true;
+                    }
+                    user.statistic.diplomacy += statisticChange.diplomacy;
+                    if (user.statistic.diplomacy > 100) {
+                        user.statistic.diplomacy = 100;
+                    } else if (user.statistic.diplomacy <= 0) {
+                        user.statistic.diplomacy = 0;
+                        gameOver = true;
+                    }
 
-                // Formulate log
-                const currTime = new Date();
-                // Generate log
-                const eventLog = new Log({
-                    time: ("0" + currTime.getHours()).slice(-2) + ":" + ("0" + currTime.getMinutes()).slice(-2),
-                    content: "A week has passed.",
-                    statChange: new StatChange({
-                        economy: statisticChange.economy,
-                        health: statisticChange.health,
-                        order: statisticChange.order,
-                        diplomacy: statisticChange.diplomacy
-                    })
-                });
-                let gameOver = false;
-                // Change statistics and add log to user document
-                user.statistic.economy += statisticChange.economy;
-                if (user.statistic.economy > 100) {
-                    user.statistic.economy = 100;
-                } else if (user.statistic.economy < 0) {
-                    user.statistic.economy = 0;
-                    gameOver = true;
-                }
-                user.statistic.order += statisticChange.order;
-                if (user.statistic.order > 100) {
-                    user.statistic.order = 100;
-                } else if (user.statistic.order < 0) {
-                    user.statistic.order = 0;
-                    gameOver = true;
-                }
-                user.statistic.health += statisticChange.health;
-                if (user.statistic.health > 100) {
-                    user.statistic.health = 100;
-                } else if (user.statistic.health < 0) {
-                    user.statistic.health = 0;
-                    gameOver = true;
-                }
-                user.statistic.diplomacy += statisticChange.diplomacy;
-                if (user.statistic.diplomacy > 100) {
-                    user.statistic.diplomacy = 100;
-                } else if (user.statistic.diplomacy < 0) {
-                    user.statistic.diplomacy = 0;
-                    gameOver = true;
-                }
+                    user.log.push(eventLog);
 
-                user.log.push(eventLog);
+                    // save user document
+                    user.save().then((user) => {
+                        const output = {
+                            newStat: user.statistic,
+                            log: eventLog,
+                            randomEvent: null
+                        };
+                        if (!gameOver) {
+                            // Ask RNGesus if there should be a random event
+                            const percentageChance = 5; // percentage chance of event occuring
+                            if (Math.floor(Math.random() * (100 - 0)) + 0 <= percentageChance) {
+                                // chooce a random event
+                                RandomEvent.countDocuments().exec(function(err, count) {
+                                    if (err) {
+                                        log(err);
+                                    } else {
+                                        const random = Math.floor(Math.random() * count);
 
-                // save user document
-                user.save().then((user) => {
-                    const output = {
-                        newStat: user.statistic,
-                        log: eventLog,
-                        randomEvent: null
-                    };
-                    if (!gameOver) {
-                        // Ask RNGesus if there should be a random event
-                        const percentageChance = 5; // percentage chance of event occuring
-                        if (Math.floor(Math.random() * (100 - 0)) + 0 <= percentageChance) {
-                            // chooce a random event
-                            RandomEvent.countDocuments().exec(function(err, count) {
-                                if (err) {
-                                    log(err);
+                                        RandomEvent.findOne().skip(random).exec(
+                                            function(err, randomEvent) {
+                                                if (err) {
+                                                    log(err);
+                                                }
+
+                                                if (!randomEvent) {
+                                                    log("Can't find randomEvent due to server issue");
+                                                } else {
+                                                    output.randomEvent = {
+                                                        name: randomEvent.name,
+                                                        description: randomEvent.description,
+                                                        choiceOne: randomEvent.choiceOne.description,
+                                                        choiceTwo: randomEvent.choiceTwo.description
+                                                    };
+                                                    res.send(output);
+                                                }
+                                            });
+                                    }
+                                });
+                            } else {
+                                res.send(output);
+                            }
+                        } else {
+                            // If one of the 4 main statistics falls to or below 0, game is over
+                            // Send the "Game Over" event to the user
+                            RandomEvent.findByName("Game Over").then((evt) => {
+                                if (!evt) {
+                                    log("Can't find randomEvent due to server issue");
                                 } else {
-                                    const random = Math.floor(Math.random() * count);
-
-                                    RandomEvent.findOne().skip(random).exec(
-                                        function(err, randomEvent) {
-                                            if (err) {
-                                                log(err);
-                                            }
-
-                                            if (!randomEvent) {
-                                                log("Can't find randomEvent due to server issue");
-                                            } else {
-                                                output.randomEvent = {
-                                                    name: randomEvent.name,
-                                                    description: randomEvent.description,
-                                                    choiceOne: randomEvent.choiceOne.description,
-                                                    choiceTwo: randomEvent.choiceTwo.description
-                                                };
-                                            }
-                                        });
+                                    output.randomEvent = {
+                                        name: evt.name,
+                                        description: evt.description,
+                                        choiceOne: evt.choiceOne.description,
+                                        choiceTwo: evt.choiceTwo.description
+                                    };
+                                    // Send new statistics, log and randomEvent(if any) to user
+                                    res.send(output);
                                 }
+                            }).catch((err) => {
+                                log(err);
+                                res.status(500).send();
                             });
                         }
-                    } else {
-                        // If one of the 4 main statistics falls to or below 0, game is over
-                        // Send the "Game Over" event to the user
-                        RandomEvent.findByName("Game Over").then((evt) => {
-                            if (!evt) {
-                                log("Can't find randomEvent due to server issue");
-                            } else {
-                                output.randomEvent = {
-                                    name: evt.name,
-                                    description: evt.description,
-                                    choiceOne: evt.choiceOne.description,
-                                    choiceTwo: evt.choiceTwo.description
-                                };
-                            }
-                        });
-                    }
-                    // Send new statistics, log and randomEvent(if any) to user
-                    res.send(output);
+                    }).catch((err) => {
+                        log(err);
+                        res.status(500).send("500 Internal Server Error");
+                    });
                 }).catch((err) => {
                     log(err);
                     res.status(500).send("500 Internal Server Error");
                 });
-            }).catch((err) => {
-                log(err);
-                res.status(500).send("500 Internal Server Error");
-            });
+            }
+
+
 
         };
     }).catch((err) => {
