@@ -588,14 +588,14 @@ app.get("/api/user/gameplay/update", mongoChecker, (req, res) => {
     const username = req.session.username;
 
     Gameplay.findByUsername(username).then((user) => {
-        log("updating for user:" + username);
+
         if (!user) {
             // Either client's cookie is corrupted or user has been deleted by admin
             // Logging the user out should be appropriate
             res.redirect("/api/logout");
         } else {
             // TODO: implement following
-
+            log("updating for user: " + username);
             let statisticChange = {
                 economy: 0,
                 order: 0,
@@ -619,11 +619,13 @@ app.get("/api/user/gameplay/update", mongoChecker, (req, res) => {
                         statisticChange.health += estImpact[2];
                         statisticChange.diplomacy += estImpact[3];
                     }).catch((err) => {
+                        log(err);
                         res.status(500).send();
                     });
 
                 });
 
+                // Formulate log
                 const currTime = new Date();
                 // Generate log
                 const eventLog = new Log({
@@ -636,32 +638,37 @@ app.get("/api/user/gameplay/update", mongoChecker, (req, res) => {
                         diplomacy: statisticChange.diplomacy
                     })
                 });
-
+                let gameOver = false;
                 // Change statistics and add log to user document
                 user.statistic.economy += statisticChange.economy;
                 if (user.statistic.economy > 100) {
                     user.statistic.economy = 100;
                 } else if (user.statistic.economy < 0) {
                     user.statistic.economy = 0;
+                    gameOver = true;
                 }
                 user.statistic.order += statisticChange.order;
                 if (user.statistic.order > 100) {
                     user.statistic.order = 100;
                 } else if (user.statistic.order < 0) {
                     user.statistic.order = 0;
+                    gameOver = true;
                 }
                 user.statistic.health += statisticChange.health;
                 if (user.statistic.health > 100) {
                     user.statistic.health = 100;
                 } else if (user.statistic.health < 0) {
                     user.statistic.health = 0;
+                    gameOver = true;
                 }
                 user.statistic.diplomacy += statisticChange.diplomacy;
                 if (user.statistic.diplomacy > 100) {
                     user.statistic.diplomacy = 100;
                 } else if (user.statistic.diplomacy < 0) {
                     user.statistic.diplomacy = 0;
+                    gameOver = true;
                 }
+
                 user.log.push(eventLog);
 
                 // save user document
@@ -671,43 +678,55 @@ app.get("/api/user/gameplay/update", mongoChecker, (req, res) => {
                         log: eventLog,
                         randomEvent: null
                     };
+                    if (!gameOver) {
+                        // Ask RNGesus if there should be a random event
+                        const percentageChance = 5; // percentage chance of event occuring
+                        if (Math.floor(Math.random() * (100 - 0)) + 0 <= percentageChance) {
+                            // chooce a random event
+                            RandomEvent.countDocuments().exec(function(err, count) {
+                                if (err) {
+                                    log(err);
+                                } else {
+                                    const random = Math.floor(Math.random() * count);
 
-                    // Determine if a random event occurs, and if so, which one
-                    const percentageChance = 5;
-                    if (Math.floor(Math.random() * (100 - 0)) + 0 <= percentageChance) {
-                        // chooce a random event
-                        RandomEvent.countDocuments().exec(function(err, count) {
-                            if (err) {
-                                log(err);
+                                    RandomEvent.findOne().skip(random).exec(
+                                        function(err, randomEvent) {
+                                            if (err) {
+                                                log(err);
+                                            }
+
+                                            if (!randomEvent) {
+                                                log("Can't find randomEvent due to server issue");
+                                            } else {
+                                                output.randomEvent = {
+                                                    name: randomEvent.name,
+                                                    description: randomEvent.description,
+                                                    choiceOne: randomEvent.choiceOne.description,
+                                                    choiceTwo: randomEvent.choiceTwo.description
+                                                };
+                                            }
+                                        });
+                                }
+                            });
+                        }
+                    } else {
+                        // If one of the 4 main statistics falls to or below 0, game is over
+                        // Send the "Game Over" event to the user
+                        RandomEvent.findByName("Game Over").then((evt) => {
+                            if (!evt) {
+                                log("Can't find randomEvent due to server issue");
                             } else {
-                                const random = Math.floor(Math.random() * count);
-
-                                RandomEvent.findOne().skip(random).exec(
-                                    function(err, randomEvent) {
-                                        if (err) {
-                                            log(err);
-                                        }
-
-                                        if (!randomEvent) {
-                                            log("Can't find randomEvent due to server issue");
-                                        } else {
-                                            output.randomEvent = {
-                                                name: randomEvent.name,
-                                                description: randomEvent.description,
-                                                choiceOne: randomEvent.choiceOne.description,
-                                                choiceTwo: randomEvent.choiceTwo.description
-                                            };
-                                        }
-                                        // Send new statistics, log and randomEvent(if any) to user
-                                        res.send(output);
-                                    });
+                                output.randomEvent = {
+                                    name: evt.name,
+                                    description: evt.description,
+                                    choiceOne: evt.choiceOne.description,
+                                    choiceTwo: evt.choiceTwo.description
+                                };
                             }
                         });
-                    } else {
-                        // Send response with no random event
-                        res.send(output);
                     }
-
+                    // Send new statistics, log and randomEvent(if any) to user
+                    res.send(output);
                 }).catch((err) => {
                     log(err);
                     res.status(500).send("500 Internal Server Error");

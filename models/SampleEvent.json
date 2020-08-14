@@ -215,7 +215,9 @@
                 }
             }
         }
-    },
+    }
+
+    ,
 
     {
         "name": "Karen's Outrage II: Electric Boogaloo",
@@ -255,6 +257,50 @@
                     "diplomacy": -3
                 }
             }
+        }
+    }
+
+    ,
+
+    {
+        "name": "Game Over",
+        "description": "Your country has collapsed because one of the statistic has fallen to 0. You were able to escape the group of rebels and rioters who attempted to murder you, but only to watch the country you once ruled fall into hands of revolutionists and foreign powers.",
+        "choiceOne": {
+            "description": "Start a new game",
+            "statChange": {
+                "economy": 0,
+                "order": 0,
+                "health": 0,
+                "diplomacy": 0
+            },
+            "log": {
+                "content": "Give me another chance (this will start a new game for you)",
+                "statChange": {
+                    "economy": 0,
+                    "order": 0,
+                    "health": 0,
+                    "diplomacy": 0
+                }
+            }
+        },
+        "choiceTwo": {
+            "description": "I want to reminisce (you will remain here and can start new game later)",
+            "statChange": {
+                "economy": 0,
+                "order": 0,
+                "health": 0,
+                "diplomacy": 0
+            },
+            "log": {
+                "content": "Your country has collapsed during the pandemic. You are now a refugee hiding from people who want you dead for your incompetent ruling.",
+                "statChange": {
+                    "economy": 0,
+                    "order": 0,
+                    "health": 0,
+                    "diplomacy": 0
+                }
+            },
+            "newEstablishment": "Failed State"
         }
     }
 ]

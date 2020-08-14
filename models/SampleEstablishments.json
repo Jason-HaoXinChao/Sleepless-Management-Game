@@ -55,4 +55,17 @@
             "diplomacy": 0
         }
     }
+
+    ,
+
+    {
+        "name": "Failed State",
+        "description": "Your government collapsed under your rule. The society as you knew it no longer exists, as rebel leaders organize their armies to fight over control of the land. With foreign powers meddling with the civil war, you can foresee the dark future that awaits your people. What about the pandemic? Well, it's not nearly as deadly as the war.",
+        "statChange": {
+            "economy": 0,
+            "order": 0,
+            "health": 0,
+            "diplomacy": 0
+        }
+    }
 ]
