@@ -8,33 +8,80 @@ let dropdownVisible = false; // toggle to indicate if dropdown menu is visible o
 let interval; // global timer variable
 const updateInterval = 15000;
 
-function sendRequest(requestType, URL, data, callback) {
-    const xml = new XMLHttpRequest();
+// function sendRequest(requestType, URL, data, callback) {
+//     const xml = new XMLHttpRequest();
 
-    xml.open(requestType, URL, true);
-    xml.setRequestHeader("Content-Type", "application/json");
-    xml.onreadystatechange = function() {
+//     xml.open(requestType, URL, true);
+//     xml.setRequestHeader("Content-Type", "application/json");
+//     xml.onreadystatechange = function() {
 
-        if (this.readyState == 4 && this.status == 200) {
-            log("received update");
-            try {
-                callback(JSON.parse(this.responseText));
-            } catch (error) {
-                log("Logging out with the error below");
-                log(error);
-                window.open(location.host + "/api/logout", "_self");
-            }
-        } else if (this.status >= 400) {
-            log("Logging out with error code: " + this.status);
-            window.open(location.host + "/api/logout", "_self");
-        }
-    };
-    xml.onerror = function() {
-        log("An error has occured.");
-        log("Logging out with error code: " + this.status);
-        window.open(location.host + "/api/logout", "_self");
+//         if (this.readyState == 4 && this.status == 200) {
+//             log("received update");
+//             try {
+//                 callback(JSON.parse(this.responseText));
+//             } catch (error) {
+//                 log("Logging out with the error below");
+//                 log(error);
+//                 window.open(location.host + "/api/logout", "_self");
+//             }
+//         } else if (this.status >= 400) {
+//             log("Logging out with error code: " + this.status);
+//             window.open(location.host + "/api/logout", "_self");
+//         }
+//     };
+//     xml.onerror = function() {
+//         log("An error has occured.");
+//         log("Logging out with error code: " + this.status);
+//         window.open(location.host + "/api/logout", "_self");
+//     }
+//     xml.send(JSON.stringify(data));
+// }
+
+// Helper function to send a request to the server using the fetch() api
+function fetchRequest(requestType, URL, data, callback) {
+    if (requestType == "GET") {
+        fetch(URL, {
+                method: requestType,
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                credentials: "include",
+                redirect: "follow"
+            })
+            .then(response => {
+                return response.json();
+            })
+            .then(data => {
+                console.log("Request Successful");
+                callback(data);
+            })
+            .catch((error) => {
+                console.error('Encountered error:', error);
+                console.error("Redirecting user to logout.");
+            });
+
+    } else {
+        fetch(URL, {
+                method: requestType,
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                credentials: "include",
+                redirect: "follow",
+                body: JSON.stringify(data)
+            })
+            .then(response => {
+                return response.json();
+            })
+            .then(data => {
+                console.log("Request Successful");
+                callback(data);
+            })
+            .catch((error) => {
+                console.error('Encountered error:', error);
+                console.error("Redirecting user to logout.");
+            });
     }
-    xml.send(JSON.stringify(data));
 }
 
 function initializePage(e) {
@@ -67,10 +114,8 @@ function initializePage(e) {
 }
 
 function loadUserData(e) {
-    // This function should call the server to get data of the user
-    // Then it should display the value in DOM elements
-
-    sendRequest("GET", "/api/user/gameplay/stat/all", {}, (userData) => {
+    log("Requesting user data");
+    fetchRequest("GET", "/api/user/gameplay/stat/all", {}, (userData) => {
         updateStatistics(userData.statistic);
         setupStrategyButton(userData.strategy);
 
@@ -121,7 +166,8 @@ function showDescription(e) {
     const content = document.getElementsByClassName("modalContent")[0].querySelector("p");
 
     // obtain the title, description, and effect on statistics of the establishment from server.
-    sendRequest("POST", "/api/user/gameplay/EstInfo", { "name": e.target.innerText }, (establishment) => {
+    log("Requesting establishment detail");
+    fetchRequest("POST", "/api/user/gameplay/EstInfo", { "name": e.target.innerText }, (establishment) => {
         title.innerText = establishment.name;
         content.innerHTML = "";
         content.appendChild(document.createTextNode(establishment.description));
@@ -299,7 +345,8 @@ function changeStrategy(e) {
             break;
     }
     // send post request to server
-    sendRequest("POST", "/api/user/gameplay/strategy/" + type + "/" + newStrat, {}, (log) => {
+    log("Requesting strategy change");
+    fetchRequest("POST", "/api/user/gameplay/strategy/" + type + "/" + newStrat, {}, (log) => {
         // Change the text of the button to the item selected in the dropdown button
         mainButton.innerText = newStrat;
         // publish log
@@ -375,12 +422,14 @@ function selectChoiceOne(e) {
 
     // Send request
     if (eventName == "Game Over") {
-        sendRequest("POST", "/api/user/gameplay/event", input, (data) => {
+        log("Requesting restart game");
+        fetchRequest("POST", "/api/user/gameplay/event", input, (data) => {
             // Simply reload the page, then the onload event will load the new DOM elements
             location.reload();
         });
     } else {
-        sendRequest("POST", "/api/user/gameplay/event", input, (data) => {
+        log("Requesting remain on end game");
+        fetchRequest("POST", "/api/user/gameplay/event", input, (data) => {
             if (data.establishment) {
                 pushEstablishment({
                     "name": data.establishment
@@ -419,7 +468,9 @@ function selectChoiceTwo(e) {
         if (isGameOver()) {
             // If this is not the first time the user is seeing this window (as the "Failed State" Establishment is already there), there is no establishment or log to add, so just do nothing.
         } else {
-            sendRequest("POST", "/api/user/gameplay/event", input, (data) => {
+
+            log("Requesting remain on end game");
+            fetchRequest("POST", "/api/user/gameplay/event", input, (data) => {
                 if (data.establishment) {
                     pushEstablishment({
                         "name": data.establishment
@@ -430,7 +481,9 @@ function selectChoiceTwo(e) {
             });
         }
     } else {
-        sendRequest("POST", "/api/user/gameplay/event", input, (data) => {
+
+        log("Requesting remain on end game");
+        fetchRequest("POST", "/api/user/gameplay/event", input, (data) => {
             if (data.establishment) {
                 pushEstablishment({
                     "name": data.establishment
@@ -450,8 +503,8 @@ function selectChoiceTwo(e) {
 
 // Request for an update from the server
 function requestUpdate() {
-    log("requesting update");
-    sendRequest("GET", "/api/user/gameplay/update", {}, (data) => {
+    log("Requesting update");
+    fetchRequest("GET", "/api/user/gameplay/update", {}, (data) => {
         let gameOver = false;
         const establishments = document.getElementsByClassName("boxedItem");
         for (let index = 0; index < establishments.length; index++) {
