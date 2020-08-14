@@ -24,11 +24,16 @@ function sendRequest(requestType, URL, data, callback) {
                 log(error);
                 window.open(location.host + "/api/logout", "_self");
             }
-        } else if (this.status == 500 || this.status == 400 || this.status == 404) {
+        } else if (this.status >= 400) {
             log("Logging out with error code: " + this.status);
             window.open(location.host + "/api/logout", "_self");
         }
     };
+    xml.onerror = function() {
+        log("An error has occured.");
+        log("Logging out with error code: " + this.status);
+        window.open(location.host + "/api/logout", "_self");
+    }
     xml.send(JSON.stringify(data));
 }
 
