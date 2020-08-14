@@ -297,7 +297,7 @@ app.get("/api/user/gameplay/stat/:type", mongoChecker, (req, res) => {
         if (!user) {
             // Either client's cookie is corrupted or user has been deleted by admin
             // Logging the user out should be appropriate
-            res.redirect("/api/logout");
+            res.status(500).send();
         } else {
             // send document according to user request type
             switch (reqType) {
@@ -327,7 +327,7 @@ app.get("/api/user/gameplay/stat/:type", mongoChecker, (req, res) => {
         } else {
             // Either client's cookie is corrupted or user has been deleted by admin
             // Logging the user out should be appropriate
-            res.redirect("/api/logout");
+            res.status(500).send();
         };
     });
 });
@@ -351,7 +351,7 @@ app.post("/api/user/gameplay/EstInfo", mongoChecker, (req, res) => {
     EstablishmentInfo.findByName(establishmentName).then((establishment) => {
         if (!establishment) {
             // Something is desync in the client or server side, log the user out and make them reload the page
-            res.redirect("/logout");
+            res.status(500).send();
         } else {
             const output = {
                 name: establishment.name,
@@ -366,7 +366,7 @@ app.post("/api/user/gameplay/EstInfo", mongoChecker, (req, res) => {
         } else {
             log(err);
             // Something is desync in the client or server side, log the user out and make them reload the page
-            res.redirect("/api/logout");
+            res.status(500).send();
         };
     });
 });
@@ -391,7 +391,7 @@ app.post("/api/user/gameplay/strategy/:type/:value", mongoChecker, (req, res) =>
         if (!user) {
             // Either client's cookie is corrupted or user has been deleted by admin
             // Logging the user out should be appropriate
-            res.status(404).redirect("/api/logout");
+            res.status(500).send();
         } else {
             // apply the change of strategy
             switch (type.toLowerCase()) {
@@ -421,7 +421,7 @@ app.post("/api/user/gameplay/strategy/:type/:value", mongoChecker, (req, res) =>
             // save document
             user.save((err, user) => {
                 if (err) {
-                    res.status(500).redirect("/api/logout");
+                    res.status(500).send();
                 } else {
                     // Send the log to client
                     res.send({ log: log });
@@ -433,7 +433,7 @@ app.post("/api/user/gameplay/strategy/:type/:value", mongoChecker, (req, res) =>
             res.status(500).send("Internal Server Error");
         } else {
             // Something is desync in the client or server side, log the user out and make them reload the page
-            res.status(400).redirect("/api/logout");
+            res.status(500).send();
         };
     });
 });
@@ -623,7 +623,7 @@ app.post("/api/user/gameplay/event", mongoChecker, (req, res) => {
         } else {
             log(err);
             // Something is desync in the client or server side, log the user out and make them reload the page
-            res.redirect("/api/logout");
+            res.status(500).send();
         };
     });
 });
@@ -651,7 +651,7 @@ app.get("/api/user/gameplay/update", mongoChecker, (req, res) => {
         if (!user) {
             // Either client's cookie is corrupted or user has been deleted by admin
             // Logging the user out should be appropriate
-            res.redirect("/api/logout");
+            res.status(500).send();
         } else {
             // TODO: implement following
             log("updating for user: " + username);
@@ -930,7 +930,7 @@ app.get("/api/admin/user_icon/:username", adminRequestChecker, mongoChecker, (re
                     width: 150,
                     crop: "fill",
                     gravity: "face"
-                    }]
+                }]
             }));
         } else {
             Credential.findOne({ username: username }).then(user => {
@@ -1002,9 +1002,9 @@ app.get("/api/admin/gameplay_stat/:username", adminRequestChecker, mongoChecker,
     });
 });
 
-app.get("/api/admin/ban_status/:username", mongoChecker, adminRequestChecker, async (req, res) => {
+app.get("/api/admin/ban_status/:username", mongoChecker, adminRequestChecker, async(req, res) => {
     const username = req.params.username;
-    
+
     try {
         const is_banned = await Credential.getBanStatusByUsername(username);
 
@@ -1089,7 +1089,7 @@ app.get("/api/admin/search_event/:event_name", adminRequestChecker, mongoChecker
 
     try {
         const event = await RandomEvent.findByName(event_name);
-        
+
         if (!event) {
             res.status(404).end();
             return;
@@ -1099,21 +1099,21 @@ app.get("/api/admin/search_event/:event_name", adminRequestChecker, mongoChecker
 
         if (event.choiceOne.newEstablishment) {
             const establishment = await EstablishmentInfo.findByName(event.choiceOne.newEstablishment);
-            
+
             if (!event) {
                 res.status(404).end();
             } else {
-                event_data.choice_one_establishment = establishment;                        
+                event_data.choice_one_establishment = establishment;
             }
         }
-            
+
         if (event.choiceTwo.newEstablishment) {
             const establishment = await EstablishmentInfo.findByName(event.choiceTwo.newEstablishment);
-            
+
             if (!event) {
                 res.status(404).end();
             } else {
-                event_data.choice_two_establishment = establishment;                        
+                event_data.choice_two_establishment = establishment;
             }
         }
 
