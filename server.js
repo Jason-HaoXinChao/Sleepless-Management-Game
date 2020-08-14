@@ -743,121 +743,6 @@ app.get("/api/user/gameplay/update", mongoChecker, (req, res) => {
     });
 });
 
-app.get("/api/admin/ban_status/:username", adminRequestChecker, mongoChecker, (req, res) => {
-    const username = req.params.username;
-
-    Credential.getBanStatusByUsername(username).then((is_banned) => {
-        if (!is_banned) {
-            res.status(404).send();
-        } else {
-            res.send(is_banned);
-        };
-    }).catch((err) => {
-        if (isMongoError(err)) {
-            res.status(500).send("Internal Server Error");
-        } else {
-            log(err);
-        };
-    });
-});
-
-app.get("/api/admin/user_info/:username", adminRequestChecker, mongoChecker, (req, res) => {
-    const username = req.params.username;
-
-    Profile.findByUsername(username).then((user) => {
-        if (!user) {
-            res.status(404).send();
-        } else {
-            res.send(user);
-        };
-    }).catch((err) => {
-        if (isMongoError(err)) {
-            res.status(500).send("Internal Server Error");
-        } else {
-            log(err);
-        };
-    });
-});
-
-app.get("/api/admin/gameplay_stat/:username", adminRequestChecker, mongoChecker, (req, res) => {
-    const username = req.params.username;
-
-    Gameplay.findByUsername(username).then((user) => {
-        if (!user) {
-            res.status(404).send();
-        } else {
-            res.send(user.statistic);
-        };
-    }).catch((err) => {
-        if (isMongoError(err)) {
-            res.status(500).send("Internal Server Error");
-        } else {
-            log(err);
-        };
-    });
-});
-
-app.post("/api/admin/change_ban/:username/:ban_status", adminRequestChecker, mongoChecker, (req, res) => {
-    const username = req.params.username;
-    const ban_status = req.params.ban_status;
-
-    Credential.updateOne({ username: username }, { $set: { is_banned: (ban_status === 'ban') ? true : false } }).then((user) => {
-        if (!user) {
-            res.status(404).send();
-        } else {
-            res.end();
-        };
-    }).catch((err) => {
-        if (isMongoError(err)) {
-            res.status(500).send("Internal Server Error");
-        } else {
-            log(err);
-        };
-    });
-});
-
-app.post("/api/admin/change_stats/:username", adminRequestChecker, mongoChecker, async(req, res) => {
-    const username = req.params.username;
-
-    Gameplay.findByUsername(username).then((user) => {
-        if (!user) {
-            res.status(404).send();
-            return;
-        }
-
-        const statisticChange = {
-            economy: req.body.economy - user.statistic.economy,
-            order: req.body.order - user.statistic.order,
-            health: req.body.health - user.statistic.health,
-            diplomacy: req.body.diplomacy - user.statistic.diplomacy
-        };
-
-        const currTime = new Date();
-        // Generate log
-        const log = new Log({
-            time: ("0" + currTime.getHours()).slice(-2) + ":" + ("0" + currTime.getMinutes()).slice(-2),
-            content: "How mysterious! An otherworldly influence has been bestowed upon you...",
-            statChange: statisticChange
-        });
-
-        // Change statistics and add log to user document
-        const stat = user.statistic;
-        stat.economy = req.body.economy;
-        stat.order = req.body.order;
-        stat.health = req.body.health;
-        stat.diplomacy = req.body.diplomacy;
-        user.log.push(log);
-
-        return user;
-    }).then((user) => {
-        // save user document
-        user.save();
-        res.end();
-    }).catch((err) => {
-        res.status(500).send("Internal Server Error");
-    });
-});
-
 app.post('/api/user/upload_icon', multipartMiddleware, (req, res) => {
     cloudinary.uploader.upload(req.files.image.path, {
         eager: [
@@ -935,39 +820,50 @@ app.get('/api/user/user_icon', (req, res) => {
     });
 });
 
-app.delete('/api/admin/delete_icon/:username', mongoChecker, adminRequestChecker, (req, res) => {
+app.get("/api/admin/user_icon/:username", adminRequestChecker, mongoChecker, (req, res) => {
     const username = req.params.username;
 
-    // Find the user icon according to the provided username
-    UserIcon.findOne({ uploader: username }).then(userIcon => {
-        // Get the user icon's image ID
-        const imageId = userIcon.image_id;
-
-        // Delete the user icon (by imageId) from the cloudinary server
-        cloudinary.uploader.destroy(imageId, function(res) {
-            // Remove the user icon from the database
-            userIcon.remove();
-        });
+    UserIcon.findByUsername(username).then((userIcon) => {
+        if (userIcon) {
+            res.send(cloudinary.image(`${userIcon.image_id}.${userIcon.format}`, {
+                transformation: [{
+                    height: 150,
+                    width: 150,
+                    crop: "fill",
+                    gravity: "face"
+                    }]
+            }));
+        } else {
+            Credential.findOne({ username: username }).then(user => {
+                if (!user) {
+                    res.status(404).end();
+                } else {
+                    res.end();
+                }
+            });
+        }
     }).catch(err => {
+        console.log(err);
         res.status(500).send("Internal Server Error");
     });
 });
 
-app.get("/api/admin/ban_status/:username", adminRequestChecker, mongoChecker, (req, res) => {
+app.delete('/api/admin/delete_icon/:username', mongoChecker, adminRequestChecker, (req, res) => {
     const username = req.params.username;
 
-    Credential.getBanStatusByUsername(username).then((is_banned) => {
-        if (!is_banned) {
-            res.status(404).send();
-        } else {
-            res.send(is_banned);
-        };
-    }).catch((err) => {
-        if (isMongoError(err)) {
-            res.status(500).send("Internal Server Error");
-        } else {
-            log(err);
-        };
+    // Find the user icon according to the provided username
+    UserIcon.findByUsername(username).then(userIcon => {
+        // Get the user icon's image ID
+        const imageId = userIcon.image_id;
+
+        // Delete the user icon (by imageId) from the cloudinary server
+        cloudinary.uploader.destroy(imageId, function(result) {
+            // Remove the user icon from the database
+            userIcon.remove();
+            res.end();
+        });
+    }).catch(err => {
+        res.status(500).send("Internal Server Error");
     });
 });
 
@@ -1007,23 +903,24 @@ app.get("/api/admin/gameplay_stat/:username", adminRequestChecker, mongoChecker,
     });
 });
 
-app.post("/api/admin/change_ban/:username/:ban_status", adminRequestChecker, mongoChecker, (req, res) => {
+app.get("/api/admin/ban_status/:username", mongoChecker, adminRequestChecker, async (req, res) => {
     const username = req.params.username;
-    const ban_status = req.params.ban_status;
+    
+    try {
+        const is_banned = await Credential.getBanStatusByUsername(username);
 
-    Credential.updateOne({ username: username }, { $set: { is_banned: (ban_status === 'ban') ? true : false } }).then((user) => {
-        if (!user) {
+        if (is_banned === 'Not Found') {
             res.status(404).send();
         } else {
-            res.end();
-        };
-    }).catch((err) => {
+            res.send(is_banned);
+        }
+    } catch {
         if (isMongoError(err)) {
             res.status(500).send("Internal Server Error");
         } else {
             log(err);
         };
-    });
+    }
 });
 
 app.post("/api/admin/change_stats/:username", adminRequestChecker, mongoChecker, async(req, res) => {
@@ -1066,6 +963,69 @@ app.post("/api/admin/change_stats/:username", adminRequestChecker, mongoChecker,
     }).catch((err) => {
         res.status(500).send("Internal Server Error");
     });
+});
+
+app.post("/api/admin/change_ban/:username/:ban_status", adminRequestChecker, mongoChecker, (req, res) => {
+    const username = req.params.username;
+    const ban_status = req.params.ban_status;
+
+    Credential.updateOne({ username: username }, { $set: { is_banned: (ban_status === 'ban') ? true : false } }).then((user) => {
+        if (!user) {
+            res.status(404).send();
+        } else {
+            res.end();
+        };
+    }).catch((err) => {
+        if (isMongoError(err)) {
+            res.status(500).send("Internal Server Error");
+        } else {
+            log(err);
+        };
+    });
+});
+
+app.get("/api/admin/search_event/:event_name", adminRequestChecker, mongoChecker, async(req, res) => {
+    const event_name = req.params.event_name;
+    const event_data = {};
+
+    try {
+        const event = await RandomEvent.findByName(event_name);
+        
+        if (!event) {
+            res.status(404).end();
+            return;
+        }
+
+        event_data.event = event;
+
+        if (event.choiceOne.newEstablishment) {
+            const establishment = await EstablishmentInfo.findByName(event.choiceOne.newEstablishment);
+            
+            if (!event) {
+                res.status(404).end();
+            } else {
+                event_data.choice_one_establishment = establishment;                        
+            }
+        }
+            
+        if (event.choiceTwo.newEstablishment) {
+            const establishment = await EstablishmentInfo.findByName(event.choiceTwo.newEstablishment);
+            
+            if (!event) {
+                res.status(404).end();
+            } else {
+                event_data.choice_two_establishment = establishment;                        
+            }
+        }
+
+        res.send(event_data);
+    } catch (err) {
+        if (isMongoError(err)) {
+            res.status(500).send("Internal Server Error");
+        } else {
+            log(err);
+        };
+    }
 });
 
 app.post("/api/admin/create_event", adminRequestChecker, mongoChecker, async(req, res) => {

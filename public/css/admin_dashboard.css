@@ -11,7 +11,7 @@ body {
     position: relative;
     margin: 0 auto;
     width: 80%;
-    height: calc(100% - 60px);
+    min-height: calc(100vh - 60px);
     background-color: #121212;
     padding: 35px 100px 70px;
     overflow: hidden;
@@ -42,6 +42,11 @@ body {
     border-radius: 4px;
 }
 
+.maincontent button,
+.maincontent input[type="submit"] {
+    cursor: pointer;
+}
+
 .admin-module-header,
 .admin-module-main {
     padding: 20px;
@@ -61,13 +66,17 @@ body {
 }
 
 .admin-module-main-container {
-    display: grid;
+    display: none;
     grid-template: "user-icon main" 150px
                    "remove-icon main" 1fr 
                    "revert-changes main" 45px /
                    150px 1fr;
     grid-gap: 10px 35px;
     margin: 10px 0 0 75px;
+}
+
+.admin-module-main-container.active {
+    display: grid;
 }
 
 .admin-module-main-container > button {
@@ -161,18 +170,25 @@ input[type="submit"] {
 
 
 #user-icon {
+    display: none;
     grid-area: user-icon;
-    display: inline-block;
     position: relative;
     width: 150px;
     height: 150px;
+    border: 5px solid #39FF14;
+    border-radius: 50%;
+    box-sizing: border-box;
+}
+
+#user-icon.loaded {
+    display: block;
 }
 
 #user-icon::before {
     content: '';
     position: absolute;
     top: calc(50% - 10px);
-    left: calc(100% - 2px);
+    left: 100%;
     border-style: solid;
     border-width: 20px 30px 0 0;
     border-color: #39FF14 transparent transparent transparent;
@@ -184,8 +200,23 @@ input[type="submit"] {
     object-fit: cover;
     object-position: center;
     border-radius: 50%;
-    border: 5px solid #39FF14;
-    box-sizing: border-box;
+}
+
+button#remove-user-icon {
+    display: none;
+}
+
+button#remove-user-icon.active {
+    display: block;
+}
+
+button#revert-changes {
+    display: none;
+    grid-row: 3 / span 1;
+}
+
+button#revert-changes.active {
+    display: block;
 }
 
 #user-info {
@@ -293,16 +324,23 @@ input[type="submit"] {
 }
 
 #no-changes {
-    opacity: 0;
     font-size: 10px;
 }
 
 #no-changes.active {
-    opacity: 1;
+    display: inline-block;
 }
 
 #new-event {
     float: right;
+}
+
+#new-event::before {
+    content: 'New Event';
+}
+
+#new-event.active::before {
+    content: 'Close';
 }
 
 .maincontent > .admin-module-main {
@@ -314,11 +352,50 @@ input[type="submit"] {
     display: block;
 }
 
-form#event-form {
+#event-search-content {
+    display: none;
+    grid-template-columns: minmax(min-content, 40%) 1fr;
+    grid-gap: 20px;
+    gap: 20px;
+}
+
+#event-search-content h2,
+#event-search-content h3 {
+    grid-column: 1 / span 2;
+    margin-bottom: 0;
+}
+
+#event-search-content > div,
+#event-search-content > div > div {
+    grid-column: 1 / span 2;
     display: grid;
+    grid-template-columns: minmax(min-content, 40%) 1fr;
+    grid-gap: 20px;
+    gap: 20px;
+    margin-left: 60px;
+}
+
+#event-search-content > div > div {
+    display: none;
+}
+
+#event-search-content > div > div.active {
+    display: grid;
+}
+
+.admin-module-main.event-search > #event-search-content {
+    display: grid;
+}
+
+form#event-form {
+    display: none;
     grid-template-columns: 300px 1fr 75px;
     grid-gap: 20px;
     align-items: center;
+}
+
+.admin-module-main.event-form > form#event-form {
+    display: grid;
 }
 
 form#event-form > h2,

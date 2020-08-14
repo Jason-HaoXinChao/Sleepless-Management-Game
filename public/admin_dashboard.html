@@ -17,40 +17,40 @@
     <!-- content -->
     <div class="maincontent ">
         <h2>Admin Dashboard</h2>
-        <form class="admin-module-header">
+        <form id="user-search-form" class="admin-module-header">
             <label for="user-search">Search User:</label>
-            <input id="user-search" type="text" />
+            <input id="user-search" type="text" required>
             <input id="user-search-button" type="submit" value="Search" />
             <span>User not found...</span>
         </form>
         <div class="admin-module-main-container">
             <div id="user-icon">
-                <img data-original="./images/ipretendidonotseeit_icon.jpg" src="./images/ipretendidonotseeit_icon.jpg" alt="User icon">
+                <img data-original="../images/visitor_icon.png" src="../images/visitor_icon.png" alt="User icon">
             </div>
             <button id="remove-user-icon">Remove User Icon</button>
             <button id="revert-changes">Revert Changes</button>
             <div class="admin-module-main">
                 <p id="user-info">
-                    <b>Username: </b> <span id="username" data-original="ipretendidonotseeit" contenteditable="false">ipretendidonotseeit</span>
+                    <b>Username: </b> <span id="username" data-original="ipretendidonotseeit" contenteditable="false"></span>
                     <br>
                     <br>
-                    <b>Email:</b> <span id="email">ipretendidonotseeit@gmail.com</span>
+                    <b>Email:</b> <span id="email"></span>
                 </p>
                 <div id="user-stats">
                     <img src="./images/econ.png" alt="Econ icon">
-                    <span class="stat" data-original="65">65</span class="stat">
+                    <span class="stat" data-original="65"></span class="stat">
                     <button class="change-stat decrease-stat">-</button>
                     <button class="change-stat increase-stat">+</button>
                     <img src="./images/order.png" alt="Order icon">
-                    <span class="stat" data-original="17">17</span class="stat">
+                    <span class="stat" data-original="17"></span class="stat">
                     <button class="change-stat decrease-stat">-</button>
                     <button class="change-stat increase-stat">+</button>
                     <img src="./images/health.png" alt="Health icon">
-                    <span class="stat" data-original="28">28</span class="stat">
+                    <span class="stat" data-original="28"></span class="stat">
                     <button class="change-stat decrease-stat">-</button>
                     <button class="change-stat increase-stat">+</button>
                     <img src="./images/diplomacy.png" alt="Diplomacy icon">
-                    <span class="stat" data-original="35">35</span class="stat">
+                    <span class="stat" data-original="35"></span class="stat">
                     <button class="change-stat decrease-stat">-</button>
                     <button class="change-stat increase-stat">+</button>
                 </div>
@@ -63,15 +63,79 @@
                     <span id="no-changes">No Changes Made...</span>
                 </div>
             </div>
-        </div>
-        <div class="admin-module-header">
+        </div>        
+        <form id="event-search-form" class="admin-module-header">
             <label for="event-search">Search Event:</label>
-            <input id="event-search" type="text"></input>
-            <button>Search</button>
+            <input id="event-search" type="text" required>
+            <input id="event-search-button" type="submit" value="Search" />
             <span>Event not found...</span>
-            <button id="new-event">New Event</button>
-        </div>
+            <button id="new-event"></button>
+        </form>
         <div class="admin-module-main">
+            <div id="event-search-content">
+                <b>Event Name:</b>
+                <span id="event-search-name"></span>
+                <b>Event Description:</b>
+                <span id="event-search-description"></span>
+                <!-- Choice One -->
+                <h2>Choice One</h2>
+                <div>
+                    <b>Choice One Description:</b>
+                    <span id="event-search-choice-one-description"></span>
+                    <b>Econ Stat Effect:</b>
+                    <span id="event-search-choice-one-econ"></span>
+                    <b>Order Stat Effect:</b>
+                    <span id="event-search-choice-one-order"></span>
+                    <b>Health Stat Effect:</b>
+                    <span id="event-search-choice-one-health"></span>
+                    <b>Diplomacy Stat Effect:</b>
+                    <span id="event-search-choice-one-diplomacy"></span>
+                    <div id="choice-one-establishment">
+                        <h3>Choice One Establishment</h3>
+                        <b>Establishment Name:</b>
+                        <span id="event-search-choice-one-establishment-name"></span>
+                        <b>Establishment Description:</b>
+                        <span id="event-search-choice-one-establishment-description"></span>
+                        <b>Econ Stat Effect:</b>
+                        <span id="event-search-choice-one-establishment-econ"></span>
+                        <b>Order Stat Effect:</b>
+                        <span id="event-search-choice-one-establishment-order"></span>
+                        <b>Health Stat Effect:</b>
+                        <span id="event-search-choice-one-establishment-health"></span>
+                        <b>Diplomacy Stat Effect:</b>
+                        <span id="event-search-choice-one-establishment-diplomacy"></span>
+                    </div>
+                </div>
+                <!-- Choice Two --><!-- Choice One -->
+                <h2>Choice Two</h2>
+                <div>
+                    <b>Choice Two Description:</b>
+                    <span id="event-search-choice-two-description"></span>
+                    <b>Econ Stat Effect:</b>
+                    <span id="event-search-choice-two-econ"></span>
+                    <b>Order Stat Effect:</b>
+                    <span id="event-search-choice-two-order"></span>
+                    <b>Health Stat Effect:</b>
+                    <span id="event-search-choice-two-health"></span>
+                    <b>Diplomacy Stat Effect:</b>
+                    <span id="event-search-choice-two-diplomacy"></span>
+                    <div id="choice-two-establishment">
+                        <h3>Choice Two Establishment</h3>
+                        <b>Establishment Name:</b>
+                        <span id="event-search-choice-two-establishment-name"></span>
+                        <b>Establishment Description:</b>
+                        <span id="event-search-choice-two-establishment-description"></span>
+                        <b>Econ Stat Effect:</b>
+                        <span id="event-search-choice-two-establishment-econ"></span>
+                        <b>Order Stat Effect:</b>
+                        <span id="event-search-choice-two-establishment-order"></span>
+                        <b>Health Stat Effect:</b>
+                        <span id="event-search-choice-two-establishment-health"></span>
+                        <b>Diplomacy Stat Effect:</b>
+                        <span id="event-search-choice-two-establishment-diplomacy"></span>
+                    </div>
+                </div>
+            </div>
             <form id="event-form" action="/api/admin/create_event" method="post">
                 <label for="event-name"><b>Event Name:</b></label>
                 <input id="event-name" type="text" name="event-name" required>

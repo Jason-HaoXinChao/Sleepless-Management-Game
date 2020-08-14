@@ -8,26 +8,47 @@ const changes = {
     changeStats: false,
 }
 
-$("form.admin-module-header").submit(function() {
+$("form#user-search-form").submit(function() {
     const username = $(this).children("#user-search").val();
 
+    $(".admin-module-main-container").addClass("active");
+    $("#user-icon").removeClass("loaded");
+    $("#user-icon").children("img").attr("data-original", '../images/visitor_icon.png');
+    $("#user-icon").children("img").attr("src", '../images/visitor_icon.png');
+    $("#remove-user-icon").removeClass("active");
+    $("#revert-changes").removeClass("active");
     $("#user-info").removeClass("active");
     $("#user-stats").removeClass("active");
     $(this).children("span").removeClass("active");
     $("#ban-user").removeClass("active");
     $("#save-changes").removeClass("active");
+    $("#no-changes").removeClass("active");
 
-    $.get(`/api/admin/ban_status/${username}`, (is_banned) => {
+    $.get(`/api/admin/user_icon/${username}`, (user_icon, textStatus, xhr) => {
+        if (xhr.status === 200) {
+            $("#user-icon").children("img").attr("data-original", $(user_icon).attr("src"));
+            $("#user-icon").children("img").attr("src", $(user_icon).attr("src"));
+
+            $("#user-icon").addClass("loaded");
+            $("#remove-user-icon").addClass("active");
+        } else {
+            $("#user-icon").children("img").attr("data-original", '../images/visitor_icon.png');
+        }
+    });
+
+    $.get(`/api/admin/ban_status/${username}`, is_banned => {
         $("#ban-user-checkbox").attr("data-original", is_banned);
         $("#ban-user-checkbox").attr("checked", is_banned);
 
-        $("#ban-user").addClass("active");   
+        $("#ban-user").addClass("active");
+        $("#save-changes").addClass("active");
+        $("#revert-changes").addClass("active");
     }).fail(() => {
         $(this).children("span").addClass("active");
         return;
     });
 
-    $.get(`/api/admin/user_info/${username}`, (data) => {
+    $.get(`/api/admin/user_info/${username}`, data => {
         $("#username").attr("data-original", data.username);
         $("#username").text(data.username);
         $("#email").attr("data-original", data.email);
@@ -35,12 +56,13 @@ $("form.admin-module-header").submit(function() {
 
         $("#user-info").addClass("active");
         $("#save-changes").addClass("active");
+        $("#revert-changes").addClass("active");
     }).fail(() => {
         $(this).children("span").addClass("active");
         return;
     });
 
-    $.get(`/api/admin/gameplay_stat/${username}`, (data) => {
+    $.get(`/api/admin/gameplay_stat/${username}`, data => {
         const stats = ["economy", "order", "health", "diplomacy"];
         
         for (let i = 0; i < 4; i++) {
@@ -49,8 +71,8 @@ $("form.admin-module-header").submit(function() {
         }
 
         $("#user-stats").addClass("active");
-        $("#ban-user").addClass("active");
         $("#save-changes").addClass("active");
+        $("#revert-changes").addClass("active");
     }).fail(() => {
         $(this).children("span").addClass("active");
         return;
@@ -77,16 +99,17 @@ $(".change-stat").on("click", function() {
  * Checks what changes to a user's info has been made by the admin user (which will display the relevant bullet points in the confirm changes popup)
  */
 $("#save-changes").on("click", function() {
+    $("#no-changes").removeClass("active");
     changes.user = $("#user-search").val();
 
     // Check to see if the admin user intends to ban the user. If so, the bullet point corresponding to that will be displayed in the comfirm changes popup
-    if ($("#ban-user-checkbox").is(":checked") && !$("#ban-user-checkbox").attr("data-original")) {
+    if ($("#ban-user-checkbox").is(":checked") && $("#ban-user-checkbox").attr("data-original") === 'false') {
         changes.banUser = true;
         $("#ban-user-confirm").addClass("active");
     }
 
     // Check to see if the admin user intends to ban the user. If so, the bullet point corresponding to that will be displayed in the comfirm changes popup
-    if (!$("#ban-user-checkbox").is(":checked") && $("#ban-user-checkbox").attr("data-original")) {
+    if (!$("#ban-user-checkbox").is(":checked") && $("#ban-user-checkbox").attr("data-original") === 'true') {
         changes.unbanUser = true;
         $("#unban-user-confirm").addClass("active");
     }
@@ -106,14 +129,10 @@ $("#save-changes").on("click", function() {
     });
 
     // Display the confirm changes popup if changes has been made. Otherwise, display a text indicator indicating that no changes have been made.
-    if (Object.values(changes).filter(change => change).length) {
+    if (Object.values(changes).filter(change => typeof(change) !== "string" && change).length) {
         $("#popup-module-blackout").addClass("active");
     } else {
         $("#no-changes").addClass("active");
-
-        setTimeout(function() {
-            $("#no-changes").removeClass("active");
-        }, 2000);
     }
 });
 
@@ -125,14 +144,22 @@ $("#confirm-changes").on("click", function() {
     // In phase 2, once the admin user confirms the changes, the updated user info should be sent to the server and override the existing info of the user
     if (changes.banUser) {
         $.post(`/api/admin/change_ban/${changes.user}/ban`);
+        $("#ban-user-checkbox").attr("data-original", true);
     }
 
     if (changes.unbanUser) {
         $.post(`/api/admin/change_ban/${changes.user}/unban`);
+        $("#ban-user-checkbox").attr("data-original", false);
     }
 
     if (changes.removeUserIcon) {
-
+        $.ajax({
+            url: `/api/admin/delete_icon/${changes.user}`,
+            method: 'DELETE',
+            success: function(res) {
+                $("#user-icon").children("img").attr("data-original", '../images/visitor_icon.png');
+            }
+        });
     }
 
     if (changes.changeStats) {
@@ -142,6 +169,11 @@ $("#confirm-changes").on("click", function() {
             health: parseInt($(".stat").eq(2).text()),
             diplomacy: parseInt($(".stat").eq(3).text()),
         });
+
+        $(".stat").eq(0).attr("data-original", $(".stat").eq(0).text());
+        $(".stat").eq(1).attr("data-original", $(".stat").eq(1).text());
+        $(".stat").eq(2).attr("data-original", $(".stat").eq(2).text());
+        $(".stat").eq(3).attr("data-original", $(".stat").eq(3).text());
     }
 
     // Close the confirm changes popup
@@ -151,6 +183,11 @@ $("#confirm-changes").on("click", function() {
     $("li").each(function() {
         $(this).removeClass("active");
     });
+
+    changes.banUser = false;
+    changes.unbanUser = false;
+    changes.removeUserIcon = false;
+    changes.changeStats = false;
 });
 
 /*
@@ -191,36 +228,77 @@ $("input[type='checkbox']").change(function() {
     });
 });
 
+$("form#event-search-form").submit(function(e) {
+    e.preventDefault();
+
+    $("#choice-one-establishment").removeClass("active");
+    $("#choice-two-establishment").removeClass("active");
+
+    const event_name = $(this).children("#event-search").val();
+
+    $.get(`/api/admin/search_event/${event_name}`, data => {
+        if ($(this).hasClass("active")) {
+            $(this).next().removeClass("active event-search");
+        } else {
+            $(this).children("#new-event").removeClass("active");
+            $(this).next().removeClass("event-form").addClass("active event-search");
+        }
+
+        console.log(data);
+        $("#event-search-name").text(data.event.name);
+        $("#event-search-description").text(data.event.description);
+
+        $("#event-search-choice-one-description").text(data.event.choiceOne.description);
+        $("#event-search-choice-one-econ").text(data.event.choiceOne.statChange.economy);
+        $("#event-search-choice-one-order").text(data.event.choiceOne.statChange.order);
+        $("#event-search-choice-one-health").text(data.event.choiceOne.statChange.health);
+        $("#event-search-choice-one-diplomacy").text(data.event.choiceOne.statChange.diplomacy);
+
+        if (data.choice_one_establishment) {
+            $("#choice-one-establishment").addClass("active");
+
+            $("#event-search-choice-one-establishment-name").text(data.choice_one_establishment.name);
+            $("#event-search-choice-one-establishment-description").text(data.choice_one_establishment.description);
+            $("#event-search-choice-one-establishment-econ").text(data.choice_one_establishment.statChange.economy);
+            $("#event-search-choice-one-establishment-order").text(data.choice_one_establishment.statChange.order);
+            $("#event-search-choice-one-establishment-health").text(data.choice_one_establishment.statChange.health);
+            $("#event-search-choice-one-establishment-diplomacy").text(data.choice_one_establishment.statChange.diplomacy);
+            
+        }
+
+        $("#event-search-choice-two-description").text(data.event.choiceTwo.description);
+        $("#event-search-choice-two-econ").text(data.event.choiceTwo.statChange.economy);
+        $("#event-search-choice-two-order").text(data.event.choiceTwo.statChange.order);
+        $("#event-search-choice-two-health").text(data.event.choiceTwo.statChange.health);
+        $("#event-search-choice-two-diplomacy").text(data.event.choiceTwo.statChange.diplomacy);
+
+        if (data.choice_two_establishment) {
+            $("#choice-two-establishment").addClass("active");
+
+            $("#event-search-choice-two-establishment-name").text(data.choice_two_establishment.name);
+            $("#event-search-choice-two-establishment-description").text(data.choice_two_establishment.description);
+            $("#event-search-choice-two-establishment-econ").text(data.choice_two_establishment.statChange.economy);
+            $("#event-search-choice-two-establishment-order").text(data.choice_two_establishment.statChange.order);
+            $("#event-search-choice-two-establishment-health").text(data.choice_two_establishment.statChange.health);
+            $("#event-search-choice-two-establishment-diplomacy").text(data.choice_two_establishment.statChange.diplomacy);
+            
+        }
+    }).fail(() => {
+        $(this).children("span").addClass("active");
+    });
+});
+
 /*
  * Displays the new event creation module when the user clicks on the "New Event" button
  */
-$("#new-event").on("click", function() {
-    $(this).parent().next().addClass("active");
-});
+$("#new-event").on("click", function(e) {
+    e.preventDefault();
 
-/*
- * Handles the submission for the new event form
- * NOTE: this functionality is not yet present until we access to a server in phase 2 
- */
-$("#event-form").on("submit", function() {
-    // Currently, the new event creation form doesn't do anything when you submit it, but in phase 2, when the admin user submits the form, the new event's info will be sent to our server
-});
+    if ($(this).hasClass("active")) {
+        $(this).parent().next().removeClass("active event-form");
+    } else {
+        $(this).parent().next().removeClass("event-search").addClass("active event-form");
+    }
 
-/*
- * Displays the corresponding user/event data based on the admin user's search term
- * NOTE: this functionality is not yet present until we access to a server in phase 2 
- */
-$(".admin-module-header button").on("click", function() {
-    // Currently, a "______ not found..." text indicator is displayed to the admin user when they search for a user or an admin.
-    // In phase 2, a request would be made to the server to attempt to retrieve the specified user/event's info
-
-    const notFoundIndicator = $(this).next();
-
-    // Displays the text indicator 
-    notFoundIndicator.addClass("active");
-
-    // Makes the text indicator dissapears on its own after 2 seconds
-    setTimeout(function() {
-        notFoundIndicator.removeClass("active");
-    }, 2000);
+    $(this).toggleClass("active");
 });

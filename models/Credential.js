@@ -99,7 +99,7 @@ CredentialSchema.statics.getBanStatusByUsername = async function(username) {
 
         // If the user cannot be found, simply return a rejected promise
         if (!user) {
-            return false;
+            return 'Not Found';
         } else {
             return user.is_banned;
         }
