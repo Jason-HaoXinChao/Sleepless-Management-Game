@@ -22,6 +22,7 @@ const { Credential } = require("./models/Credential");
 const { EstablishmentInfo, EventChoice, RandomEvent } = require("./models/SystemData");
 const { Gameplay, Log, Establishment, StatChange } = require("./models/Gameplay");
 const { Profile } = require("./models/Profile");
+const { Diplomacy } = reqruie("./models/Diplomacy");
 
 // express-session for managing user sessions
 const session = require('express-session')
@@ -193,6 +194,11 @@ app.post("/api/register", mongoChecker, async(req, res) => {
         strategy: {}
     });
 
+    const diplomacy = new Diplomacy({
+        username: req.body.username,
+        connection: []
+    });
+
     // Save the user credentials to the the database
     try {
         const user = await credentials.save();
@@ -209,6 +215,12 @@ app.post("/api/register", mongoChecker, async(req, res) => {
 
         const data = await gameplayData.save();
         if (!data) {
+            res.status(500).send("500 Internal Server Error");
+            return;
+        }
+
+        const friendsList = await diplomacy.save();
+        if (!friendsList) {
             res.status(500).send("500 Internal Server Error");
             return;
         }
