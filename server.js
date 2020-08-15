@@ -1588,13 +1588,13 @@ app.post("/api/user/feedback", mongoChecker, async(req, res) => {
     })
     feedback.save().then(feedback => {
         if (!feedback) {
-            req.status(400).send();
+            res.status(400).send();
         } else {
-            req.status(200).send();
+            res.status(200).send();
         }
     }).catch(err => {
         log(err);
-        req.status(500).send();
+        res.status(500).send();
     })
 });
 
