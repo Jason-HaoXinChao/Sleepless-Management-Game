@@ -1,13 +1,21 @@
 <div id="header">
     {{#unless is_admin}}
-    <a href="{{#if is_logged_out}}/login{{else}}/gameplay{{/if}}" class="logo">INSERT LOGO HERE</a>
+    <a href="{{#if is_logged_out}}/login{{else}}/gameplay{{/if}}" class="logo">
+        <a href="/login" class="logo">
+        <img src="./images/logo.gif" width="auto" height="100%">
+        <span>Sleepless</span>
+    </a>
     {{#unless is_logged_out}}<a class="{{#if gameplay}}current_page{{else}}other_page{{/if}}" href="/gameplay">Gameplay</a>{{/unless}}
     {{#unless is_logged_out}}<a class="{{#if diplomacy}}current_page{{else}}other_page{{/if}}" href="/diplomacy">Diplomacy</a>{{/unless}}
     <a class="{{#if leaderboard}}current_page{{else}}other_page{{/if}}" href="/leaderboard">Leaderboard</a>
     <a class="{{#if patch_notes}}current_page{{else}}other_page{{/if}}" href="/patchnotes">Patch Notes</a>
     {{#unless is_logged_out}}<a class="{{#if contact}}current_page{{else}}other_page{{/if}}" href="/contact">Contact</a>{{/unless}}
     {{else}}
-    <a href="/admin_dashboard" class="logo">INSERT LOGO HERE</a>
+    <a href="/admin_dashboard" class="logo">
+        <a href="/login" class="logo">
+        <img src="./images/logo.gif" width="auto" height="100%">
+        <span>Sleepless</span>
+    </a>
     <a class="{{#if admin_panel}}current_page{{else}}other_page{{/if}}" href="/admin_dashboard">Admin Panel</a>
     <a class="{{#if user_feedback}}current_page{{else}}other_page{{/if}}" href="/user_feedback">User Feedback</a>
     <a class="{{#if patch_notes}}current_page{{else}}other_page{{/if}}" href="/patchnotes">Patch Notes</a>

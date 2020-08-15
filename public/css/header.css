@@ -24,7 +24,36 @@
 }
 
 #header > a.logo {
-    font-size: 28px;
+    display: inline-block;
+    height: 40px;
+    padding: 0;
+}
+
+#header > a.logo > img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    -webkit-mask-image: linear-gradient(to right, black, transparent);
+    mask-image: linear-gradient(to right, black, transparent);
+    display: inline-block;
+    vertical-align: middle;
+    box-sizing: border-box;
+}
+
+#header > a.logo > span {
+    display: inline-block;
+    position: relative;
+    z-index: 2;
+    margin-left: 10px;
+    background-image: linear-gradient(to right, #39FF14 0%, #18520d 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    -webkit-text-stroke: 1px #212121;
+    font-size: 50px;
+    font-weight: 600;
+    font-variant: small-caps;
+    vertical-align: middle;
 }
 
 #header > a.current_page {
