@@ -22,7 +22,7 @@ const { Credential } = require("./models/Credential");
 const { EstablishmentInfo, EventChoice, RandomEvent } = require("./models/SystemData");
 const { Gameplay, Log, Establishment, StatChange } = require("./models/Gameplay");
 const { Profile } = require("./models/Profile");
-const { Diplomacy } = reqruie("./models/Diplomacy");
+const { Diplomacy } = require("./models/Diplomacy");
 
 // express-session for managing user sessions
 const session = require('express-session')
@@ -853,6 +853,37 @@ app.get("/api/user/gameplay/update", mongoChecker, (req, res) => {
     });
 });
 
+/**
+ * Route for getting friends list in diplomacy page.
+ * Expected request body: None
+ * Expected return value:
+ * {
+ *  totalPage: Number
+ *  connection: [String]    // each element is a user name, should send at most 6 each call
+ * }
+ */
+app.get("/api/user/diplomacy/:pageNumber", mongoChecker, (req, res) => {
+    const pagenum = req.params.pageNumber;
+    const username = req.session.username;
+
+    Diplomacy.findByName(username).then((data) => {
+        if (!data) {
+            // User not found, cookie corrupted or user deleted by admin
+            res.status(400).send();
+        } else {
+            const output = {
+                totalPage: Math.ceil(data.connection.length / 6),
+                connecton: data.connection.slice(6 * (pagenum - 1), 6 * pagenum)
+            }
+            res.status(200).send(output);
+        }
+    }).catch((err) => {
+        log(err);
+        res.status(500).send();
+    })
+});
+
+
 app.post('/api/user/upload_icon', multipartMiddleware, (req, res) => {
     cloudinary.uploader.upload(req.files.image.path, {
         eager: [
@@ -1324,4 +1355,4 @@ app.get('*', (req, res) => {
 const port = process.env.PORT || 5000;
 app.listen(port, () => {
     log(`listening on ${port}...`);
-});
+})
