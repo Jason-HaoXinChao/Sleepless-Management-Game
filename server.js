@@ -1188,6 +1188,23 @@ app.get('/api/user/user_icon/:username?', (req, res) => {
     });
 });
 
+app.get("/api/user/leaderboard", mongoChecker, async (req, res) => {
+    try {
+        const user_gameplay = await Gameplay.find();
+
+        user_gameplay.sort((first_user, second_user) => {
+            const first_user_sum = first_user.statistic.economy + first_user.statistic.order + first_user.statistic.health + first_user.statistic.diplomacy;
+            const second_user_sum = second_user.statistic.economy + second_user.statistic.order + second_user.statistic.health + second_user.statistic.diplomacy;
+
+            return second_user_sum - first_user_sum;
+        });
+
+        res.send(user_gameplay);
+    } catch (err) {
+        log(err);
+    }
+});
+
 app.delete('/api/admin/delete_icon/:username', mongoChecker, adminRequestChecker, (req, res) => {
     const username = req.params.username;
 
