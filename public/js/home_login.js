@@ -1,4 +1,6 @@
-// Toggles between signin and login form
+/*
+* Toggles between signin and login form
+*/
 $(".form-toggle").on("click", function(e) {
     e.stopImmediatePropagation();
 
