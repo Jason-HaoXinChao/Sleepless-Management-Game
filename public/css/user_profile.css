@@ -67,6 +67,22 @@ h2 {
     text-align: center;
 }
 
+#add-diplomatic-connection {
+    visibility: hidden;
+}
+
+#add-diplomatic-connection.active {
+    visibility: visible;
+}
+
+#add-diplomatic-connection::before {
+    content: 'Add Ally';
+}
+
+#add-diplomatic-connection.remove-ally::before {
+    content: 'Remove Ally';
+}
+
 input#country-name {
     margin: 0.83em 0;
     width: 100%;
