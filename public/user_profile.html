@@ -19,9 +19,11 @@
         <div class="container" id="user-pic">
             <h2 id="username">&nbsp;</h2>
             <img src="./images/visitor_icon.png" alt="User Icon" class="user-icon">
-            {{#unless visiting}}
+            {{#if visiting}}
+            <button id="add-diplomatic-connection"></button>
+            {{else}}
             <button id="edit-profile-pic">Edit Profile Pic</button>
-            {{/unless}}
+            {{/if}}
         </div>
         <div class="container" id="user-info">
             <h2>Personal Information</h2>

@@ -7,6 +7,24 @@ if ($(".maincontent").children(".container").length) {
         const profile_username = new URLSearchParams(window.location.search).get("profile");
         const profile = (profile_username) ? `${profile_username}` : "";
 
+        // Check to see if the user is visiting another user's profile
+        if (profile_username !== '') {
+            // Make a GET to fetch the info regarding whether or not the user has added the user they are visiting as an ally
+            fetch(`/api/user/diplomacy/status/${profile}`).then(res => {
+                if (res) {
+                    return res.json();
+                }
+            }).then(json => {
+                if (json.isAlly) {
+                    $("#add-diplomatic-connection").addClass("remove-ally");
+                }
+            }).catch(err => {
+                console.log(err);
+            }).finally(() => {
+                $("#add-diplomatic-connection").addClass("active");
+            })
+        }
+
         // Make a GET request to get the user's user icon
         fetch(`/api/user/user_icon/${profile}`).then(res => {
             if (res) {
@@ -190,6 +208,25 @@ if ($(".maincontent").children(".container").length) {
         } else if ($(this).val() !== '' && !$(this).parent().next().length) {
             // If the user has inputted something into the last input, add an additional input in case they need to add an additional social media account
             $(this).closest("#social-media").append('<li><input class="social-media-account" type="text" placeholder="Not Set"></input></li>');
+        }
+    });
+
+    /*
+     * Handles the adding of diplomatic connection
+     */
+    $("#add-diplomatic-connection").on("click", function() {
+        if (!$(this).hasClass("remove-ally")) {
+            $.post('/api/user/diplomacy/add', {
+                username: $("#username").text()
+            }, () => {
+                $("#add-diplomatic-connection").addClass("remove-ally");
+            });
+        } else {
+            $.post('/api/user/diplomacy/delete', {
+                username: $("#username").text()
+            }, () => {
+                $("#add-diplomatic-connection").removeClass("remove-ally");
+            });
         }
     });
 

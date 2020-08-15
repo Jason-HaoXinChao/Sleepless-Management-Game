@@ -885,6 +885,31 @@ app.get("/api/user/diplomacy/:pageNumber", mongoChecker, (req, res) => {
     })
 });
 
+app.get("/api/user/diplomacy/status/:username", mongoChecker, (req, res) => {
+    const username = req.session.username;
+    const ally = req.params.username;
+
+    Diplomacy.findByUsername(username).then((data) => {
+        if (!data) {
+            // User not found, cookie corrupted or user deleted by admin
+            res.status(404).send();
+        } else {
+            if (data.connection.includes(ally)) {
+                res.send({
+                    isAlly: true
+                });
+            } else {
+                res.send({
+                    isAlly: false
+                });
+            }
+        }
+    }).catch((err) => {
+        log(err);
+        res.status(500).end();
+    })
+});
+
 /**
  * Route for adding a user to the diplomacy connection list
  * Expected Body:
