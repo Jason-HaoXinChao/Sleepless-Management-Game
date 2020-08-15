@@ -13,7 +13,7 @@ const NoteSchema = new mongoose.Schema({
         required: true,
         trim: true
     }
-})
+});
 
 const PatchnoteSchema = new mongoose.Schema({
     name: {
@@ -27,6 +27,6 @@ const PatchnoteSchema = new mongoose.Schema({
     }
 });
 
-const PatchNote = mongoose.model("PatchNote", PatchnoteSchema);
+const PatchNotes = mongoose.model("PatchNote", PatchnoteSchema);
 
-module.exports = { PatchNote };
+module.exports = { PatchNotes };

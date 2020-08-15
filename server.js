@@ -1063,7 +1063,8 @@ app.post("/api/user/diplomacy/send", mongoChecker, (req, res) => {
  * }
  */
 app.get("/api/patchnote", mongoChecker, (req, res) => {
-    PatchNotes.findone().then((patchnotes) => {
+
+    PatchNotes.findOne().then((patchnotes) => {
         if (!patchnotes) {
             res.status(500).send("500 Internal Server Error");
         } else {
@@ -1072,7 +1073,8 @@ app.get("/api/patchnote", mongoChecker, (req, res) => {
     }).catch((err) => {
         log(err);
         res.status(500).send("500 Internal Server Error");
-    })
+    });
+
 });
 
 
