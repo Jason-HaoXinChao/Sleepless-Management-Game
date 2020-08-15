@@ -1,19 +1,24 @@
 // Here we should obtain data of the leaderboard from server to display on the webpage
 $(window).on("load", function() {
+    // Make a GET request to fetch the current leaderboard user ranking
     fetch("/api/user/leaderboard").then(res => {
         return res.json();
     }).then(json => {
+        // Iterate through the array of users 10 times (sorted in descending order by user statistic sum)
         for (let i = 0; i < 10; i++) {
+            // Generate the leaderboard ranking element
             const user = json[i];
-            let user_icon_src = './images/visitor_icon.png';
 
+            // Container
             const leaderboardProfile = document.createElement('div');
             leaderboardProfile.classList.add("leaderboard-profile");
 
+            // Rank
             const rank = document.createElement('div');
             rank.classList.add("rank");
             leaderboardProfile.appendChild(rank);
 
+            // User Icon
             const userIconContainer = document.createElement('div');
             userIconContainer.classList.add("user-icon-container");
 
@@ -31,10 +36,12 @@ $(window).on("load", function() {
             userIconContainer.appendChild(userIcon);
             leaderboardProfile.appendChild(userIconContainer);
 
+            // Username
             const username = document.createElement('div');
             username.appendChild(document.createTextNode(user.username));
             userIconContainer.appendChild(username);
 
+            // Statistic - Economy
             const econStat = document.createElement('span');
             econStat.classList.add("stat", "economy");
             econStatHeading = document.createElement("b");
@@ -44,6 +51,7 @@ $(window).on("load", function() {
             econStat.appendChild(document.createTextNode(user.statistic.economy));
             leaderboardProfile.appendChild(econStat);
 
+            // Statistic - Order
             const orderStat = document.createElement('span');
             orderStat.classList.add("stat", "order");
             orderStatHeading = document.createElement("b");
@@ -53,6 +61,7 @@ $(window).on("load", function() {
             orderStat.appendChild(document.createTextNode(user.statistic.order));
             leaderboardProfile.appendChild(orderStat);
 
+            // Statistic - Health
             const healthStat = document.createElement('span');
             healthStat.classList.add("stat", "health");
             healthHeading = document.createElement("b");
@@ -62,6 +71,7 @@ $(window).on("load", function() {
             healthStat.appendChild(document.createTextNode(user.statistic.health));
             leaderboardProfile.appendChild(healthStat);
 
+            // Statistic - Diplomacy
             const diplomacyStat = document.createElement('span');
             diplomacyStat.classList.add("stat", "diplomacy");
             diplomacyStatHeading = document.createElement("b");
@@ -71,6 +81,7 @@ $(window).on("load", function() {
             diplomacyStat.appendChild(document.createTextNode(user.statistic.diplomacy));
             leaderboardProfile.appendChild(diplomacyStat);
 
+            // User Profile Link
             const userProfileLink = document.createElement("a");
             userProfileLink.href = `/user_profile?profile=${user.username}`;
             userProfileLink.appendChild(document.createTextNode("View Profile"));
