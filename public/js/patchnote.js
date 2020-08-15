@@ -48,6 +48,7 @@ function insertNote(note, number) {
     container.appendChild(noteWrapper);
     const title = document.createElement("p");
     title.id = `title${number}`;
+    title.classList.add("title");
     title.innerText = note.title;
     noteWrapper.appendChild(title);
     const content = document.createElement("p");

@@ -1,0 +1,34 @@
+{
+    "name": "Alpha 1.0.0",
+    "notes": [{
+        "title": "Introduction",
+        "content": "This is the first patch of our game. In this patch note we will introduce you to key mechanics of the game so you have a better chance of not running your country into the ground. The game is obviously very unbalanced but we will work towrds making it more fun to play."
+    }, {
+        "title": "Background",
+        "content": "In this game, you are playing as the leader of the government of a country amidst a global pandemic. Your goal is to manage your country by choosing the appropriate strategies, react to emergency events, and maintain diplomatic connection with other players. The status of your country is indicated by the four core statistics shown on the statistics panel in the gameplay page, if any of these statistics falls to 0, you lose the game. Your statistic is updated once every week (10 seconds in real time), they change based on your selection of strategy and your collection of establishments, as well as your decision during randomly occuring emergency events."
+    }, {
+        "title": "Establishment",
+        "content": "Establishments are permanent buff/debuffs, you can gain an establishment from reacting to random emergency events that occur. Every time your statistic updates, each of your establishment can affect the statistics that you gain or lose. You can check the impact of the establishment by clicking on its name in the Establishment panel."
+    }, {
+        "title": "Strategy",
+        "content": "Your choice of strategy has the most impact on the change of your statistics. Choose them wisely to keep your statistics at a reasonable level. You can change your strategy by clicking on the currently selected strategy in the strategy panel."
+    }, {
+        "title": "Random Emergency Events",
+        "content": "Every time your statistics updates, there is a chance that a random event may occur. You should make your decision wisely, as it can result in major change in statistics and/or gaining impactful establishments."
+    }, {
+        "title": "Logs",
+        "content": "Everything that happens in the game is recorded in case you want to look back and review the impact of your decisions. You can view the logs in the event log panel of gameplay page."
+    }, {
+        "title": "Diplomacy",
+        "content": "Maintaining a good diplomatic relationship with other players can greatly help you combat the pandemic. You can establish diplomatic connection with another player by going to their profile page and click on 'establish diplomacy'. Every player you established connection with can be found in the Diplomacy page. In this page you can see their current statistics, and you can choose to view their profile, send them medical supply, or break ties with them. Helping each other out is very important in this unprecedented time. (note: a player can have at most 30 diplomatic connections)"
+    }, {
+        "title": "Personalization",
+        "content": "Open your profile page by clicking on your icon in the top right, here you can make many personalization changes, such as changing icon, setting a new flag image (for others who view your profile to see),and displaying optional personal information (for example, your social media). Note that your icon is the first thing that other players will see of you, choose a unique icon to stand out from the crowd!"
+    }, {
+        "title": "Leaderboard",
+        "content": "You can view a list containing the top 10 players on the server in the leaderboard page. In this page you can see their statistics and feel bad about your own. You can also go to their profile and establish diplomatic connection with them!"
+    }, {
+        "title": "Feedback",
+        "content": "The game is extremely new and we went through a lot of trouble during production (cough cough teammate quitting the team 3 days before deadline cough cough). Obviously there are countless bugs and the gameplay is probably not very balanced right now. We will really appreciate it if you guys can send your feedback or bug reports through the contact page."
+    }]
+}
