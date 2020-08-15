@@ -18,10 +18,6 @@ const ProfileSchema = new mongoose.Schema({
         required: true,
         unique: true
     },
-    flagPic: {
-        type: String,
-        required: false
-    },
     age: {
         type: Number,
         required: false
@@ -53,6 +49,27 @@ ProfileSchema.statics.findByUsername = async function(username) {
             return false;
         } else {
             return user;
+        }
+    } catch (err) {
+        console.log(err);
+    }
+}
+
+// Static method for finding a user's profile based on their country name
+ProfileSchema.statics.findByCountryName = async function(countryName) {
+    const UserProfile = this;
+
+    try {
+        // Attempt to find the user by their country name
+        const country = await UserProfile.findOne({ countryname: countryName });
+        console.log(countryName);
+        console.log(country);
+
+        // If the user cannot be found, simply return a rejected promise
+        if (!country) {
+            return false;
+        } else {
+            return country;
         }
     } catch (err) {
         console.log(err);

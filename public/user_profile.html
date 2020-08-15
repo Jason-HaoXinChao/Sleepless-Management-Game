@@ -46,10 +46,11 @@
             {{/unless}}
         </div>
         <div class="container" id="country-flag">
-            <h2 id="country-name">&nbsp;</h2>
+            <input id="country-name" type="text" required disabled />
             <img src="./images/country-flag.png" alt="country-flag-pic" class="country-flag">
             {{#unless visiting}}
             <button id="edit-flag">Edit Country Flag</button>
+            <button id="edit-country-name"></button>
             {{/unless}}
         </div>
         <div class="container" id="country-stats">
@@ -77,8 +78,17 @@
     {{#unless visiting}}
     <div id="popup-module-blackout">
         <div id="popup-module">
-            <form action="/api/user/upload_icon" method="post" enctype="multipart/form-data">
+            <button id="close-popup-module">Cancel</button>
+            <form id="user-icon-form" action="/api/user/upload_icon" method="post" enctype="multipart/form-data">
+                <h2>Upload User Icon</h2>
                 <input type="file" name="image" accept="images/*" />
+                <br>
+                <input type="submit" value="upload" />
+            </form>            
+            <form id="user-flag-form" action="/api/user/upload_flag" method="post" enctype="multipart/form-data">
+                <h2>Upload Flag</h2>
+                <input type="file" name="image" accept="images/*" />
+                <br>
                 <input type="submit" value="upload" />
             </form>
         </div>

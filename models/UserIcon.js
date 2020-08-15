@@ -23,6 +23,21 @@ const UserIconSchema = new mongoose.Schema({
     }
 });
 
+const UserFlagSchema = new mongoose.Schema({
+    image_id: {
+        type: String,
+        required: true
+    },
+    image_url: {
+        type: String,
+        required: true
+    },
+    uploader: {
+        type: String,
+        required: true
+    }
+});
+
 UserIconSchema.statics.findByUsername = async function(username) {
     const UserIcon = this;
 
@@ -40,6 +55,24 @@ UserIconSchema.statics.findByUsername = async function(username) {
     }
 }
 
-const UserIcon = mongoose.model('UserIcon', UserIconSchema);
+UserFlagSchema.statics.findByUsername = async function(username) {
+    const UserFlag = this;
 
-module.exports = { UserIcon };
+    try {
+        // Attempt to find the user by their username
+        const userFlag = await UserFlag.findOne({ uploader: username });
+
+        if (!userFlag) {
+            return false;
+        } else {
+            return userFlag;
+        }
+    } catch (err) {
+        console.log(err);
+    }
+}
+
+const UserIcon = mongoose.model('UserIcon', UserIconSchema);
+const UserFlag = mongoose.model('UserFlag', UserFlagSchema);
+
+module.exports = { UserIcon, UserFlag };

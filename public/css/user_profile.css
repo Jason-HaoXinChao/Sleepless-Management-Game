@@ -54,12 +54,46 @@ body {
     width: 200px;
     height: 200px;
     border-radius: 50%;
+    visibility: hidden;
+}
+
+.container .user-icon.loaded {
+    visibility: visible;
 }
 
 h2 {
     font-size: 24px;
     text-transform: uppercase;
     text-align: center;
+}
+
+input#country-name {
+    margin: 0.83em 0;
+    width: 100%;
+    border: 2px solid #00FF00;
+    background-color: transparent;
+    color: white;
+    font-family: 'Lucida Console';
+    font-size: 24px;
+    font-weight: 700;
+    text-transform: uppercase;
+    text-align: center;
+}
+
+input#country-name {
+    outline: none;
+}
+
+input#country-name:disabled {
+    border: none;
+}
+
+.country-flag {
+    visibility: hidden;
+}
+
+.country-flag.loaded {
+    visibility: visible;
 }
 
 .container#user-info {
@@ -247,7 +281,6 @@ h2 {
 .container > button {
     position: absolute;
     bottom: 20px;
-    left: 20px;
     border: 2px ridge #39FF14;
     background-color: #121212;
     color: #ffffff;
@@ -257,7 +290,23 @@ h2 {
     border-radius: 15px;
     user-select: none;
     cursor: pointer;
-} 
+}
+
+.container > button:not(#edit-country-name) {
+    left: 20px;
+}
+
+button#edit-country-name {
+    right: 20px;
+}
+
+button#edit-country-name::before {
+    content: 'Edit Country Name';
+}
+
+button#edit-country-name.save-country-name::before {
+    content: 'Save Country Name';
+}
 
 #popup-module-blackout {
     display: none;
@@ -291,19 +340,44 @@ h2 {
     box-sizing: border-box;
 }
 
-#popup-module > h2 {
-    margin: 0;
-    height: auto;
-    border-left: 5px solid #39FF14;
-    line-height: 25px;
-    padding-left: 20px;
-}
-
-#popup-module li {
+#user-icon-form {
     display: none;
 }
 
-#popup-module li.active {
-    display: list-item;
+.user-icon #user-icon-form {
+    display: block;
 }
 
+#user-flag-form {
+    display: none;
+}
+
+.user-flag #user-flag-form {
+    display: block;
+}
+
+#popup-module input {
+    display: block;
+    margin: 0 auto;
+}
+
+input[type="file"] {
+    font-family: 'Lucida Console';
+}
+
+#popup-module input[type="file"]::-webkit-file-upload-button,
+#popup-module input[type="submit"],
+#popup-module button {
+    border: 2px ridge #39FF14;
+    background-color: #121212;
+    color: #ffffff;
+    text-decoration: none;
+    padding: 5px 10px;
+    border-radius: 20px;
+}
+
+#popup-module button {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+}

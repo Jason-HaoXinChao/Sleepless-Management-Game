@@ -17,6 +17,18 @@ if ($(".maincontent").children(".container").length) {
             $(".user-icon").addClass("loaded");
         });
 
+        fetch(`/api/user/user_flag/${profile}`).then(res => {
+            if (res) {
+                return res.json();
+            }
+        }).then(json => {
+            $(".country-flag").attr("src", json.url);
+        }).catch(err => {
+            console.log(err);
+        }).finally(() => {
+            $(".country-flag").addClass("loaded");
+        });
+
         fetch(`/api/user/gameplay/stat/all/${profile}`).then(res => {
             if (res) {
                 return res.json();
@@ -39,7 +51,7 @@ if ($(".maincontent").children(".container").length) {
             }
         }).then(json => {
             $("#username").text(json.username);
-            $("#country-name").text(json.profile.countryname);
+            $("#country-name").val(json.profile.countryname);
             $("#email").val(json.profile.email);
 
             const optional_user_info = ["age", "country", "gender", "socialMedia"];
@@ -81,14 +93,33 @@ if ($(".maincontent").children(".container").length) {
     * Change profile pic
     */
     $("#edit-profile-pic").on("click", function() {
-        $("#popup-module-blackout").addClass("active");
+        $("#popup-module-blackout").addClass("active user-icon");
     });
 
     /*
     * Change country flag
     */
     $("#edit-flag").on("click", function() {
-    $("#popup-module-blackout").addClass("active");
+        $("#popup-module-blackout").addClass("active user-flag");
+    });
+
+    /*
+    * Change country flag
+    */
+    $("#edit-country-name").on("click", function() {
+        if (!$(this).hasClass("save-country-name")) {
+            $(this).addClass("save-country-name");
+            $("#country-name").removeAttr("disabled");
+        }  else if ($("#country-name").val() !== '') {            
+            $(this).removeClass("save-country-name");
+            $("#country-name").attr("disabled", true);
+
+            $.post('/api/user/change_country_name', {
+                countryName: $("#country-name").val()
+            }).fail(data => {
+                window.location.replace(data.responseText);
+            });
+        }
     });
 
     /*
@@ -136,9 +167,9 @@ if ($(".maincontent").children(".container").length) {
     * Closes pop up window
     * NOTE: some functionality is not yet present until we access to a server in phase 2 
     */
-    $("#confirm-changes").on("click", function() {
+    $("#confirm-changes, #close-popup-module").on("click", function() {
         // In phase 2, once the user will be able to uplaod a new image
         // Close the confirm changes popup
-        $(this).closest("#popup-module-blackout").removeClass("active");
+        $(this).closest("#popup-module-blackout").removeClass("active user-icon user-flag");
     });
 }

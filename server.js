@@ -30,7 +30,7 @@ const session = require('express-session')
 app.use(bodyParser.urlencoded({ extended: true }));
 
 // import the mongoose model
-const { UserIcon } = require("./models/UserIcon");
+const { UserIcon, UserFlag } = require("./models/UserIcon");
 
 // multipart middleware: allows you to access uploaded file from req.file
 const multipart = require('connect-multiparty');
@@ -1074,10 +1074,7 @@ app.get("/api/patchnote", mongoChecker, (req, res) => {
         log(err);
         res.status(500).send("500 Internal Server Error");
     });
-
 });
-
-
 
 app.get('/api/user/user_profile_info/:username?', async(req, res) => {
     const username = req.params.username ? req.params.username : req.session.username;
@@ -1131,7 +1128,7 @@ app.post('/api/user/upload_icon', multipartMiddleware, (req, res) => {
                 cloudinary.uploader.destroy(userIcon.image_id);
 
                 userIcon.image_id = image.public_id;
-                userIcon.url = image.url;
+                userIcon.image_url = image.url;
                 userIcon.format = image.format;
                 userIcon.uploader = req.session.username;
                 userIcon.created_at = image.created_at;
@@ -1195,6 +1192,83 @@ app.get('/api/user/user_icon/:username?', (req, res) => {
                         gravity: "face"
                     }]
                 })
+            });
+        } else {
+            const user = await Profile.findByUsername(username);
+
+            if (user) {
+                res.send(false);
+            } else {
+                res.status(404).end();
+            }
+        }
+    }).catch(err => {
+        console.log(err);
+        res.status(500).send("Internal Server Error");
+    });
+});
+
+app.post('/api/user/change_country_name', mongoChecker, async (req, res) => {
+    try {
+        const country = await Profile.findByCountryName(req.body.countryName);
+        if (country) {
+            res.status(400).send('/user_profile?country_name=duplicate');
+            return;
+        }
+
+        const profile = await Profile.findByUsername(req.session.username);
+        profile.countryname = req.body.countryName;
+        profile.save();
+    } catch (err) {
+        log(err);
+        res.status(500).send("/user_profile?country_name=failed")
+    }
+});
+
+app.post('/api/user/upload_flag', multipartMiddleware, (req, res) => {
+    cloudinary.uploader.upload(req.files.image.path).then(image => {
+        UserFlag.findByUsername(req.session.username).then((userFlag) => {
+            if (userFlag) {
+                cloudinary.uploader.destroy(userFlag.image_id);
+
+                userFlag.image_id = image.public_id;
+                userFlag.image_url = image.url;
+                userFlag.uploader = req.session.username;
+
+                userFlag.save().then(result => {
+                    res.redirect("/user_profile?upload=success");
+                }).catch(err => {
+                    console.log(err);
+                    res.status(500).redirect("/user_profile?upload=failed");
+                });
+            } else {
+                var userFlag = new UserFlag({
+                    image_id: image.public_id, // image id on cloudinary server
+                    image_url: image.url,                    
+                    uploader: req.session.username
+                });
+
+                userFlag.save().then(result => {
+                    res.redirect("/user_profile?upload=success");
+                }).catch(err => {
+                    console.log(err);
+                    res.status(500).redirect("/user_profile?upload=failed");
+                });
+            }
+        });
+    }).catch(err => {
+        console.log(err);
+        res.status(500).redirect("/user_profile?upload=failed");
+    });
+});
+
+app.get('/api/user/user_flag/:username?', (req, res) => {
+    const username = req.params.username ? req.params.username : req.session.username;
+
+    UserFlag.findByUsername(username).then(async(userFlag) => {
+        if (userFlag) {
+            res.send({
+                url: userFlag.image_url
             });
         } else {
             const user = await Profile.findByUsername(username);
@@ -1580,13 +1654,17 @@ app.get('/user_feedback', loggedOutRedirectChecker, regUserRedirectChecker, (req
 app.get('/user_profile', loggedOutRedirectChecker, adminRedirectChecker, async(req, res) => {
     try {
         const profile = req.query.profile;
+        const upload = req.query.upload;
+        const country_name = req.query.country_name;
 
         if (profile !== undefined && profile !== req.session.username) {
             const user = await Profile.findByUsername(profile);
 
             if (user) {
                 res.render('user_profile', {
-                    visiting: true
+                    visiting: true,
+                    uploadStatus: upload,
+                    countryNameStatus: country_name 
                 });
             } else {
                 res.render('user_profile', {
