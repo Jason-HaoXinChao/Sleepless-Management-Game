@@ -17,6 +17,22 @@ if ($(".maincontent").children(".container").length) {
             $(".user-icon").addClass("loaded");
         });
 
+        fetch(`/api/user/gameplay/stat/all/${profile}`).then(res => {
+            if (res) {
+                return res.json();
+            }
+        }).then(json => {
+            const econ = json.statistic.economy;
+            const order = json.statistic.order;
+            const health = json.statistic.health;
+            const diplomacy = json.statistic.diplomacy;
+
+            $("#econBar").children().width(`${econ}%`).text(econ).attr("id", econ >= 50 ? "green" : "red");
+            $("#orderBar").children().width(`${order}%`).text(order).attr("id", order >= 50 ? "green" : "red");
+            $("#healthBar").children().width(`${health}%`).text(health).attr("id", health >= 50 ? "green" : "red");
+            $("#diplomacyBar").children().width(`${diplomacy}%`).text(diplomacy).attr("id", diplomacy >= 50 ? "green" : "red");
+        });
+
         fetch(`/api/user/user_profile_info/${profile}`).then(res => {
             if (res) {
                 return res.json();
@@ -26,17 +42,35 @@ if ($(".maincontent").children(".container").length) {
             $("#country-name").text(json.profile.countryname);
             $("#email").val(json.profile.email);
 
-            const optional_user_info = ["age", "country", "gender", "social_media"];
+            const optional_user_info = ["age", "country", "gender", "socialMedia"];
             
             optional_user_info.forEach(field => {
-                if (!json.profile.field) return;
+                if (!json.profile[field]) return;
 
                 switch (field) {
-                    case 'countrypic':
+                    case 'age':
+                        $("#age").val(json.profile.age);
+                        break;
+                    case 'country':
+                        $("#country").val(json.profile.country);
+                        break;
+                    case 'gender':
+                        $("#gender").val(json.profile.gender);
                         break;
                     case 'socialMedia':
-                        break;
-                    default:
+                        $("#social-media").empty();
+
+                        if (!json.profile.socialMedia || !json.profile.socialMedia.length) {
+                            $("#social-media").append(`<li><input class="social-media-account" type="text" placeholder="Not Set" disabled="" /></li>`);
+                            break;
+                        }
+                        
+                        json.profile.socialMedia.forEach(account => {
+                            if (profile !== "" && account == "") return;
+
+                            $("#social-media").append(`<li><input class="social-media-account" type="text" placeholder="Not Set" value="${account}" disabled="" /></li>`);
+                        });
+
                         break;
                 }
             })
@@ -93,7 +127,6 @@ if ($(".maincontent").children(".container").length) {
     });
 
     $("#social-media").on("keyup", ".social-media-account", function() {
-        console.log($(this).val());
         if ($(this).val() !== ''  && !$(this).parent().next().length) {
             $(this).closest("#social-media").append('<li><input class="social-media-account" type="text" placeholder="Not Set"></input></li>');
         }

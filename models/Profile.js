@@ -27,7 +27,7 @@ const ProfileSchema = new mongoose.Schema({
         required: false
     },
     country: {
-        type: Number,
+        type: String,
         required: false
     },
     gender: {

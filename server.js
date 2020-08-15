@@ -301,8 +301,8 @@ app.post("/api/logout", (req, res) => {
  * log: send log property
  * strategy: send strategy property
  */
-app.get("/api/user/gameplay/stat/:type", mongoChecker, (req, res) => {
-    const username = req.session.username;
+app.get("/api/user/gameplay/stat/:type/:username?", mongoChecker, (req, res) => {
+    const username = req.params.username ? req.params.username : req.session.username;
     const reqType = req.params.type;
 
     Gameplay.findByUsername(username).then((user) => {
@@ -911,11 +911,13 @@ app.get('/api/user/user_profile_info/:username?', async (req, res) => {
 
 app.post('/api/user/user_profile_info', async (req, res) => {
     try {
+        const profile = await Profile.findByUsername(req.session.username);
+
         Object.entries(req.body).forEach(([key, value]) => {
-            console.log(key);
+            profile[key] = value;
         });
-        
-        const user_profile = await Profile.findByUsername(req.session.username);
+
+        profile.save();
     } catch (err) {
         log(err);
     }
