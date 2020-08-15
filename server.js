@@ -883,6 +883,43 @@ app.get("/api/user/diplomacy/:pageNumber", mongoChecker, (req, res) => {
     })
 });
 
+app.get('/api/user/user_profile_info/:username?', async (req, res) => {
+    const username = req.params.username ? req.params.username : req.session.username;
+
+    const user_info = {
+        username: username
+    };
+
+    try {
+        const user_profile = await Profile.findByUsername(username);
+
+        if (user_profile) {
+            user_info.profile = user_profile;
+        }
+
+        const user_gameplay = await Gameplay.findByUsername(username);
+
+        if (user_gameplay) {
+            user_info.gameplay = user_gameplay;
+        }
+
+        res.send(user_info);
+    } catch {
+        res.send(user_info);
+    }
+});
+
+app.post('/api/user/user_profile_info', async (req, res) => {
+    try {
+        Object.entries(req.body).forEach(([key, value]) => {
+            console.log(key);
+        });
+        
+        const user_profile = await Profile.findByUsername(req.session.username);
+    } catch (err) {
+        log(err);
+    }
+});
 
 app.post('/api/user/upload_icon', multipartMiddleware, (req, res) => {
     cloudinary.uploader.upload(req.files.image.path, {
@@ -930,16 +967,24 @@ app.post('/api/user/upload_icon', multipartMiddleware, (req, res) => {
     });
 });
 
-app.get('/api/user/user_icon', (req, res) => {
-    const username = req.session.username;
+app.get('/api/user/user_icon/:username?', (req, res) => {
+    const username = req.params.username ? req.params.username : req.session.username;
 
-    UserIcon.findByUsername(username).then((userIcon) => {
+    UserIcon.findByUsername(username).then(async (userIcon) => {
         if (userIcon) {
             res.send({
                 avatar: cloudinary.image(`${userIcon.image_id}.${userIcon.format}`, {
                     transformation: [{
                         height: 40,
                         width: 40,
+                        crop: "fill",
+                        gravity: "face"
+                    }]
+                }),
+                medium: cloudinary.image(`${userIcon.image_id}.${userIcon.format}`, {
+                    transformation: [{
+                        height: 150,
+                        width: 150,
                         crop: "fill",
                         gravity: "face"
                     }]
@@ -954,34 +999,13 @@ app.get('/api/user/user_icon', (req, res) => {
                 })
             });
         } else {
-            res.send(false);
-        }
-    }).catch(err => {
-        res.status(500).send("Internal Server Error");
-    });
-});
+            const user = await Profile.findByUsername(username);
 
-app.get("/api/admin/user_icon/:username", adminRequestChecker, mongoChecker, (req, res) => {
-    const username = req.params.username;
-
-    UserIcon.findByUsername(username).then((userIcon) => {
-        if (userIcon) {
-            res.send(cloudinary.image(`${userIcon.image_id}.${userIcon.format}`, {
-                transformation: [{
-                    height: 150,
-                    width: 150,
-                    crop: "fill",
-                    gravity: "face"
-                }]
-            }));
-        } else {
-            Credential.findOne({ username: username }).then(user => {
-                if (!user) {
-                    res.status(404).end();
-                } else {
-                    res.end();
-                }
-            });
+            if (user) {
+                res.send(false);
+            } else {
+                res.status(404).end();
+            }
         }
     }).catch(err => {
         console.log(err);
@@ -1338,8 +1362,28 @@ app.get('/user_feedback', loggedOutRedirectChecker, regUserRedirectChecker, (req
 });
 
 // '/user_profile' route: redirects to '/login' if the user isn't logged in; redirects to '/admin_dashboard' if the user is an admin user
-app.get('/user_profile', loggedOutRedirectChecker, adminRedirectChecker, (req, res) => {
-    res.render('user_profile');
+app.get('/user_profile', loggedOutRedirectChecker, adminRedirectChecker, async (req, res) => {
+    try {
+        const profile = req.query.profile;
+
+        if (profile !== undefined && profile !== req.session.username) {
+            const user = await Profile.findByUsername(profile);
+
+            if (user) {
+                res.render('user_profile', {
+                    visiting: true
+                });
+            } else {
+                res.render('user_profile', {
+                    not_found: true
+                });                
+            }
+        } else {
+            res.render('user_profile');
+        }
+    } catch {
+
+    }    
 });
 
 // Set up the routes for the '/css', '/images/, and '/js' static directories

@@ -18,10 +18,6 @@ const ProfileSchema = new mongoose.Schema({
         required: true,
         unique: true
     },
-    profilePic: {
-        type: String,
-        required: false
-    },
     flagPic: {
         type: String,
         required: false
@@ -45,7 +41,7 @@ const ProfileSchema = new mongoose.Schema({
 });
 
 // Static method for finding a user's profile based on their username
-ProfileSchema.statics.findByUsername = async function(username, password) {
+ProfileSchema.statics.findByUsername = async function(username) {
     const UserProfile = this;
 
     try {

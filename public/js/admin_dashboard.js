@@ -24,10 +24,10 @@ $("form#user-search-form").submit(function() {
     $("#save-changes").removeClass("active");
     $("#no-changes").removeClass("active");
 
-    $.get(`/api/admin/user_icon/${username}`, (user_icon, textStatus, xhr) => {
+    $.get(`/api/user/user_icon/${username}`, (user_icon, textStatus, xhr) => {
         if (xhr.status === 200) {
-            $("#user-icon").children("img").attr("data-original", $(user_icon).attr("src"));
-            $("#user-icon").children("img").attr("src", $(user_icon).attr("src"));
+            $("#user-icon").children("img").attr("data-original", $(user_icon.medium).attr("src"));
+            $("#user-icon").children("img").attr("src", $(user_icon.medium).attr("src"));
 
             $("#user-icon").addClass("loaded");
             $("#remove-user-icon").addClass("active");

@@ -15,13 +15,19 @@ body {
     color: white;
     box-sizing: border-box;
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    grid-template-rows: 1fr 1fr;
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: repeat(2, min-content);
     grid-template-areas: "user-pic country-flag" "user-info country-stats";
     grid-gap: 60px;
     gap: 60px;
     justify-items: center;
-    align-items: center;
+    align-items: top;
+}
+
+.maincontent > h3 {
+    grid-column: 1 / span 2;
+    font-size: 40px;
+    text-align: center;
 }
 
 .container {
@@ -32,13 +38,14 @@ body {
     background-color: #212121;
     color: white;
     border-radius: 5%;
-    padding: 10px 40px;
+    padding: 20px 40px;
     box-sizing: border-box;
     overflow: hidden;
 }
 
 .container#user-pic {
     grid-area: user-pic;
+    height: 350px;
 }
 
 .container .user-icon {
@@ -60,6 +67,60 @@ h2 {
     height: 100%;
 }
 
+#user-info-form {
+    display: grid;
+    grid-template-columns: 30% 1fr;
+    grid-gap: 10px;
+    gap: 10px;
+}
+
+#user-info-form input {
+    width: 100%;
+    height: 30px;
+    border: 2px solid #00FF00;
+    background-color: transparent;
+    font-family: 'Lucida Console';
+    color: white;
+    font-size: 16px;
+    text-align: right;
+    padding: 0 20px;
+    box-sizing: border-box;
+}
+
+#user-info-form input:focus {
+    outline: none;
+}
+
+#user-info-form input::placeholder  {
+    font-family: 'Lucida Console';
+    color: white;
+    font-size: 16px;
+}
+
+#user-info-form input:disabled {
+    border: none;
+}
+
+#user-info-form ul {
+    margin: 0;
+}
+
+#user-info-form li:not(:last-child) {
+    margin-bottom: 10px;
+}
+
+#edit-profile-info:focus {
+    outline: none;
+}
+
+#edit-profile-info::before {
+    content: 'Edit Profile';
+}
+
+#edit-profile-info.save-profile::before {
+    content: 'Save Profile';
+}
+
 .container p {
     font-size: 16px;
     font-weight: normal;
@@ -70,6 +131,7 @@ h2 {
 
 .container#country-flag {
     grid-area: country-flag;
+    height: 350px;
 }
 
 .container .country-flag {
@@ -81,7 +143,7 @@ h2 {
 
 .container#country-stats {
     grid-area: country-stats;
-    height: 100%;
+    height: 350px;
 }
 
 .container .stats {
