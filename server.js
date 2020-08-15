@@ -883,7 +883,159 @@ app.get("/api/user/diplomacy/:pageNumber", mongoChecker, (req, res) => {
     })
 });
 
-app.get('/api/user/user_profile_info/:username?', async (req, res) => {
+/**
+ * Route for adding a user to the diplomacy connection list
+ * Expected Body:
+ * {
+ *  username: String    // username of the user to be added to the list
+ * }
+ * Expected output:
+ * {
+ *  status: String   // Should indicate one of: already ally, your list full, target list full, success
+ * }
+ * 
+ * Current maximum number of diplomatic connection is 30
+ */
+app.post("/api/user/diplomacy/add", mongoChecker, (req, res) => {
+    const username = req.session.username;
+    const newAlly = req.body.username;
+
+    Diplomacy.findByName(username).then((data) => {
+        if (!data) {
+            // User not found, cookie corrupted or user deleted by admin
+            res.status(404).send();
+        } else {
+            if (data.connection.length == 30) {
+                res.status(200).send({ status: "your list full" });
+            } else if (data.connection.contains(newAlly)) {
+                res.status(200).send({ status: "already ally" })
+            } else {
+                Diplomacy.findByName(newAlly).then((allyData) => {
+                    if (!allyData) {
+                        res.status(404).send();
+                    } else if (allyData.connection.length == 30) {
+                        res.status(200).send({ status: "target list full" });
+                    } else {
+                        data.connection.push(newAlly);
+                        allyData.connection.push(username);
+                        const dataSaved = await data.save();
+                        const allyDataSaved = await allyData.save();
+
+                        if (dataSaved && allyDataSaved) {
+                            res.status(200).send({ status: "success" })
+                        } else {
+                            res.status(500).send();
+                        }
+                    }
+                })
+            }
+        }
+    }).catch((err) => {
+        log(err);
+        res.status(500).send();
+    })
+});
+
+/**
+ * Route for removng a user from the diplomacy connection list
+ * Expected Body:
+ * {
+ *  username: String    // username of the user to be removed from the list
+ * }
+ * Expected output:
+ * {
+ *  status: String   // Should indicate one of: not in list, success
+ * }
+ * 
+ * Current maximum number of diplomatic connection is 30
+ */
+app.post("/api/user/diplomacy/delete", mongoChecker, (req, res) => {
+    const username = req.session.username;
+    const removeAlly = req.body.username;
+
+    Diplomacy.findByName(username).then((data) => {
+        if (!data) {
+            // User not found, cookie corrupted or user deleted by admin
+            res.status(404).send();
+        } else {
+            if (!data.connection.contains(removeAlly)) {
+                res.status(200).send({ status: "not in list" })
+            } else {
+                Diplomacy.findByName(removeAlly).then((allyData) => {
+                    if (!allyData) {
+                        res.status(404).send();
+                    } else {
+                        data.connection = data.connection.filter(ally => ally !== removeAlly);
+                        allyData.connection = allyData.connection.filter(ally => ally !== username);
+                        const dataSaved = await data.save();
+                        const allyDataSaved = await allyData.save();
+                        if (dataSaved && allyDataSaved) {
+                            res.status(200).send({ status: "success" })
+                        } else {
+                            res.status(500).send();
+                        }
+                    }
+                })
+            }
+        }
+    }).catch((err) => {
+        log(err);
+        res.status(500).send();
+    })
+});
+
+
+/**
+ * Route for removng a user from the diplomacy connection list
+ * Expected Body:
+ * {
+ *  username: String    // username of the user to be removed from the list
+ * }
+ * Expected output:
+ * {
+ *  status: String   // Should indicate one of: not in list, success
+ * }
+ * 
+ * Current maximum number of diplomatic connection is 30
+ */
+app.post("/api/user/diplomacy/delete", mongoChecker, (req, res) => {
+    const username = req.session.username;
+    const removeAlly = req.body.username;
+
+    Diplomacy.findByName(username).then((data) => {
+        if (!data) {
+            // User not found, cookie corrupted or user deleted by admin
+            res.status(404).send();
+        } else {
+            if (!data.connection.contains(removeAlly)) {
+                res.status(200).send({ status: "not in list" })
+            } else {
+                Diplomacy.findByName(removeAlly).then((allyData) => {
+                    if (!allyData) {
+                        res.status(404).send();
+                    } else {
+                        data.connection = data.connection.filter(ally => ally !== removeAlly);
+                        allyData.connection = allyData.connection.filter(ally => ally !== username);
+                        const dataSaved = await data.save();
+                        const allyDataSaved = await allyData.save();
+                        if (dataSaved && allyDataSaved) {
+                            res.status(200).send({ status: "success" })
+                        } else {
+                            res.status(500).send();
+                        }
+                    }
+                })
+            }
+        }
+    }).catch((err) => {
+        log(err);
+        res.status(500).send();
+    })
+});
+
+
+
+app.get('/api/user/user_profile_info/:username?', async(req, res) => {
     const username = req.params.username ? req.params.username : req.session.username;
 
     const user_info = {
@@ -909,7 +1061,7 @@ app.get('/api/user/user_profile_info/:username?', async (req, res) => {
     }
 });
 
-app.post('/api/user/user_profile_info', async (req, res) => {
+app.post('/api/user/user_profile_info', async(req, res) => {
     try {
         const profile = await Profile.findByUsername(req.session.username);
 
@@ -917,7 +1069,11 @@ app.post('/api/user/user_profile_info', async (req, res) => {
             profile[key] = value;
         });
 
+<<<<<<< HEAD
         profile.save();
+=======
+        const user_profile = await Profile.findByUsername(req.session.username);
+>>>>>>> 5a87c859d1ae30410fe22246b0f14ca9ece672f4
     } catch (err) {
         log(err);
     }
@@ -972,7 +1128,7 @@ app.post('/api/user/upload_icon', multipartMiddleware, (req, res) => {
 app.get('/api/user/user_icon/:username?', (req, res) => {
     const username = req.params.username ? req.params.username : req.session.username;
 
-    UserIcon.findByUsername(username).then(async (userIcon) => {
+    UserIcon.findByUsername(username).then(async(userIcon) => {
         if (userIcon) {
             res.send({
                 avatar: cloudinary.image(`${userIcon.image_id}.${userIcon.format}`, {
@@ -1364,7 +1520,7 @@ app.get('/user_feedback', loggedOutRedirectChecker, regUserRedirectChecker, (req
 });
 
 // '/user_profile' route: redirects to '/login' if the user isn't logged in; redirects to '/admin_dashboard' if the user is an admin user
-app.get('/user_profile', loggedOutRedirectChecker, adminRedirectChecker, async (req, res) => {
+app.get('/user_profile', loggedOutRedirectChecker, adminRedirectChecker, async(req, res) => {
     try {
         const profile = req.query.profile;
 
@@ -1378,14 +1534,14 @@ app.get('/user_profile', loggedOutRedirectChecker, adminRedirectChecker, async (
             } else {
                 res.render('user_profile', {
                     not_found: true
-                });                
+                });
             }
         } else {
             res.render('user_profile');
         }
     } catch {
 
-    }    
+    }
 });
 
 // Set up the routes for the '/css', '/images/, and '/js' static directories
@@ -1401,4 +1557,4 @@ app.get('*', (req, res) => {
 const port = process.env.PORT || 5000;
 app.listen(port, () => {
     log(`listening on ${port}...`);
-})
+});
