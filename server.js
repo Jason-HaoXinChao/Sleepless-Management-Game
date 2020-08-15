@@ -891,7 +891,7 @@ app.get("/api/user/diplomacy/:pageNumber", mongoChecker, (req, res) => {
  * }
  * Expected output:
  * {
- *  status: String   // Should indicate one of: already ally, your list full, target list full, success
+ *  status: String   // Should indicate one of: already ally, your list full, success
  * }
  * 
  * Current maximum number of diplomatic connection is 30
@@ -910,24 +910,13 @@ app.post("/api/user/diplomacy/add", mongoChecker, (req, res) => {
             } else if (data.connection.contains(newAlly)) {
                 res.status(200).send({ status: "already ally" })
             } else {
-                Diplomacy.findByName(newAlly).then((allyData) => {
-                    if (!allyData) {
-                        res.status(404).send();
-                    } else if (allyData.connection.length == 30) {
-                        res.status(200).send({ status: "target list full" });
-                    } else {
-                        data.connection.push(newAlly);
-                        allyData.connection.push(username);
-                        const dataSaved = await data.save();
-                        const allyDataSaved = await allyData.save();
-
-                        if (dataSaved && allyDataSaved) {
-                            res.status(200).send({ status: "success" })
-                        } else {
-                            res.status(500).send();
-                        }
-                    }
-                })
+                data.connection.push(newAlly);
+                const saved = await data.save();
+                if (!saved) {
+                    res.status(500).send();
+                } else {
+                    res.status(200).send({ status: "success" })
+                }
             }
         }
     }).catch((err) => {
@@ -946,8 +935,6 @@ app.post("/api/user/diplomacy/add", mongoChecker, (req, res) => {
  * {
  *  status: String   // Should indicate one of: not in list, success
  * }
- * 
- * Current maximum number of diplomatic connection is 30
  */
 app.post("/api/user/diplomacy/delete", mongoChecker, (req, res) => {
     const username = req.session.username;
@@ -961,21 +948,7 @@ app.post("/api/user/diplomacy/delete", mongoChecker, (req, res) => {
             if (!data.connection.contains(removeAlly)) {
                 res.status(200).send({ status: "not in list" })
             } else {
-                Diplomacy.findByName(removeAlly).then((allyData) => {
-                    if (!allyData) {
-                        res.status(404).send();
-                    } else {
-                        data.connection = data.connection.filter(ally => ally !== removeAlly);
-                        allyData.connection = allyData.connection.filter(ally => ally !== username);
-                        const dataSaved = await data.save();
-                        const allyDataSaved = await allyData.save();
-                        if (dataSaved && allyDataSaved) {
-                            res.status(200).send({ status: "success" })
-                        } else {
-                            res.status(500).send();
-                        }
-                    }
-                })
+                data.connection = data.connection.filter(ally => ally !== removeAlly);
             }
         }
     }).catch((err) => {
@@ -986,51 +959,93 @@ app.post("/api/user/diplomacy/delete", mongoChecker, (req, res) => {
 
 
 /**
- * Route for removng a user from the diplomacy connection list
+ * Route for sending medical supply to ally
  * Expected Body:
  * {
- *  username: String    // username of the user to be removed from the list
+ *  username: String    // username of the ally to send supply to
+ *  amount: Number      // amount of supply to be sent
  * }
  * Expected output:
  * {
- *  status: String   // Should indicate one of: not in list, success
+ *  status: String   // Should indicate one of: not enough supply, not in list, failed state, success
  * }
  * 
  * Current maximum number of diplomatic connection is 30
  */
-app.post("/api/user/diplomacy/delete", mongoChecker, (req, res) => {
+app.post("/api/user/diplomacy/send", mongoChecker, (req, res) => {
     const username = req.session.username;
-    const removeAlly = req.body.username;
+    const ally = req.body.username;
+    const amount = req.body.amount;
 
     Diplomacy.findByName(username).then((data) => {
         if (!data) {
             // User not found, cookie corrupted or user deleted by admin
             res.status(404).send();
         } else {
-            if (!data.connection.contains(removeAlly)) {
-                res.status(200).send({ status: "not in list" })
+            if (!data.connection.contains(ally)) {
+                res.status(200).send({ status: "not in list" });
             } else {
-                Diplomacy.findByName(removeAlly).then((allyData) => {
-                    if (!allyData) {
+                Gameplay.findByName(username).then((userData) => {
+                    if (!userData) {
                         res.status(404).send();
+                    } else if (userData.statistic.health <= amount) {
+                        res.status(200).send({ status: "not enough supply" });
                     } else {
-                        data.connection = data.connection.filter(ally => ally !== removeAlly);
-                        allyData.connection = allyData.connection.filter(ally => ally !== username);
-                        const dataSaved = await data.save();
-                        const allyDataSaved = await allyData.save();
-                        if (dataSaved && allyDataSaved) {
-                            res.status(200).send({ status: "success" })
-                        } else {
+                        Gameplay.findbyname(ally).then((allyData) => {
+                            if (!allyData) {
+                                res.status(404).send();
+                            } else if ([] !== allyData.establishment.filter(est => est.name == "Failed State")) {
+                                res.status(200).send({ status: "failed state" });
+                            } else {
+                                userData.statistic.health -= amount;
+                                allyData.statistic.health += amount;
+                                if (allyData.statistic.health > 100) {
+                                    allyData.statistic.health = 100;
+                                }
+                                const curr = new Date();
+                                userData.log.push(new Log({
+                                    time: ("0" + curr.getHours()).slice(-2) + ":" + ("0" + curr.getMinutes()).slice(-2),
+                                    content: `You sent ${amount} medical supplies to your ally ${ally}.`,
+                                    statChange: new StatChange({
+                                        economy: 0,
+                                        health: -amount,
+                                        order: 0,
+                                        diplomacy: amount
+                                    })
+                                }));
+                                allyData.log.push(new Log({
+                                    time: ("0" + currTime.getHours()).slice(-2) + ":" + ("0" + currTime.getMinutes()).slice(-2),
+                                    content: `You received ${amount} medical supplies from a friendly country ruled by ${username}.`,
+                                    statChange: new StatChange({
+                                        economy: 0,
+                                        health: amount,
+                                        order: 0,
+                                        diplomacy: 0
+                                    })
+                                }));
+                                const userSaved = await userData.save();
+                                const allySaved = await allyData.save();
+                                if (userSaved && allySaved) {
+                                    res.status(200).send({ status: "success" });
+                                } else {
+                                    res.status(500).send();
+                                }
+                            }
+                        }).catch((err) => {
+                            log(err);
                             res.status(500).send();
-                        }
+                        });
                     }
-                })
+                }).catch((err) => {
+                    log(err);
+                    res.status(500).send();
+                });
             }
         }
     }).catch((err) => {
         log(err);
         res.status(500).send();
-    })
+    });
 });
 
 
