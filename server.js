@@ -1084,11 +1084,7 @@ app.post('/api/user/user_profile_info', async(req, res) => {
             profile[key] = value;
         });
 
-<<<<<<< HEAD
         profile.save();
-=======
-        const user_profile = await Profile.findByUsername(req.session.username);
->>>>>>> 5a87c859d1ae30410fe22246b0f14ca9ece672f4
     } catch (err) {
         log(err);
     }
