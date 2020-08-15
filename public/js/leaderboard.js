@@ -5,7 +5,7 @@ $(window).on("load", function() {
         return res.json();
     }).then(json => {
         // Iterate through the array of users 10 times (sorted in descending order by user statistic sum)
-        for (let i = 0; i < 10; i++) {
+        for (let i = 0; i < Math.max(10, json.length); i++) {
             // Generate the leaderboard ranking element
             const user = json[i];
 
