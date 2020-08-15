@@ -24,6 +24,7 @@ const { Gameplay, Log, Establishment, StatChange } = require("./models/Gameplay"
 const { Profile } = require("./models/Profile");
 const { Diplomacy } = require("./models/Diplomacy");
 const { PatchNotes } = require("./models/PatchNotes");
+const { Feedback } = require("./models/Feedback");
 
 // express-session for managing user sessions
 const session = require('express-session')
@@ -1208,7 +1209,7 @@ app.get('/api/user/user_icon/:username?', (req, res) => {
     });
 });
 
-app.post('/api/user/change_country_name', mongoChecker, async (req, res) => {
+app.post('/api/user/change_country_name', mongoChecker, async(req, res) => {
     try {
         const country = await Profile.findByCountryName(req.body.countryName);
         if (country) {
@@ -1244,7 +1245,7 @@ app.post('/api/user/upload_flag', multipartMiddleware, (req, res) => {
             } else {
                 var userFlag = new UserFlag({
                     image_id: image.public_id, // image id on cloudinary server
-                    image_url: image.url,                    
+                    image_url: image.url,
                     uploader: req.session.username
                 });
 
@@ -1570,6 +1571,44 @@ app.post("/api/admin/create_event", adminRequestChecker, mongoChecker, async(req
     }
 });
 
+
+/**
+ * Route for user to submit a feedback
+ * expected body:
+ * {
+ *  content: String
+ * }
+ */
+app.post("/api/user/feedback", mongoChecker, async(req, res) => {
+    const username = req.session.username;
+    const content = req.body.content;
+    const feedback = new Feedback({
+        "sender": username,
+        "content": content
+    })
+    feedback.save().then(feedback => {
+        if (!feedback) {
+            req.status(400).send();
+        } else {
+            req.status(200).send();
+        }
+    }).catch(err => {
+        log(err);
+        req.status(500).send();
+    })
+});
+
+/**
+ * Route for admin getting array containing all feedbacks
+ * expected output:
+ * {
+ *  feedbacks:[Object]  // should contain Feedback models
+ * }
+ */
+app.get("/api/admin/feedback", adminRequestChecker, mongoChecker, async(req, res) => {
+
+});
+
 // Root route: redirects to the '/welcome'
 app.get('/', sessionChecker, (req, res) => {
     res.redirect('/welcome');
@@ -1664,7 +1703,7 @@ app.get('/user_profile', loggedOutRedirectChecker, adminRedirectChecker, async(r
                 res.render('user_profile', {
                     visiting: true,
                     uploadStatus: upload,
-                    countryNameStatus: country_name 
+                    countryNameStatus: country_name
                 });
             } else {
                 res.render('user_profile', {
