@@ -185,3 +185,13 @@ body {
 .pagination a:hover:not(.active) {
     background-color: #212121;
 }
+
+.pagination a.grayedOut {
+    color: gray;
+}
+
+.pagination a.grayedOut:hover {
+    background-color: black;
+    cursor: default;
+    pointer-events: none;
+}

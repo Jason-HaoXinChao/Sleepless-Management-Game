@@ -1,43 +1,98 @@
-/*  userInfo class contains information to display on a diplomacy card */
-class userInfo {
-    constructor(icon, username, stats) {
-        this.icon = icon;
-        this.username = username;
-        this.stats = stats;
-    }
-}
-
 // onload event listener
 window.addEventListener("load", initializePage);
 
-/*  This should obtain data of ally users from server
-    for now we just make up some mock data
-*/
+/*  obtain ally users from the server and display them on the page
+ */
 function initializePage(e) {
-    let user = [];
-    user.push(new userInfo("./images/piano_cat_icon.jpg", "piano cat", [12, 34, 56, 78]));
-    user.push(new userInfo("./images/yelledatcat_icon.png", "why you yelling", [98, 87, 65, 54]));
-    user.push(new userInfo("./images/grumpycat_icon.png", "alright", [59, 31, 47, 78]));
-    user.push(new userInfo("./images/tomandjerry_icon.png", "polish jerry", [20, 35, 68, 74]));
-    user.forEach(element => {
-        addCard(element);
+    const pagination = document.getElementsByClassName("pagination")[0];
+    const container = document.getElementsByClassName("card_container")[0];
+    fetchRequest("GET", "/api/user/diplomacy/1", {}, (output) => {
+        // Add paginations
+        if (output.totalPage <= 1) { // Hide pagination if there is 0 or 1 page
+            pagination.style.display = "none";
+        } else {
+            const nextButton = document.getElementById("Next");
+            for (let i = 1; index <= output.totalPage; i++) {
+                const page = document.createElement("a");
+                page.innerText = i;
+                if (i == 1) {
+                    page.setAttribute("id", "active");
+                }
+                // Add onclick eventlistener to the link
+                page.addEventListener("click", switchPage);
+                // Insert the new page button before the next page button
+                nextButton.before(page);
+            }
+            // gray out the previous page button
+            const previousButton = document.getElementById("Previous");
+            previousButton.classList.toggle("grayedOut");
+        }
+        output.connection.forEach(connection => {
+            addCard(connection);
+        });
+        if (output.totalPage == 0) {
+            alert("You have no diplomatic connection with any other country.");
+        }
     });
 }
 
-/* A function to add a diplomacy card given a user's information */
-function addCard(user) {
-    //Create DOM elemnts for each component
+/**
+ * changes the diplomatic connections displayed
+ * @param {*} e onclick event
+ */
+function switchPage(e) {
+    e.preventDefault();
+    const pageButton = e.target;
+    const pageNumber = pageButton.innerText;
+    // Empty the card container to put in new cards
+    const container = document.getElementsByClassName("card_container")[0];
+    while (container.firstChild) {
+        container.removeChild(container.lastChild);
+    }
+    fetchRequest("GET", "/api/user/diplomacy/" + pageNumber, {}, (output) => {
+        output.connection.forEach(connection => {
+            addCard(connection);
+        });
+    });
+
+    // gray out the previous page button if user is on first page, ungray if otherwise.
+    const previousButton = document.getElementById("Previous");
+    if (pageNumber > 1 && previousButton.classList.contains("grayedOut")) {
+        previousButton.classList.toggle("grayedOut");
+    } else if (pageNumber == 1 && !previousButton.classList.contains("grayedOut")) {
+        previousButton.classList.toggle("grayedOut");
+    }
+
+    // gray out the next page button if user is on last page, ungray if otherwise.
+    const nextButton = document.getElementById("Next");
+    if (pageNumber < output.totalPage && nextButton.classList.contains("grayedOut")) {
+        nextButton.classList.toggle("grayedOut");
+    } else if (pageNumber == output.totalPage && !nextButton.classList.contains("grayedOut")) {
+        nextButton.classList.toggle("grayedOut");
+    }
+
+    // Change the active button to the current page
+    const currentPage = document.getElementById("active");
+    currentPage.classList.toggle("active");
+    pageButton.toggle("active");
+}
+
+/**
+ * add a diplomacy card given a user's username
+ * @param {String} username username of an ally user 
+ */
+function addCard(username) {
+    // Create card container
     const card = document.createElement("div");
     card.setAttribute("class", "card");
-    const icon = document.createElement("img");
-    icon.setAttribute("id", "icon");
-    icon.src = user.icon;
-    card.appendChild(icon);
-    const username = document.createElement("p");
-    username.setAttribute("id", "username");
-    username.innerText = user.username;
-    card.appendChild(username);
-    // stat icons
+
+    // Username
+    const usernameDOM = document.createElement("p");
+    usernameDOM.setAttribute("id", "username");
+    usernameDOM.innerText = username;
+    card.appendChild(usernameDOM);
+
+    // statistic icons
     const econIcon = document.createElement("img");
     econIcon.setAttribute("id", "econIcon");
     econIcon.src = "./images/econ.png";
@@ -54,24 +109,7 @@ function addCard(user) {
     diplomacyIcon.setAttribute("id", "diplomacyIcon");
     diplomacyIcon.src = "./images/diplomacy.png";
     card.appendChild(diplomacyIcon);
-    // stats
-    const econStat = document.createElement("p");
-    econStat.setAttribute("id", "econStat");
-    econStat.innerText = user.stats[0];
-    card.appendChild(econStat);
-    const orderStat = document.createElement("p");
-    orderStat.setAttribute("id", "orderStat");
-    orderStat.innerText = user.stats[1];
-    card.appendChild(orderStat);
-    const healthStat = document.createElement("p");
-    healthStat.setAttribute("id", "healthStat");
-    healthStat.innerText = user.stats[2];
-    card.appendChild(healthStat);
-    const diplomacyStat = document.createElement("p");
-    diplomacyStat.setAttribute("id", "diplomacyStat");
-    diplomacyStat.innerText = user.stats[3];
-    card.appendChild(diplomacyStat);
-    // buttons
+
     const profileButton = document.createElement("button");
     profileButton.setAttribute("class", "profile");
     profileButton.innerText = "View Profile";
@@ -89,17 +127,55 @@ function addCard(user) {
     breakButton.innerText = "Break Ties";
     card.appendChild(breakButton);
 
-    // Append card to cardContainer
-    const cardContainer = (document.getElementsByClassName("card_container"))[0];
-    console.log(cardContainer);
-    cardContainer.appendChild(card);
-
     // Set up eventlisteners for the buttons
     profileButton.addEventListener("click", viewProfile);
     sendButton.addEventListener("click", sendResource);
     askButton.addEventListener("click", askResource);
     breakButton.addEventListener("click", breakTies)
+
+    // wait for asynchronous calls to finish before appending to the container
+
+    // Fetch gameplay statistic
+    fetchRequest("GET", "/api/admin/gameplay_stat/" + username, {}, (statistic) => {
+        try {
+            // stats
+            const econStat = document.createElement("p");
+            econStat.setAttribute("id", "econStat");
+            econStat.innerText = user.stats[0];
+            card.appendChild(econStat);
+            const orderStat = document.createElement("p");
+            orderStat.setAttribute("id", "orderStat");
+            orderStat.innerText = user.stats[1];
+            card.appendChild(orderStat);
+            const healthStat = document.createElement("p");
+            healthStat.setAttribute("id", "healthStat");
+            healthStat.innerText = user.stats[2];
+            card.appendChild(healthStat);
+            const diplomacyStat = document.createElement("p");
+            diplomacyStat.setAttribute("id", "diplomacyStat");
+            diplomacyStat.innerText = user.stats[3];
+            card.appendChild(diplomacyStat);
+        } catch (error) {
+            log(error)
+        }
+
+        // Fetch user icon
+        fetchRequest("GET", "/api/admin/user_icon/" + username, {}, (icon) => {
+            try {
+                const icon = document.createElement("img");
+                icon.setAttribute("id", "icon");
+                icon.src = icon;
+                card.appendChild(icon);
+            } catch (error) {
+                log(error);
+            }
+            // Append card to cardContainer
+            const cardContainer = (document.getElementsByClassName("card_container"))[0];
+            cardContainer.appendChild(card);
+        });
+    });
 }
+
 
 /*  obtain url from server to open the profile of said user
     But here we just alert the user to let them know this button does something
@@ -144,5 +220,78 @@ function breakTies(e) {
     if (confirm("Are you sure you want to break ties with this ally?")) {
         const card = e.target.parentNode;
         card.parentNode.removeChild(card);
+    }
+}
+
+// Helper function to send a request to the server using the fetch() api
+function fetchRequest(requestType, URL, data, callback) {
+    if (requestType == "GET") {
+        fetch(URL, {
+                method: requestType,
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                credentials: "include",
+                redirect: "follow"
+            })
+            .then(response => {
+                if (!response.ok) { // server sending non-200 codes
+                    log("Error status:", response.status);
+                    log("Logging user out...");
+                    document.getElementsByClassName("logout")[0].click();
+                    return;
+                } else {
+                    return response.json();
+                }
+            })
+            .then(data => {
+                if (data) {
+                    log("Request Successful");
+                    callback(data);
+                } else {
+                    log("Request Failed");
+                    document.getElementsByClassName("logout")[0].click();
+                }
+            })
+            .catch((error) => {
+                console.error('Encountered error:', error);
+                console.error("Redirecting user to logout.");
+                document.getElementsByClassName("logout")[0].click();
+            });
+
+    } else {
+        fetch(URL, {
+                method: requestType,
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                credentials: "include",
+                redirect: "follow",
+                body: JSON.stringify(data)
+            })
+            .then(response => {
+                if (!response.ok) { // server sending non-200 codes
+                    log("Error status:", response.status);
+                    log("Logging user out...");
+                    document.getElementsByClassName("logout")[0].click();
+                    return;
+                } else {
+                    return response.json();
+                }
+            })
+            .then(data => {
+                if (data) {
+                    log("Request Successful");
+                    callback(data);
+                } else {
+                    log("Request Failed");
+                    document.getElementsByClassName("logout")[0].click();
+                }
+            })
+            .catch((error) => {
+                console.error('Encountered error:', error);
+                console.error("Redirecting user to logout.");
+                document.getElementsByClassName("logout")[0].click();
+            });
     }
 }

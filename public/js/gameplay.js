@@ -8,107 +8,6 @@ let dropdownVisible = false; // toggle to indicate if dropdown menu is visible o
 let interval; // global timer variable
 const updateInterval = 15000;
 
-// function sendRequest(requestType, URL, data, callback) {
-//     const xml = new XMLHttpRequest();
-
-//     xml.open(requestType, URL, true);
-//     xml.setRequestHeader("Content-Type", "application/json");
-//     xml.onreadystatechange = function() {
-
-//         if (this.readyState == 4 && this.status == 200) {
-//             log("received update");
-//             try {
-//                 callback(JSON.parse(this.responseText));
-//             } catch (error) {
-//                 log("Logging out with the error below");
-//                 log(error);
-//                 window.open(location.host + "/api/logout", "_self");
-//             }
-//         } else if (this.status >= 400) {
-//             log("Logging out with error code: " + this.status);
-//             window.open(location.host + "/api/logout", "_self");
-//         }
-//     };
-//     xml.onerror = function() {
-//         log("An error has occured.");
-//         log("Logging out with error code: " + this.status);
-//         window.open(location.host + "/api/logout", "_self");
-//     }
-//     xml.send(JSON.stringify(data));
-// }
-
-// Helper function to send a request to the server using the fetch() api
-function fetchRequest(requestType, URL, data, callback) {
-    if (requestType == "GET") {
-        fetch(URL, {
-                method: requestType,
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                credentials: "include",
-                redirect: "follow"
-            })
-            .then(response => {
-                if (!response.ok) { // server sending non-200 codes
-                    log("Error status:", response.status);
-                    log("Logging user out...");
-                    document.getElementsByClassName("logout")[0].click();
-                    return;
-                } else {
-                    return response.json();
-                }
-            })
-            .then(data => {
-                if (data) {
-                    log("Request Successful");
-                    callback(data);
-                } else {
-                    log("Request Failed");
-                    document.getElementsByClassName("logout")[0].click();
-                }
-            })
-            .catch((error) => {
-                console.error('Encountered error:', error);
-                console.error("Redirecting user to logout.");
-                document.getElementsByClassName("logout")[0].click();
-            });
-
-    } else {
-        fetch(URL, {
-                method: requestType,
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                credentials: "include",
-                redirect: "follow",
-                body: JSON.stringify(data)
-            })
-            .then(response => {
-                if (!response.ok) { // server sending non-200 codes
-                    log("Error status:", response.status);
-                    log("Logging user out...");
-                    document.getElementsByClassName("logout")[0].click();
-                    return;
-                } else {
-                    return response.json();
-                }
-            })
-            .then(data => {
-                if (data) {
-                    log("Request Successful");
-                    callback(data);
-                } else {
-                    log("Request Failed");
-                    document.getElementsByClassName("logout")[0].click();
-                }
-            })
-            .catch((error) => {
-                console.error('Encountered error:', error);
-                console.error("Redirecting user to logout.");
-                document.getElementsByClassName("logout")[0].click();
-            });
-    }
-}
 
 function initializePage(e) {
     // Add event listener for strategy buttons
@@ -564,4 +463,78 @@ function isGameOver() {
         }
     }
     return gameOver;
+}
+
+
+// Helper function to send a request to the server using the fetch() api
+function fetchRequest(requestType, URL, data, callback) {
+    if (requestType == "GET") {
+        fetch(URL, {
+                method: requestType,
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                credentials: "include",
+                redirect: "follow"
+            })
+            .then(response => {
+                if (!response.ok) { // server sending non-200 codes
+                    log("Error status:", response.status);
+                    log("Logging user out...");
+                    document.getElementsByClassName("logout")[0].click();
+                    return;
+                } else {
+                    return response.json();
+                }
+            })
+            .then(data => {
+                if (data) {
+                    log("Request Successful");
+                    callback(data);
+                } else {
+                    log("Request Failed");
+                    document.getElementsByClassName("logout")[0].click();
+                }
+            })
+            .catch((error) => {
+                console.error('Encountered error:', error);
+                console.error("Redirecting user to logout.");
+                document.getElementsByClassName("logout")[0].click();
+            });
+
+    } else {
+        fetch(URL, {
+                method: requestType,
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                credentials: "include",
+                redirect: "follow",
+                body: JSON.stringify(data)
+            })
+            .then(response => {
+                if (!response.ok) { // server sending non-200 codes
+                    log("Error status:", response.status);
+                    log("Logging user out...");
+                    document.getElementsByClassName("logout")[0].click();
+                    return;
+                } else {
+                    return response.json();
+                }
+            })
+            .then(data => {
+                if (data) {
+                    log("Request Successful");
+                    callback(data);
+                } else {
+                    log("Request Failed");
+                    document.getElementsByClassName("logout")[0].click();
+                }
+            })
+            .catch((error) => {
+                console.error('Encountered error:', error);
+                console.error("Redirecting user to logout.");
+                document.getElementsByClassName("logout")[0].click();
+            });
+    }
 }
