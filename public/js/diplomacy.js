@@ -1,6 +1,6 @@
 const log = console.log;
 // onload event listener
-window.addEventListener("load", initializePage);
+window.addEventListener("DOMContentLoaded", initializePage);
 
 /*  obtain ally users from the server and display them on the page
  */
@@ -13,11 +13,11 @@ function initializePage(e) {
             pagination.style.display = "none";
         } else {
             const nextButton = document.getElementById("Next");
-            for (let i = 1; index <= output.totalPage; i++) {
+            for (let i = 1; i <= output.totalPage; i++) {
                 const page = document.createElement("a");
                 page.innerText = i;
                 if (i == 1) {
-                    page.setAttribute("id", "active");
+                    page.classList.toggle("active");
                 }
                 // Add onclick eventlistener to the link
                 page.addEventListener("click", switchPage);
@@ -27,12 +27,16 @@ function initializePage(e) {
             // gray out the previous page button
             const previousButton = document.getElementById("Previous");
             previousButton.classList.toggle("grayedOut");
+            nextButton.addEventListener("click", nextPage);
+            previousButton.addEventListener("click", previousPage);
         }
-        output.connection.forEach(connection => {
-            addCard(connection);
-        });
+
         if (output.totalPage == 0) {
             alert("You have no diplomatic connection with any other country.");
+        } else {
+            output.connection.forEach(username => {
+                addCard(username);
+            });
         }
     });
 }
@@ -43,6 +47,7 @@ function initializePage(e) {
  */
 function switchPage(e) {
     e.preventDefault();
+    log("this is the target", e.target);
     const pageButton = e.target;
     const pageNumber = pageButton.innerText;
     // Empty the card container to put in new cards
@@ -54,28 +59,44 @@ function switchPage(e) {
         output.connection.forEach(connection => {
             addCard(connection);
         });
+
+        // gray out the previous page button if user is on first page, ungray if otherwise.
+        const previousButton = document.getElementById("Previous");
+        if (pageNumber > 1 && previousButton.classList.contains("grayedOut")) {
+            previousButton.classList.toggle("grayedOut");
+        } else if (pageNumber == 1 && !previousButton.classList.contains("grayedOut")) {
+            previousButton.classList.toggle("grayedOut");
+        }
+
+        // gray out the next page button if user is on last page, ungray if otherwise.
+        const nextButton = document.getElementById("Next");
+        if (pageNumber < output.totalPage && nextButton.classList.contains("grayedOut")) {
+            nextButton.classList.toggle("grayedOut");
+        } else if (pageNumber == output.totalPage && !nextButton.classList.contains("grayedOut")) {
+            nextButton.classList.toggle("grayedOut");
+        }
+
+        // Change the active button to the current page
+        const currentPage = document.getElementsByClassName("active")[0];
+        currentPage.classList.toggle("active");
+        pageButton.classList.toggle("active");
     });
+}
 
-    // gray out the previous page button if user is on first page, ungray if otherwise.
-    const previousButton = document.getElementById("Previous");
-    if (pageNumber > 1 && previousButton.classList.contains("grayedOut")) {
-        previousButton.classList.toggle("grayedOut");
-    } else if (pageNumber == 1 && !previousButton.classList.contains("grayedOut")) {
-        previousButton.classList.toggle("grayedOut");
-    }
-
-    // gray out the next page button if user is on last page, ungray if otherwise.
+function nextPage(e) {
     const nextButton = document.getElementById("Next");
-    if (pageNumber < output.totalPage && nextButton.classList.contains("grayedOut")) {
-        nextButton.classList.toggle("grayedOut");
-    } else if (pageNumber == output.totalPage && !nextButton.classList.contains("grayedOut")) {
-        nextButton.classList.toggle("grayedOut");
+    const currentPage = document.getElementsByClassName("active")[0];
+    if (nextButton !== currentPage.nextSibling) {
+        currentPage.nextSibling.click();
     }
+}
 
-    // Change the active button to the current page
-    const currentPage = document.getElementById("active");
-    currentPage.classList.toggle("active");
-    pageButton.toggle("active");
+function previousPage(e) {
+    const previousButton = document.getElementById("Previous");
+    const currentPage = document.getElementsByClassName("active")[0];
+    if (previousButton !== currentPage.previousSibling) {
+        currentPage.previousSibling.click();
+    }
 }
 
 /**
@@ -132,7 +153,7 @@ function addCard(username) {
     // wait for asynchronous calls to finish before appending to the container
 
     // Fetch gameplay statistic
-    fetchRequest("GET", "/api/admin/gameplay_stat/" + username, {}, (statistic) => {
+    fetchRequest("GET", "/api/user/gameplay/stat/" + "stat/" + username, {}, (statistic) => {
         try {
             // stats
             const econStat = document.createElement("p");
@@ -154,17 +175,21 @@ function addCard(username) {
         } catch (error) {
             log(error)
         }
-
-        // Fetch user icon
-        fetchRequest("GET", "/api/admin/user_icon/" + username, {}, (iconImg) => {
-            try {
-                const icon = document.createElement("img");
-                icon.setAttribute("id", "icon");
-                icon.src = iconImg.src;
-                card.appendChild(icon);
-            } catch (error) {
-                log(error);
+        const icon = document.createElement("img");
+        icon.setAttribute("id", "icon");
+        icon.src = "./images/visitor_icon.png";
+        card.appendChild(icon);
+        fetch(`/api/user/user_icon/${username}`).then(res => {
+            if (res) {
+                return res.json();
             }
+        }).then(json => {
+            if (json !== false) {
+                icon.src = $(json.large).attr("src");
+            }
+        }).catch(err => {
+            console.log(err);
+        }).finally(() => {
             // Append card to cardContainer
             const cardContainer = (document.getElementsByClassName("card_container"))[0];
             cardContainer.appendChild(card);
@@ -179,7 +204,7 @@ function viewProfile(e) {
     e.preventDefault();
     const button = e.target;
     const parent = button.parentNode;
-    const username = parent.getElementById("username").innerText;
+    const username = parent.querySelector("#username").innerText;
     window.open(location.origin + "/user_profile?profile=" + username, "_self");
 }
 
@@ -196,8 +221,8 @@ function sendResource(e) {
     e.preventDefault();
     const button = e.target;
     const parent = button.parentNode;
-    const username = parent.getElementById("username").innerText;
-    const amount = Parseint(prompt("How much medical supply do you want to send? (You can only send less than your current health statistic)", "0"));
+    const username = parent.querySelector("#username").innerText;
+    const amount = parseInt(prompt("How much medical supply do you want to send? (You can only send less than your current health statistic)", "0"));
     if (amount != null && amount >= 0) {
         fetchRequest("POST", "/api/user/diplomacy/send", { "username": username, "amount": Math.floor(amount) }, (output) => {
             if (!output.status) {
@@ -236,7 +261,7 @@ function breakTies(e) {
     e.preventDefault();
     if (confirm("Are you sure you want to break ties with this ally?")) {
         const card = e.target.parentNode;
-        const username = card.getElementById("username").innerText;
+        const username = card.querySelector("#username").innerText;
         fetchRequest("POST", "/api/user/diplomacy/delete", { username: username }, (output) => {
             if (!output.status) {
                 log("didn't receive status update");
@@ -272,7 +297,7 @@ function fetchRequest(requestType, URL, data, callback) {
                 if (!response.ok) { // server sending non-200 codes
                     log("Error status:", response.status);
                     log("Logging user out...");
-                    document.getElementsByClassName("logout")[0].click();
+                    //document.getElementsByClassName("logout")[0].click();
                     return;
                 } else {
                     return response.json();
@@ -284,13 +309,13 @@ function fetchRequest(requestType, URL, data, callback) {
                     callback(data);
                 } else {
                     log("Request Failed");
-                    document.getElementsByClassName("logout")[0].click();
+                    //document.getElementsByClassName("logout")[0].click();
                 }
             })
             .catch((error) => {
                 console.error('Encountered error:', error);
                 console.error("Redirecting user to logout.");
-                document.getElementsByClassName("logout")[0].click();
+                //document.getElementsByClassName("logout")[0].click();
             });
 
     } else {
@@ -307,7 +332,7 @@ function fetchRequest(requestType, URL, data, callback) {
                 if (!response.ok) { // server sending non-200 codes
                     log("Error status:", response.status);
                     log("Logging user out...");
-                    document.getElementsByClassName("logout")[0].click();
+                    //document.getElementsByClassName("logout")[0].click();
                     return;
                 } else {
                     return response.json();
@@ -319,13 +344,13 @@ function fetchRequest(requestType, URL, data, callback) {
                     callback(data);
                 } else {
                     log("Request Failed");
-                    document.getElementsByClassName("logout")[0].click();
+                    //document.getElementsByClassName("logout")[0].click();
                 }
             })
             .catch((error) => {
                 console.error('Encountered error:', error);
                 console.error("Redirecting user to logout.");
-                document.getElementsByClassName("logout")[0].click();
+                //document.getElementsByClassName("logout")[0].click();
             });
     }
 }

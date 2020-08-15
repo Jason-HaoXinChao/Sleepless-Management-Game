@@ -866,14 +866,14 @@ app.get("/api/user/diplomacy/:pageNumber", mongoChecker, (req, res) => {
     const pagenum = req.params.pageNumber;
     const username = req.session.username;
 
-    Diplomacy.findByName(username).then((data) => {
+    Diplomacy.findByUsername(username).then((data) => {
         if (!data) {
             // User not found, cookie corrupted or user deleted by admin
             res.status(400).send();
         } else {
             const output = {
                 totalPage: Math.ceil(data.connection.length / 6),
-                connecton: data.connection.slice(6 * (pagenum - 1), 6 * pagenum)
+                connection: data.connection.slice(6 * (pagenum - 1), 6 * pagenum)
             }
             res.status(200).send(output);
         }
@@ -900,14 +900,14 @@ app.post("/api/user/diplomacy/add", mongoChecker, (req, res) => {
     const username = req.session.username;
     const newAlly = req.body.username;
 
-    Diplomacy.findByName(username).then((data) => {
+    Diplomacy.findByUsername(username).then((data) => {
         if (!data) {
             // User not found, cookie corrupted or user deleted by admin
             res.status(404).send();
         } else {
             if (data.connection.length == 30) {
                 res.status(200).send({ status: "your list full" });
-            } else if (data.connection.contains(newAlly)) {
+            } else if (data.connection.includes(newAlly)) {
                 res.status(200).send({ status: "already ally" })
             } else {
                 data.connection.push(newAlly);
@@ -940,12 +940,12 @@ app.post("/api/user/diplomacy/delete", mongoChecker, (req, res) => {
     const username = req.session.username;
     const removeAlly = req.body.username;
 
-    Diplomacy.findByName(username).then((data) => {
+    Diplomacy.findByUsername(username).then((data) => {
         if (!data) {
             // User not found, cookie corrupted or user deleted by admin
             res.status(404).send();
         } else {
-            if (!data.connection.contains(removeAlly)) {
+            if (!data.connection.includes(removeAlly)) {
                 res.status(200).send({ status: "not in list" })
             } else {
                 data.connection = data.connection.filter(ally => ally !== removeAlly);
@@ -983,24 +983,24 @@ app.post("/api/user/diplomacy/send", mongoChecker, (req, res) => {
     const ally = req.body.username;
     const amount = req.body.amount;
 
-    Diplomacy.findByName(username).then((data) => {
+    Diplomacy.findByUsername(username).then((data) => {
         if (!data) {
             // User not found, cookie corrupted or user deleted by admin
             res.status(404).send();
         } else {
-            if (!data.connection.contains(ally)) {
+            if (!data.connection.includes(ally)) {
                 res.status(200).send({ status: "not in list" });
             } else {
-                Gameplay.findByName(username).then((userData) => {
+                Gameplay.findByUsername(username).then((userData) => {
                     if (!userData) {
                         res.status(404).send();
                     } else if (userData.statistic.health <= amount) {
                         res.status(200).send({ status: "not enough supply" });
                     } else {
-                        Gameplay.findbyname(ally).then((allyData) => {
+                        Gameplay.findByUsername(ally).then((allyData) => {
                             if (!allyData) {
                                 res.status(404).send();
-                            } else if ([] !== allyData.establishment.filter(est => est.name == "Failed State")) {
+                            } else if (allyData.establishment.filter(est => est.name == "Failed State").length !== 0) {
                                 res.status(200).send({ status: "failed state" });
                             } else {
                                 userData.statistic.health -= amount;
@@ -1020,7 +1020,7 @@ app.post("/api/user/diplomacy/send", mongoChecker, (req, res) => {
                                     })
                                 }));
                                 allyData.log.push(new Log({
-                                    time: ("0" + currTime.getHours()).slice(-2) + ":" + ("0" + currTime.getMinutes()).slice(-2),
+                                    time: ("0" + curr.getHours()).slice(-2) + ":" + ("0" + curr.getMinutes()).slice(-2),
                                     content: `You received ${amount} medical supplies from a friendly country ruled by ${username}.`,
                                     statChange: new StatChange({
                                         economy: 0,
