@@ -911,7 +911,7 @@ app.post("/api/user/diplomacy/add", mongoChecker, (req, res) => {
                 res.status(200).send({ status: "already ally" })
             } else {
                 data.connection.push(newAlly);
-                const saved = await data.save();
+                const saved = data.save();
                 if (!saved) {
                     res.status(500).send();
                 } else {
@@ -949,6 +949,12 @@ app.post("/api/user/diplomacy/delete", mongoChecker, (req, res) => {
                 res.status(200).send({ status: "not in list" })
             } else {
                 data.connection = data.connection.filter(ally => ally !== removeAlly);
+                const saved = data.save();
+                if (!saved) {
+                    res.status(500).send();
+                } else {
+                    res.status(200).send({ status: "success" });
+                }
             }
         }
     }).catch((err) => {
@@ -1023,8 +1029,8 @@ app.post("/api/user/diplomacy/send", mongoChecker, (req, res) => {
                                         diplomacy: 0
                                     })
                                 }));
-                                const userSaved = await userData.save();
-                                const allySaved = await allyData.save();
+                                const userSaved = userData.save();
+                                const allySaved = allyData.save();
                                 if (userSaved && allySaved) {
                                     res.status(200).send({ status: "success" });
                                 } else {
