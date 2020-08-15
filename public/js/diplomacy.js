@@ -1,3 +1,4 @@
+const log = console.log;
 // onload event listener
 window.addEventListener("load", initializePage);
 
@@ -118,10 +119,6 @@ function addCard(username) {
     sendButton.setAttribute("class", "send");
     sendButton.innerText = "Send Resource";
     card.appendChild(sendButton);
-    const askButton = document.createElement("button");
-    askButton.setAttribute("class", "ask");
-    askButton.innerText = "Ask for Resource";
-    card.appendChild(askButton);
     const breakButton = document.createElement("button");
     breakButton.setAttribute("class", "break");
     breakButton.innerText = "Break Ties";
@@ -130,7 +127,6 @@ function addCard(username) {
     // Set up eventlisteners for the buttons
     profileButton.addEventListener("click", viewProfile);
     sendButton.addEventListener("click", sendResource);
-    askButton.addEventListener("click", askResource);
     breakButton.addEventListener("click", breakTies)
 
     // wait for asynchronous calls to finish before appending to the container
@@ -141,30 +137,30 @@ function addCard(username) {
             // stats
             const econStat = document.createElement("p");
             econStat.setAttribute("id", "econStat");
-            econStat.innerText = user.stats[0];
+            econStat.innerText = statistic.economy;
             card.appendChild(econStat);
             const orderStat = document.createElement("p");
             orderStat.setAttribute("id", "orderStat");
-            orderStat.innerText = user.stats[1];
+            orderStat.innerText = statistic.order;
             card.appendChild(orderStat);
             const healthStat = document.createElement("p");
             healthStat.setAttribute("id", "healthStat");
-            healthStat.innerText = user.stats[2];
+            healthStat.innerText = statistic.health;
             card.appendChild(healthStat);
             const diplomacyStat = document.createElement("p");
             diplomacyStat.setAttribute("id", "diplomacyStat");
-            diplomacyStat.innerText = user.stats[3];
+            diplomacyStat.innerText = statistic.diplomacy;
             card.appendChild(diplomacyStat);
         } catch (error) {
             log(error)
         }
 
         // Fetch user icon
-        fetchRequest("GET", "/api/admin/user_icon/" + username, {}, (icon) => {
+        fetchRequest("GET", "/api/admin/user_icon/" + username, {}, (iconImg) => {
             try {
                 const icon = document.createElement("img");
                 icon.setAttribute("id", "icon");
-                icon.src = icon;
+                icon.src = iconImg.src;
                 card.appendChild(icon);
             } catch (error) {
                 log(error);
@@ -177,49 +173,87 @@ function addCard(username) {
 }
 
 
-/*  obtain url from server to open the profile of said user
-    But here we just alert the user to let them know this button does something
-    Because we are obviously not going to hard code 50 different profile pages
-    for phase 1 just to delete them all after.
+/*  open the profile page of the specified ally
  */
 function viewProfile(e) {
     e.preventDefault();
-    alert("Sorry we can't view this user's profile right now.\n(we don't want to hard code a different profile page for every fake user)");
+    const button = e.target;
+    const parent = button.parentNode;
+    const username = parent.getElementById("username").innerText;
+    window.open(location.origin + "/user_profile?profile=" + username, "_self");
 }
 
-/*  ask user for a amount of resource to send 
-    it should then send this information to the server to validate
-    whether the user has enough resource, and then it should obtain a
-    response from the server to display to the user
+/*  ask user for a amount of medical supply to send 
+    then send this information to the server to validate, 
+    then obtain a response from the server to display to the user
+    expected results
+    not enough supply: health statistic lower than proposed amount
+    not in list: target user is not in diplomacy database (reload)
+    failed state: target user has already game over'ed
+    success: successfully sent supply
  */
 function sendResource(e) {
     e.preventDefault();
-    const amount = prompt("How much resource do you want to send?", "0");
-    if (amount != null) {
-        alert("You've sent " + amount + " resource, your ally will see it once they login.");
+    const button = e.target;
+    const parent = button.parentNode;
+    const username = parent.getElementById("username").innerText;
+    const amount = Parseint(prompt("How much medical supply do you want to send? (You can only send less than your current health statistic)", "0"));
+    if (amount != null && amount >= 0) {
+        fetchRequest("POST", "/api/user/diplomacy/send", { "username": username, "amount": Math.floor(amount) }, (output) => {
+            if (!output.status) {
+                log("didn't receive status update");
+                alert("An error has occured. Your current session might be desynced with the server, try log back in later. Logging out...");
+                document.getElementsByClassName("logout")[0].click(); // logout
+                return;
+            }
+            switch (output.status) {
+                case "not in list":
+                    alert("An error has occured. Your current session might be desynced with the server, try log back in later. Logging out...");
+                    document.getElementsByClassName("logout")[0].click(); // logout
+                    break;
+                case "not enough supply":
+                    alert("You don't have enough supply to send!");
+                    break;
+                case "failed state":
+                    alert("This ally's government has lost control of their country, you can't send them supply when there's a civil war going on.");
+                    break;
+                case "success":
+                    alert("Your medical supply has been sent! Your ally will see it in their event log.");
+                    break;
+                default:
+                    break;
+            }
+        });
+    } else {
+        alert("ILLEGAL AMOUNT!");
     }
 }
 
-/*  ask user for a amount of resource to ask 
-    it should then send this information to the server to validate,
-    and then it should obtain a response from the server to display to the user
- */
-function askResource(e) {
-    e.preventDefault();
-    const amount = prompt("How much resource do you want to ask for?", "0");
-    if (amount != null) {
-        alert("You've asked for " + amount + " resource, your ally will see it once they login.");
-    }
-}
-
-/*  ask the user to confirm their decision, if the user confirms it, remove
-    the user chosen from the diplomacy page.
+/*  ask the user to confirm their decision, if the user confirms it, send
+    a request to the server to remove the user chosen from the diplomacy collection.
 */
 function breakTies(e) {
     e.preventDefault();
     if (confirm("Are you sure you want to break ties with this ally?")) {
         const card = e.target.parentNode;
-        card.parentNode.removeChild(card);
+        const username = card.getElementById("username").innerText;
+        fetchRequest("POST", "/api/user/diplomacy/delete", { username: username }, (output) => {
+            if (!output.status) {
+                log("didn't receive status update");
+                alert("An error has occured. Your current session might be desynced with the server, try log back in later. Logging out...");
+                document.getElementsByClassName("logout")[0].click(); // logout
+                return;
+            }
+
+            if (output.status == "not in list") {
+                alert("An error has occured. Your current session might be desynced with the server, try log back in later. Logging out...");
+                document.getElementsByClassName("logout")[0].click(); // logout
+            } else if (output.status == "success") {
+                alert("You have successfully destroyed your diplomatic connection with this user. Updating ally list...");
+                location.reload(); // reinitialize the page
+            }
+        })
+
     }
 }
 
