@@ -6,7 +6,7 @@ const log = console.log;
 // Global variables
 let dropdownVisible = false; // toggle to indicate if dropdown menu is visible or not
 let interval; // global timer variable
-const updateInterval = 15000;
+const updateInterval = 10000;
 
 
 function initializePage(e) {

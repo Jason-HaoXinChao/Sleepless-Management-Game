@@ -781,7 +781,7 @@ app.get("/api/user/gameplay/update", mongoChecker, (req, res) => {
                         };
                         if (!gameOver) {
                             // Ask RNGesus if there should be a random event
-                            const percentageChance = 5; // percentage chance of event occuring
+                            const percentageChance = 15; // percentage chance of event occuring
                             if (Math.floor(Math.random() * (100 - 0)) + 0 <= percentageChance) {
                                 // chooce a random event
                                 RandomEvent.countDocuments().exec(function(err, count) {
@@ -1188,7 +1188,7 @@ app.get('/api/user/user_icon/:username?', (req, res) => {
     });
 });
 
-app.get("/api/user/leaderboard", mongoChecker, async (req, res) => {
+app.get("/api/user/leaderboard", mongoChecker, async(req, res) => {
     try {
         const user_gameplay = await Gameplay.find();
 
