@@ -51,7 +51,7 @@ body {
     display: grid;
     grid-template-columns: repeat(6, 1fr);
     grid-template-rows: repeat(8, 1fr);
-    grid-template-areas: "icon icon econIcon econIcon orderIcon orderIcon" "icon icon econStat econStat orderStat orderStat" "username username healthIcon healthIcon diplomacyIcon diplomacyIcon" "username username healthStat healthStat diplomacyStat diplomacyStat" "profile profile profile send send send" "profile profile profile send send send" "ask ask ask break break break" "ask ask ask break break break";
+    grid-template-areas: "icon icon econIcon econIcon orderIcon orderIcon" "icon icon econStat econStat orderStat orderStat" "username username healthIcon healthIcon diplomacyIcon diplomacyIcon" "username username healthStat healthStat diplomacyStat diplomacyStat" "profile profile profile break break break" "profile profile profile break break break" "send send send send send send" "send send send send send send";
     justify-content: center;
     align-content: center;
 }
@@ -66,12 +66,14 @@ body {
     padding: 2px;
     height: 99px;
     width: 99px;
+    user-select: none;
 }
 
 .card p {
     max-width: 100%;
     justify-self: center;
     text-align: center;
+    user-select: none;
 }
 
 .card #username {

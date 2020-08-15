@@ -83,6 +83,7 @@ function switchPage(e) {
     });
 }
 
+// switch to the next page
 function nextPage(e) {
     const nextButton = document.getElementById("Next");
     const currentPage = document.getElementsByClassName("active")[0];
@@ -91,6 +92,7 @@ function nextPage(e) {
     }
 }
 
+// switch to the previous page
 function previousPage(e) {
     const previousButton = document.getElementById("Previous");
     const currentPage = document.getElementsByClassName("active")[0];
@@ -138,7 +140,7 @@ function addCard(username) {
     card.appendChild(profileButton);
     const sendButton = document.createElement("button");
     sendButton.setAttribute("class", "send");
-    sendButton.innerText = "Send Resource";
+    sendButton.innerText = "Send Medical Supplies";
     card.appendChild(sendButton);
     const breakButton = document.createElement("button");
     breakButton.setAttribute("class", "break");
