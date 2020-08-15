@@ -67,5 +67,64 @@
             "health": 0,
             "diplomacy": 0
         }
+    },
+
+    {
+        "name": "Infectious Goods",
+        "description": "Potentially infected goods are being let through the border.",
+        "statChange": {
+            "economy": 2,
+            "order": 0,
+            "health": -4,
+            "diplomacy": 1
+        }
+    },
+
+    {
+        "name": "Temporary Hospital",
+        "description": "Additional hospitals around the country relieves pressure from medical staffs, but they are expensive to build and run.",
+        "statChange": {
+            "economy": -4,
+            "order": 0,
+            "health": 6,
+            "diplomacy": 0
+        }
+    }
+
+    ,
+
+    {
+        "name": "Museum Hospital",
+        "description": "Museums are being used to situate infected patients with only mild symptoms.",
+        "statChange": {
+            "economy": -1,
+            "order": 0,
+            "health": 2,
+            "diplomacy": 0
+        }
+    }
+
+    ,
+
+    {
+        "name": "Power of memes",
+        "description": "Your relaxed gestures and joking speeches make your citizen think that you have everything in control.",
+        "statChange": {
+            "economy": 0,
+            "order": 1,
+            "health": 0,
+            "diplomacy": 0
+        }
+    },
+
+    {
+        "name": "Power of anime",
+        "description": "People are staying home a lot more now to watch free anime, resulting in reduced human contact.",
+        "statChange": {
+            "economy": 0,
+            "order": 0,
+            "health": 1,
+            "diplomacy": 0
+        }
     }
 ]

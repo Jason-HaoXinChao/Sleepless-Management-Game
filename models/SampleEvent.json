@@ -303,4 +303,221 @@
             "newEstablishment": "Failed State"
         }
     }
+
+    ,
+
+    {
+        "name": "Dying Business",
+        "description": "Companies and corporations are complaining that their imported goods are stuck at the border because it has to go through virus test, and it's really hurting their business.",
+        "choiceOne": {
+            "description": "Compensate the companies for their goods",
+            "statChange": {
+                "economy": -5,
+                "order": 2,
+                "health": 2,
+                "diplomacy": 0
+            },
+            "log": {
+                "content": "You compensated companies for the goods that are stuck in customs, it costed quite a bit of money, but it got the companies to shut up.",
+                "statChange": {
+                    "economy": -5,
+                    "order": 2,
+                    "health": 2,
+                    "diplomacy": 0
+                }
+            }
+        },
+        "choiceTwo": {
+            "description": "Loose up border control",
+            "statChange": {
+                "economy": 10,
+                "order": -1,
+                "health": -3,
+                "diplomacy": 0
+            },
+            "log": {
+                "content": "You ordered the customs and border control to go easy on the goods and let them through faster. Advisors warned about the possibility of the goods carrying the virus, but the monetary incentive was too high.",
+                "statChange": {
+                    "economy": 10,
+                    "order": -1,
+                    "health": -3,
+                    "diplomacy": 0
+                }
+            },
+            "newEstablishment": "Infectious Goods"
+        }
+    }
+
+    ,
+
+    {
+        "name": "Stuck At Border",
+        "description": "Some citizens who were travelling outside of the country are now stuck at the border and not allowed in. Medical professionals said it's only safe to let them into the country after 14 days of isolation.",
+        "choiceOne": {
+            "description": "Compensate those who are stuck at the border",
+            "statChange": {
+                "economy": -4,
+                "order": 2,
+                "health": 1,
+                "diplomacy": 0
+            },
+            "log": {
+                "content": "You handed out monetary compensation for travellers who are stuck at the border, and arranged hotels for them to stay, now suddenly there's a lot more of them.",
+                "statChange": {
+                    "economy": -4,
+                    "order": 2,
+                    "health": 1,
+                    "diplomacy": 0
+                }
+            }
+        },
+        "choiceTwo": {
+            "description": "LAW IS LAW",
+            "statChange": {
+                "economy": 0,
+                "order": 2,
+                "health": 2,
+                "diplomacy": -4
+            },
+            "log": {
+                "content": "You forced the travellers to stay at the border for 14 days, most of them are understandable, but some started badmouthing your government with support of foreign countries, claiming that this is a violation of human right or something.",
+                "statChange": {
+                    "economy": 0,
+                    "order": 2,
+                    "health": 2,
+                    "diplomacy": -4
+                }
+            },
+            "newEstablishment": "Foreign Influence"
+        }
+
+    },
+
+    {
+        "name": "Overwhelmed Hospitals",
+        "description": "With increasingly more people infected by the virus, the hospitals are running out of beds to treat patients.",
+        "choiceOne": {
+            "description": "Build temporary hospitals",
+            "statChange": {
+                "economy": -8,
+                "order": 2,
+                "health": 3,
+                "diplomacy": 0
+            },
+            "log": {
+                "content": "After investing a large sum of money, temporary emergency hospitals are being built all around the country.",
+                "statChange": {
+                    "economy": -8,
+                    "order": 2,
+                    "health": 3,
+                    "diplomacy": 0
+                }
+            },
+            "newEstablishment": "Temporary Hospital"
+        },
+        "choiceTwo": {
+            "description": "Use the Museums",
+            "statChange": {
+                "economy": -2,
+                "order": 1,
+                "health": 2,
+                "diplomacy": 0
+            },
+            "log": {
+                "content": "Museums which were already closed due to the pandemic are now being utilized to isolate patients. Although the equipments are not nearly as good as profesional hospitals, but it only costed a small amount of money in rent.",
+                "statChange": {
+                    "economy": -2,
+                    "order": 1,
+                    "health": 2,
+                    "diplomacy": 0
+                }
+            },
+            "newEstablishment": "Museum Hospital"
+        }
+    },
+
+    {
+        "name": "Karen's Outrage III: Revenge of the Karen",
+        "description": "A group of Karens are holding anti-quarantine ralleys claiming that the virus is a government consipracy so they can install 5G towers, which will control people by communicating with microchips in future vaccines that are injected into their brain.",
+        "choiceOne": {
+            "description": "Publically laugh at them",
+            "statChange": {
+                "economy": 0,
+                "order": 1,
+                "health": 1,
+                "diplomacy": 0
+            },
+            "log": {
+                "content": "You joked about how these Karens aren't worth the price of a microchip. People embraced the memes and Karens are extremely embarassed.",
+                "statChange": {
+                    "economy": 0,
+                    "order": 1,
+                    "health": 1,
+                    "diplomacy": 0
+                }
+            },
+            "newEstablishment": "Power of memes"
+        },
+        "choiceTwo": {
+            "description": "Round them up",
+            "statChange": {
+                "economy": 0,
+                "order": 2,
+                "health": 1,
+                "diplomacy": -3
+            },
+            "log": {
+                "content": "People cheered as the Karens are arrested and fined, but foreign powers use this chance to attack your interantional reputation.",
+                "statChange": {
+                    "economy": 0,
+                    "order": 2,
+                    "health": 1,
+                    "diplomacy": -3
+                }
+            }
+        }
+    },
+
+    {
+        "name": "Boredom",
+        "description": "People are very bored during quarantine.",
+        "choiceOne": {
+            "description": "Stream anime for free",
+            "statChange": {
+                "economy": -3,
+                "order": 1,
+                "health": 1,
+                "diplomacy": 0
+            },
+            "log": {
+                "content": "People in your country now enjoys free anime streaming service, people are going out a lot less.",
+                "statChange": {
+                    "economy": -3,
+                    "order": 1,
+                    "health": 1,
+                    "diplomacy": 0
+                }
+            },
+            "newEstablishment": "Power of anime"
+        },
+        "choiceTwo": {
+            "description": "Send free seeds for gardening",
+            "statChange": {
+                "economy": 0,
+                "order": 0,
+                "health": 1,
+                "diplomacy": 0
+            },
+            "log": {
+                "content": "You sent seeds for everyone to learn how to garden at home, but it wasn't too effective. Turns out people are very lazy.",
+                "statChange": {
+                    "economy": 0,
+                    "order": 0,
+                    "health": 1,
+                    "diplomacy": 0
+                }
+            }
+        }
+    }
+
 ]
