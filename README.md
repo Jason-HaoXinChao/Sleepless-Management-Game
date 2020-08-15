@@ -21,17 +21,24 @@ If you logged in as a user, you will see on the header that you are logged into 
 Gameplay: on this page, you can see that there are 4 panels.
 
     The top left panel displays your four core ingame statistics (economy, law and order, public health, and diplomacy), the main goal of this game is to keep your core statistics at a high or at least tolerable level. Statistics are updated once every certain amount of time, each update is recorded on the event log.
+    
     The top right panel displays your country’s current establishments. Establishments are buffs/debuffs/neutral status effects which will impact your statistical change and affect what kind of random events you will encounter. The way of obtaining establishment is through random events, we will talk about it later. You can click on each establishment to see a description of it.
+    
     The bottom left panel displays a list of logs recording events that happened in game. Each log has a yellow timestamp showing the real time at which the event occurred, white text describing the event, and 4 different colored text representing the immediate change in the 4 different statistics.
+    
     The bottom right panel allows you to control your strategy at each field. To change the strategy, click on the current strategy, and choose another strategy in the dropdown menu that appears. Your choice of strategy will affect how your statistic changes each time the server ticks.
+    
     Random events pops up at a random time. You will see a title of the event, a description, and two buttons for you to choose. Your decision on random events can greatly impact your statistics or establishment. You can see the effect on the event log.
 
 
 Diplomacy: on this page, you can see a list of your ally players (friends). For each ally player, you can see their icon, username, core ingame statistics, and there are 3 actions (represented by 3 buttons) you can apply for each ally user:
 
     View profile: Open the profile page of the selected ally user.
+    
     Send medical supplies: send some of your medical supplies to your friend to help them out, clicking this button will bring up a prompt asking you to input the amount of resource to send to your friend.
+    
     Break Ties: Click this button to remove an ally from your diplomacy page. The site will ask you to confirm if you are certain that you want to break ties with your ally, in case it was a misclick.
+    
     The page displays at most 6 allies at once, you can click on the page numbers at the bottom to view more allies.
 
 Leaderboard and patch notes are the same as previously mentioned, except now you can visit players' profile pages from the leaderboard.
