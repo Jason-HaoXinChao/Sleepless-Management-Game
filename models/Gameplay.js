@@ -264,14 +264,15 @@ const GameplaySchema = new mongoose.Schema({
 
 // Find a user's gameplay statistics by their username
 GameplaySchema.statics.findByUsername = async function(username) {
-    const User = this;
+    const Gameplay = this;
 
     try {
-        const user = await User.findOne({ username: username });
-        if (!user) {
+        const gameplay = await Gameplay.findOne({ username: username });
+
+        if (!gameplay) {
             return false;
         } else {
-            return user;
+            return gameplay;
         };
     } catch (err) {
         console.log(err);
