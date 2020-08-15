@@ -883,6 +883,158 @@ app.get("/api/user/diplomacy/:pageNumber", mongoChecker, (req, res) => {
     })
 });
 
+/**
+ * Route for adding a user to the diplomacy connection list
+ * Expected Body:
+ * {
+ *  username: String    // username of the user to be added to the list
+ * }
+ * Expected output:
+ * {
+ *  status: String   // Should indicate one of: already ally, your list full, target list full, success
+ * }
+ * 
+ * Current maximum number of diplomatic connection is 30
+ */
+app.post("/api/user/diplomacy/add", mongoChecker, (req, res) => {
+    const username = req.session.username;
+    const newAlly = req.body.username;
+
+    Diplomacy.findByName(username).then((data) => {
+        if (!data) {
+            // User not found, cookie corrupted or user deleted by admin
+            res.status(404).send();
+        } else {
+            if (data.connection.length == 30) {
+                res.status(200).send({ status: "your list full" });
+            } else if (data.connection.contains(newAlly)) {
+                res.status(200).send({ status: "already ally" })
+            } else {
+                Diplomacy.findByName(newAlly).then((allyData) => {
+                    if (!allyData) {
+                        res.status(404).send();
+                    } else if (allyData.connection.length == 30) {
+                        res.status(200).send({ status: "target list full" });
+                    } else {
+                        data.connection.push(newAlly);
+                        allyData.connection.push(username);
+                        const dataSaved = await data.save();
+                        const allyDataSaved = await allyData.save();
+
+                        if (dataSaved && allyDataSaved) {
+                            res.status(200).send({ status: "success" })
+                        } else {
+                            res.status(500).send();
+                        }
+                    }
+                })
+            }
+        }
+    }).catch((err) => {
+        log(err);
+        res.status(500).send();
+    })
+});
+
+/**
+ * Route for removng a user from the diplomacy connection list
+ * Expected Body:
+ * {
+ *  username: String    // username of the user to be removed from the list
+ * }
+ * Expected output:
+ * {
+ *  status: String   // Should indicate one of: not in list, success
+ * }
+ * 
+ * Current maximum number of diplomatic connection is 30
+ */
+app.post("/api/user/diplomacy/delete", mongoChecker, (req, res) => {
+    const username = req.session.username;
+    const removeAlly = req.body.username;
+
+    Diplomacy.findByName(username).then((data) => {
+        if (!data) {
+            // User not found, cookie corrupted or user deleted by admin
+            res.status(404).send();
+        } else {
+            if (!data.connection.contains(removeAlly)) {
+                res.status(200).send({ status: "not in list" })
+            } else {
+                Diplomacy.findByName(removeAlly).then((allyData) => {
+                    if (!allyData) {
+                        res.status(404).send();
+                    } else {
+                        data.connection = data.connection.filter(ally => ally !== removeAlly);
+                        allyData.connection = allyData.connection.filter(ally => ally !== username);
+                        const dataSaved = await data.save();
+                        const allyDataSaved = await allyData.save();
+                        if (dataSaved && allyDataSaved) {
+                            res.status(200).send({ status: "success" })
+                        } else {
+                            res.status(500).send();
+                        }
+                    }
+                })
+            }
+        }
+    }).catch((err) => {
+        log(err);
+        res.status(500).send();
+    })
+});
+
+
+/**
+ * Route for removng a user from the diplomacy connection list
+ * Expected Body:
+ * {
+ *  username: String    // username of the user to be removed from the list
+ * }
+ * Expected output:
+ * {
+ *  status: String   // Should indicate one of: not in list, success
+ * }
+ * 
+ * Current maximum number of diplomatic connection is 30
+ */
+app.post("/api/user/diplomacy/delete", mongoChecker, (req, res) => {
+    const username = req.session.username;
+    const removeAlly = req.body.username;
+
+    Diplomacy.findByName(username).then((data) => {
+        if (!data) {
+            // User not found, cookie corrupted or user deleted by admin
+            res.status(404).send();
+        } else {
+            if (!data.connection.contains(removeAlly)) {
+                res.status(200).send({ status: "not in list" })
+            } else {
+                Diplomacy.findByName(removeAlly).then((allyData) => {
+                    if (!allyData) {
+                        res.status(404).send();
+                    } else {
+                        data.connection = data.connection.filter(ally => ally !== removeAlly);
+                        allyData.connection = allyData.connection.filter(ally => ally !== username);
+                        const dataSaved = await data.save();
+                        const allyDataSaved = await allyData.save();
+                        if (dataSaved && allyDataSaved) {
+                            res.status(200).send({ status: "success" })
+                        } else {
+                            res.status(500).send();
+                        }
+                    }
+                })
+            }
+        }
+    }).catch((err) => {
+        log(err);
+        res.status(500).send();
+    })
+});
+
+
+
 
 app.post('/api/user/upload_icon', multipartMiddleware, (req, res) => {
     cloudinary.uploader.upload(req.files.image.path, {
@@ -1355,4 +1507,4 @@ app.get('*', (req, res) => {
 const port = process.env.PORT || 5000;
 app.listen(port, () => {
     log(`listening on ${port}...`);
-})
+});
