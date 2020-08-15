@@ -47,7 +47,9 @@
         </div>
         <div class="container" id="country-flag">
             <input id="country-name" type="text" required disabled />
-            <img src="./images/country-flag.png" alt="country-flag-pic" class="country-flag">
+            <div class="flag-container">
+                <img src="./images/country-flag.png" alt="country-flag-pic" class="country-flag">
+            </div>
             {{#unless visiting}}
             <button id="edit-flag">Edit Country Flag</button>
             <button id="edit-country-name"></button>
