@@ -14,9 +14,14 @@ const DiplomacySchema = new mongoose.Schema({
         required: false,
         default: [],
         unique: false,
-        trim: true
+        trim: true,
+        validate: [sizeLimit, "{PATH} exceeds the maximum limit of 30!"]
     }
 });
+
+function sizeLimit(array) {
+    return array.length <= 30;
+}
 
 DiplomacySchema.statics.findByUsername = async function(username) {
     const Diplomacy = this;
