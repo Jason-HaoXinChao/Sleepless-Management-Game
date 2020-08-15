@@ -1,3 +1,4 @@
+"use strict";
 const log = console.log;
 // onload event listener
 window.addEventListener("DOMContentLoaded", initializePage);

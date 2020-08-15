@@ -23,6 +23,7 @@ const { EstablishmentInfo, EventChoice, RandomEvent } = require("./models/System
 const { Gameplay, Log, Establishment, StatChange } = require("./models/Gameplay");
 const { Profile } = require("./models/Profile");
 const { Diplomacy } = require("./models/Diplomacy");
+const { PatchNotes } = require("./models/PatchNotes");
 
 // express-session for managing user sessions
 const session = require('express-session')
@@ -1052,6 +1053,26 @@ app.post("/api/user/diplomacy/send", mongoChecker, (req, res) => {
         log(err);
         res.status(500).send();
     });
+});
+
+/**
+ * Route for getting patch notes, note that there should only be 1 entry in the patchnote database at all times
+ * expected output:
+ * {
+ *  notes: [Object] //content should follow the NoteSchema in ./models/PatchNotes
+ * }
+ */
+app.get("/api/patchnote", mongoChecker, (req, res) => {
+    PatchNotes.findone().then((patchnotes) => {
+        if (!patchnotes) {
+            res.status(500).send("500 Internal Server Error");
+        } else {
+            res.status(200).send({ name: patchnotes.name, notes: patchnotes.notes });
+        }
+    }).catch((err) => {
+        log(err);
+        res.status(500).send("500 Internal Server Error");
+    })
 });
 
 

@@ -1,3 +1,4 @@
+"use strict";
 // onload event listener
 window.addEventListener("load", initializePage);
 
