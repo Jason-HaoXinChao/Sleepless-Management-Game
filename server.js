@@ -1324,7 +1324,8 @@ app.get("/api/user/leaderboard", mongoChecker, async(req, res) => {
 
         res.send(user_gameplay);
     } catch (err) {
-        log(err);
+        log(err);        
+        res.status(500).end();
     }
 });
 
@@ -1631,7 +1632,35 @@ app.post("/api/user/feedback", mongoChecker, async(req, res) => {
  * }
  */
 app.get("/api/admin/feedback", adminRequestChecker, mongoChecker, async(req, res) => {
+    try {
+        const user_feedback = await Feedback.find();
+        res.send(user_feedback);
+    } catch (err) {
+        log(err);
+        res.status(500).end();
+    }
+});
 
+/**
+ * Route for admin to delete a specific user feeback
+ */
+app.delete("/api/admin/feedback/:id", adminRequestChecker, mongoChecker, async(req, res) => {
+    const id = req.params.id;
+
+    try {
+        const deleted_user_feedback = await Feedback.findOneAndRemove({
+            _id: id
+        });
+
+        if (deleted_user_feedback) {
+            res.send();
+        } else {
+            res.status(404).redirect("/user_feedback?delete=failed");
+        }
+    } catch (err) {
+        log(err);
+        res.status(500).redirect("/user_feedback?delete=failed");
+    }
 });
 
 // Root route: redirects to the '/welcome'
@@ -1711,7 +1740,7 @@ app.get('/admin_dashboard', loggedOutRedirectChecker, regUserRedirectChecker, (r
 
 // '/user_feedback' route: redirects to '/welcome' if the user isn't logged in; redirects to '/gameplay' if the user isn't an admin user
 app.get('/user_feedback', loggedOutRedirectChecker, regUserRedirectChecker, (req, res) => {
-    res.render('userfeedback');
+    res.render('user_feedback');
 });
 
 // '/user_profile' route: redirects to '/login' if the user isn't logged in; redirects to '/admin_dashboard' if the user is an admin user

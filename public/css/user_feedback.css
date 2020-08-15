@@ -1,0 +1,136 @@
+body {
+    background-color: #212121;
+    margin: 0px;
+    width: 100%;
+    height: 100%;
+    overflow-x: hidden;
+    overflow-y: scroll;
+    font-family: 'Lucida Console', ui-monospace, monospace;
+}
+
+.maincontent {
+    width: 80%;
+    min-height: 100%;
+    margin: auto;
+    margin-top: 0px;
+    padding: 20px 100px;
+    background-color: #121212;
+    overflow: hidden;
+    box-sizing: border-box;
+}
+
+.heading {
+    margin-bottom: 20px;
+    width: 100%;
+    text-align: right;
+}
+
+h2 {
+    font-size: 28px;
+    font-weight: bold;
+    text-transform: uppercase;
+    text-decoration: none;
+    color: white;
+    width: max-content;
+    text-align: center;
+    margin: auto;
+    margin-top: 30px;
+    margin-bottom: 5px;
+}
+
+#select-all,
+#delete {
+    display: inline-block;
+    height: auto;
+    border: 2px ridge #39FF14;
+    background-color: #121212;
+    color: #ffffff;
+    font-family: Lucida Console;
+    text-decoration: none;
+    padding: 5px 10px;
+    border-radius: 15px;
+    user-select: none;
+    cursor: pointer;
+}
+
+#select-all {
+    margin-right: 10px;
+}
+
+#select-all:focus,
+#delete:focus {
+    outline: none;
+}
+
+#select-all::before {
+    content: 'Select All';
+}
+
+#select-all.deselect::before {
+    content: 'Deselect All';
+}
+
+.user-feedback-container {
+    width: 100%;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.feedback-box {
+    display: inline-block;
+    width: 100%;
+    min-height: 200px;
+    max-height: 600px;
+    border: 3px solid #39FF14;
+    border-radius: 4px;
+    overflow: auto;
+}
+
+.feedback-box:not(:last-child) {
+    margin-bottom: 10px;
+}
+
+input[type="checkbox"] {
+    float: left;
+    position: relative;
+    -webkit-appearance: none;
+    margin: 15px;
+    background-color: #00ff00;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+}
+
+input[type="checkbox"]:focus {
+    outline: none;
+}
+
+input[type="checkbox"]:checked::before {    
+    content: '\2713';
+    position: absolute;
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    font-size: 17px;
+    font-weight: bold;
+    line-height: 24px;
+    text-align: center;
+}
+
+.textbox {
+    float: right;
+    color: white;
+    width: 75%;
+    padding: 10px 20px;
+}
+
+.textbox b {
+    color: #00ff00;
+}
+
+.from,
+.message {
+    line-height: 25px;
+    word-break: break-all;
+
+}

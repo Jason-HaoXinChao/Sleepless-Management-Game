@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>User Feedback</title>
+    <link rel="stylesheet" type="text/css" href="css/user_feedback.css">
+    <link rel="stylesheet" type="text/css" href="css/header.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script type="text/javascript" src="js/user_feedback.js" defer></script>
+    <script type="text/javascript" src="js/header.js" defer></script>
+</head>
+<body>
+    <!-- header -->
+    {{> header is_admin=true user_feedback=true}}
+    <!-- user profile -->
+    <div class="maincontent">
+        <div class="heading">
+            <h2>User Feedback</h2>
+            <button type="button" id="select-all"></button>
+            <button type="button" id="delete">Delete</button>
+        </div>
+        <div class="user-feedback-container"></div>
+    </div>
+    </div>
+</body>
+</html>
