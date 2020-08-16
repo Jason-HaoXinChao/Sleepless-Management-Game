@@ -187,7 +187,7 @@ if ($(".maincontent").children(".container").length) {
             
             // Make a POST request to change the profile info
             $.post("/api/user/user_profile_info", {
-                age: $("#age").val(),
+                age: (!isNaN($("#age").val())) ? $("#age").val() : "",
                 country: $("#country").val(),
                 gender: $("#gender").val(),
                 email: $("#email").val(),
