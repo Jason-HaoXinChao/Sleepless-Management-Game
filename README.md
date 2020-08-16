@@ -58,3 +58,366 @@ You can also search for a random event by the event name on the form labelled �
 You can also make a new event by clicking on the button labelled “new event”, and input a the informations accordingly.
 
 The user feedback page allows the admin to view and delete the feedback and messages sent from the users through the contact page. 
+
+
+# Routes
+We have a LOT of routes. We will list the url, method, expected body and output below. (many of these routes require cookies to function, so we are not sure how effective it would be to test it via postman) You can read about them in more detail in server.js
+```javascript
+/**
+ *  Register Route
+ *  Expected body:
+ *      {
+ *          username: <username>,
+ *          password: <password>,
+ *          email: <an email address containing @>,
+ *          birthday: <a string in the format YYYY-MM-DD>
+ *      }
+ */
+app.post("/api/register"
+```
+
+```javascript
+/**
+ *  Login Route
+ *  Expected body:
+ *      {
+ *          username: <username>,
+ *          password: <password>
+ *      }
+ */
+app.post("/api/login"
+```
+
+```javascript
+// Logout Route, no expected body or output
+app.post("/api/logout"
+```
+
+
+```javascript
+/** 
+ * Route for getting gameplay related statistic of user.
+ * Expected request body: none, server checks the currently logged in user through cookie
+ * ":type" indicates which statistic of the user is being requested, possible options:
+ * all: send the entire user document
+ * name: send the username
+ * stat: send statistic property 
+ * log: send log property
+ * strategy: send strategy property
+ */
+app.get("/api/user/gameplay/stat/:type/:username?"
+```
+
+```javascript
+/**
+ * Route for getting information of specific establishment
+ * expected request body:
+ * {
+ *  name: String
+ * }
+ * expected return:
+ * {
+ * name:String,
+ * description: String,
+ * statChange: [number]
+ * }
+ */
+app.post("/api/user/gameplay/EstInfo"
+```
+
+```javascript
+/**
+ * Route for changing user's strategy
+ * expected request body: none
+ * expected return value: 
+ * {
+ *  log: Log object
+ * }
+ * parameters
+ * strategyType: which strategy is being change(economy/order/health/diplomacy)
+ * value: the new choice of strategy for that field
+ */
+app.post("/api/user/gameplay/strategy/:type/:value"
+```
+
+```javascript
+/**
+ * Route for submitting a randomEvent choice
+ * Expected request body:
+ * {
+ *  eventName: String,
+ *  choice: string
+ * }
+ * Expected return value:
+ * {
+ *  establishment: String or null,
+ *  log: Object  (see logSchema in /models/Gameplay)
+ *  newStatistic: object (see StatisticSchema)
+ * }
+ */
+app.post("/api/user/gameplay/event"
+```
+
+```javascript
+/**
+ * Route for requesting an update
+ * Expected request body: none
+ * Expected return value:
+ * {
+ * newStat: Object  (see StatisticSchema in /models/Gameplay),
+ * log: Object  (see logSchema in /models/Gameplay)
+ * randomEvent: {
+ *                  name:String,
+ *                  description: String,
+ *                  choiceOne: String,
+ *                  choiceTwo: String
+ *              }
+ * }
+ */
+app.get("/api/user/gameplay/update"
+```
+
+```javascript
+/**
+ * Route for getting friends list in diplomacy page.
+ * Expected request body: None
+ * Expected return value:
+ * {
+ *  totalPage: Number
+ *  connection: [String]    // each element is a user name, should send at most 6 each call
+ * }
+ */
+app.get("/api/user/diplomacy/:pageNumber"
+```
+
+```javascript
+/**
+ * Route that cehcks whether :username is an ally, returns true or false.
+ */
+app.get("/api/user/diplomacy/status/:username"
+```
+
+```javascript
+/**
+ * Route for adding a user to the diplomacy connection list
+ * Expected Body:
+ * {
+ *  username: String    // username of the user to be added to the list
+ * }
+ * Expected output:
+ * {
+ *  status: String   // Should indicate one of: already ally, your list full, success
+ * }
+ * 
+ * Current maximum number of diplomatic connection is 30
+ */
+app.post("/api/user/diplomacy/add"
+```
+
+```javascript 
+/**
+ * Route for removng a user from the diplomacy connection list
+ * Expected Body:
+ * {
+ *  username: String    // username of the user to be removed from the list
+ * }
+ * Expected output:
+ * {
+ *  status: String   // Should indicate one of: not in list, success
+ * }
+ */
+app.post("/api/user/diplomacy/delete"
+```
+
+```javascript 
+/**
+ * Route for sending medical supply to ally
+ * Expected Body:
+ * {
+ *  username: String    // username of the ally to send supply to
+ *  amount: Number      // amount of supply to be sent
+ * }
+ * Expected output:
+ * {
+ *  status: String   // Should indicate one of: not enough supply, not in list, failed state, success
+ * }
+ * 
+ * Current maximum number of diplomatic connection is 30
+ */
+app.post("/api/user/diplomacy/send"
+```
+
+```javascript 
+/**
+ * Route for getting patch notes, note that there should only be 1 entry in the patchnote database at all times
+ * expected output:
+ * {
+ *  notes: [Object] //content should follow the NoteSchema in ./models/PatchNotes
+ * }
+ */
+app.get("/api/patchnote"
+```
+
+```javascript
+// route that gets the profile data of the user specified by username
+app.get('/api/user/user_profile_info/:username?'
+```
+
+```javascript
+// route that submits new profile information of a user
+app.post('/api/user/user_profile_info'
+```
+
+```javascript
+// route that uploads an icon for the currently logged in user
+app.post('/api/user/upload_icon'
+```
+
+```javascript
+// returns the icon of the specified user
+app.get('/api/user/user_icon/:username?'
+```
+
+```javascript
+// changes country name of the currently logged in user to req.body.countryname
+app.post('/api/user/change_country_name'
+```
+
+```javascript
+// changes the flag of the currently logged in user to the the image specified in req.body
+app.post('/api/user/upload_flag'
+```
+
+```javascript
+// returns the flag image of the user
+app.get('/api/user/user_flag/:username?'
+```
+
+```javascript
+// returns data of users on the leaderboard
+app.get("/api/user/leaderboard"
+```
+
+```javascript
+// deletes the user's icon from their profile
+app.delete('/api/admin/delete_icon/:username'
+```
+
+```javascript
+// admin exclusive route for getting user's profile
+app.get("/api/admin/user_info/:username"
+```
+
+```javascript
+// admin exclusive route for getting user's gameplay statistic
+app.get("/api/admin/gameplay_stat/:username"
+```
+
+```javascript
+// admin exclusive route for getting banstatus of user (yes users can get banned in this game)
+app.get("/api/admin/ban_status/:username"
+```
+
+```javascript
+// admin exclusive route for changing the user's gameplay statistics
+app.post("/api/admin/change_stats/:username"
+```
+
+```javascript
+// admin exclusive route for banning/unbanning user
+app.post("/api/admin/change_ban/:username/:ban_status"
+```
+
+```javascript
+// admin exclusive route for obtaining information of a random event
+app.get("/api/admin/search_event/:event_name"
+```
+
+```javascript
+// admin exclusive route for creating a new random event
+app.post("/api/admin/create_event"
+```
+
+```javascript
+/**
+ * Route for user to submit a feedback
+ * expected body:
+ * {
+ *  content: String
+ * }
+ */
+app.post("/api/user/feedback"
+```
+
+```javascript
+/**
+ * Route for admin getting array containing all feedbacks
+ * expected output:
+ * {
+ *  feedbacks:[Object]  // should contain Feedback models
+ * }
+ */
+app.get("/api/admin/feedback"
+```
+
+```javascript
+/**
+ * Route for admin to delete a specific user feeback
+ */
+app.delete("/api/admin/feedback/:id"
+```
+
+```javascript
+// Root route: redirects to the '/welcome'
+app.get('/'
+```
+
+```javascript
+// '/welcome' route: reirects to '/admin_dashboard' if the user is logged in and is an admin user;
+//  redirects to '/gameplay' if the user is already logged in but isn't an admin user
+app.get('/welcome'
+```
+
+```javascript
+// '/gameplay' route: redirects to '/welcome' if the user isn't logged in; redirects to '/admin_dashboard' if the user is an admin user
+app.get('/gameplay'
+```
+
+```javascript
+// '/diplomacy' route: redirects to '/welcome' if the user isn't logged in; redirects to '/admin_dashboard' if the user is an admin user
+app.get('/diplomacy'
+```
+
+```javascript
+// '/contact' route: redirects to '/welcome' if the user isn't logged in; redirects to '/admin_dashboard' if the user is an admin user
+app.get('/contact'
+```
+
+```javascript
+// '/leaderboard' route: if the user isn't logged in, the header will only display links to the the patchnotes and the leaderboard (excluding the other links)
+app.get('/leaderboard'
+```
+
+```javascript
+/**
+ * '/patchnotes' route
+ * If the user is an admin user - the header will display admin specific links only
+ * If the user isn't logged in - the header will only display links to the the patchnotes and the leaderboard (excluding the other links)
+ */
+app.get('/patchnotes'
+```
+
+```javascript
+/ '/admin_dashboard' route: redirects to '/welcome' if the user isn't logged in; redirects to '/gameplay' if the user isn't an admin user
+app.get('/admin_dashboard'
+```
+
+```javascript
+// '/user_feedback' route: redirects to '/welcome' if the user isn't logged in; redirects to '/gameplay' if the user isn't an admin user
+app.get('/user_feedback'
+```
+
+```javascript
+// '/user_profile' route: redirects to '/login' if the user isn't logged in; redirects to '/admin_dashboard' if the user is an admin user
+app.get('/user_profile'
+```
