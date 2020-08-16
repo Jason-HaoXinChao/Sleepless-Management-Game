@@ -259,82 +259,199 @@ app.get("/api/patchnote"
 ```
 
 ```javascript
-// route that gets the profile data of the user specified by username
+/**
+ * Route for getting a user's profile info
+ * optional parameters:
+ *  A string corresponding to the user whose profile info you are getting
+ */
 app.get('/api/user/user_profile_info/:username?'
 ```
 
 ```javascript
-// route that submits new profile information of a user
+/**
+ * Route for saving a user's changes to the user profile info
+ * expected data:
+ * {
+ *  age: Number
+ *  country: String
+ *  gender: String
+ *  email: String   // A valid email string
+ *  socialMedia: [String]   // An array of strings corresponding to social media accounts
+ * }
+ */
 app.post('/api/user/user_profile_info'
 ```
 
 ```javascript
+/**
+ * Route for uploading a user's user icon
+ * expected data:
+ *  A file
+ */
 // route that uploads an icon for the currently logged in user
 app.post('/api/user/upload_icon'
 ```
 
 ```javascript
+/**
+ * Route for getting a user's user icon
+ * optional parameters:
+ *  A string corresponding to the username of the user whose user icon you're getting
+ */
 // returns the icon of the specified user
 app.get('/api/user/user_icon/:username?'
 ```
 
 ```javascript
-// changes country name of the currently logged in user to req.body.countryname
+/**
+ * Route for saving a user's change to their country's name
+ * optional data:
+ * {
+ *  countryName: String // the update country name
+ * }
+ */
 app.post('/api/user/change_country_name'
 ```
 
 ```javascript
-// changes the flag of the currently logged in user to the the image specified in req.body
+/**
+ * Route for uploader a user's flag
+ * expected data:
+ *  A file
+ */
 app.post('/api/user/upload_flag'
 ```
 
 ```javascript
-// returns the flag image of the user
+/**
+ * Route for getting a user's flag
+ * expected output:
+ * {
+ *  url: String // string corresponding to the url of the image
+ * }
+ */
 app.get('/api/user/user_flag/:username?'
 ```
 
 ```javascript
-// returns data of users on the leaderboard
+/**
+ * Route for getting an array of users sorted by the sum of their gameplay statistics
+ * expected output:
+ *  [Object] // An array of Gameplay documents sorted in descending order based on the sum of their gameplay statistic
+ */
 app.get("/api/user/leaderboard"
 ```
 
 ```javascript
-// deletes the user's icon from their profile
+/**
+ * Admin-only route for deleting a user's user icon
+ * expected parameter:
+ *  A string corresponding to the username of the user whose user icon you are deleting
+ */
 app.delete('/api/admin/delete_icon/:username'
 ```
 
 ```javascript
-// admin exclusive route for getting user's profile
+/**
+ * Admin-only route for getting a user's user info
+ * expected parameter:
+ *  A string corresponding to the username of the user whose user info you are getting
+ */
 app.get("/api/admin/user_info/:username"
 ```
 
 ```javascript
-// admin exclusive route for getting user's gameplay statistic
+/**
+ * Admin-only route for getting a user's gameplay statistics
+ * expected parameter:
+ *  A string corresponding to the username of the user whose gameplay statistics you are getting
+ */
 app.get("/api/admin/gameplay_stat/:username"
 ```
 
 ```javascript
-// admin exclusive route for getting banstatus of user (yes users can get banned in this game)
+/**
+ * Admin-only route for getting a user's ban status
+ * expected parameter:
+ *  A string corresponding to the username of the user whose ban status you are getting
+ */
 app.get("/api/admin/ban_status/:username"
 ```
 
 ```javascript
-// admin exclusive route for changing the user's gameplay statistics
+/**
+ * Admin-only route for changing a user's gameplay statistic
+ * expected parameter:
+ *  A string corresponding to the username of the user whose ban status you are getting
+ * expected data:
+ * {
+ *  economy: Number // a number from 0 to 100
+ *  order: Number // a number from 0 to 100
+ *  health: Number // a number from 0 to 100
+ *  diplomacy: Number // a number from 0 to 100
+ * }
+ */
 app.post("/api/admin/change_stats/:username"
 ```
 
 ```javascript
-// admin exclusive route for banning/unbanning user
+/**
+ * Admin-only route for banning/unbanning a user
+ * expected parameter:
+ *  A string corresponding to the username of the user you are banning/unbanning
+ *  A string, either 'ban' or 'unban'
+ */
 app.post("/api/admin/change_ban/:username/:ban_status"
 ```
 
 ```javascript
-// admin exclusive route for obtaining information of a random event
+/**
+ * Admin-only route for getting information about an event
+ * expected parameter:
+ *  A string corresponding to the name of the event you are searching for
+ * expected output:
+ * {
+ *  event: [Object], // RandomEvent
+ *  choice_one_establishment: [Object] // Establishment (optional, if applicable)
+ *  choice_two_establishment: [Object] // Establishment (optional, if applicable)
+ * }
+ */
 app.get("/api/admin/search_event/:event_name"
 ```
 
 ```javascript
-// admin exclusive route for creating a new random event
+/**
+ * Admin-only route for saving a new event
+ * expected data:
+ * {
+ *  event-name: String, // Name of the event
+ *  event-description: String,  // Description for the event
+ *  choice-one-description: String, // Description for the first choice
+ *  choice-one-econ: Number,    // Economy statistic change for the first choice
+ *  choice-one-order: Number,   // Order statistic change for the first choice
+ *  choice-one-health: Number,  // Health statistic change for the first choice
+ *  choice-one-diplomacy: Number,   // Diplomacy statistic change for the first choice
+ *  choice-one-log-content: String, // Log content the first choice
+ *  choice-one-establishment-name: String,  // Optional; name for the establishment of the first choice
+ *  choice-one-establishment-description: String,   // Optional; description for the establishment of the first choice
+ *  choice-one-establishment-econ: Number,  // Optional; economy statistic change for the establishment of the first choice
+ *  choice-one-establishment-order: Number, // Optional; order statistic change for the establishment of the first choice
+ *  choice-one-establishment-health: Number,    // Optional; health statistic change for the establishment of the first choice
+ *  choice-one-establishment-diplomacy: Number, // Optional; diplomacy statistic change for the establishment of the first choice
+ *  choice-two-description: String  // Description for the second choice
+ *  choice-two-econ: Number,    // Economy statistic change for the second choice
+ *  choice-two-order: Number,   // Order statistic change for the second choice
+ *  choice-two-health: Number,  // Health statistic change for the second choice
+ *  choice-two-diplomacy: Number,   // Diplomacy statistic change for the second choice
+ *  choice-two-log-content: String, // Log content for the second choice
+ *  choice-two-establishment-name: String,  // Optional; name for the establishment of the first choice
+ *  choice-two-establishment-description: String,   // Optional; description for the establishment of the first choice
+ *  choice-two-establishment-econ: Number,  // Optional; economy statistic change for the establishment of the first choice
+ *  choice-two-establishment-order: Number, // Optional; order statistic change for the establishment of the first choice
+ *  choice-two-establishment-health: Number,    // Optional; health statistic change for the establishment of the first choice
+ *  choice-two-establishment-diplomacy: Number  // Optional; diplomacy statistic change for the establishment of the first choice
+ * }
+ */
 app.post("/api/admin/create_event"
 ```
 
@@ -363,6 +480,8 @@ app.get("/api/admin/feedback"
 ```javascript
 /**
  * Route for admin to delete a specific user feeback
+ * expected parameter:
+ *  A string corresponding to the id of the Feeback document you are deleting
  */
 app.delete("/api/admin/feedback/:id"
 ```

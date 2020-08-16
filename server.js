@@ -885,6 +885,11 @@ app.get("/api/user/diplomacy/:pageNumber", mongoChecker, (req, res) => {
     })
 });
 
+/**
+ * Route for getting the diplomatic status between a user and another user
+ * expected parameter:
+ *  username: String    // the username of the user you are checking your diplomatic status with
+ */
 app.get("/api/user/diplomacy/status/:username", mongoChecker, (req, res) => {
     const username = req.session.username;
     const ally = req.params.username;
@@ -1102,6 +1107,11 @@ app.get("/api/patchnote", mongoChecker, (req, res) => {
     });
 });
 
+/**
+ * Route for getting a user's profile info
+ * optional parameters:
+ *  A string corresponding to the user whose profile info you are getting
+ */
 app.get('/api/user/user_profile_info/:username?', async(req, res) => {
     const username = req.params.username ? req.params.username : req.session.username;
 
@@ -1128,6 +1138,17 @@ app.get('/api/user/user_profile_info/:username?', async(req, res) => {
     }
 });
 
+/**
+ * Route for saving a user's changes to the user profile info
+ * expected data:
+ * {
+ *  age: Number
+ *  country: String
+ *  gender: String
+ *  email: String   // A valid email string
+ *  socialMedia: [String]   // An array of strings corresponding to social media accounts
+ * }
+ */
 app.post('/api/user/user_profile_info', async(req, res) => {
     try {
         const profile = await Profile.findByUsername(req.session.username);
@@ -1142,6 +1163,11 @@ app.post('/api/user/user_profile_info', async(req, res) => {
     }
 });
 
+/**
+ * Route for uploading a user's user icon
+ * expected data:
+ *  A file
+ */
 app.post('/api/user/upload_icon', multipartMiddleware, (req, res) => {
     cloudinary.uploader.upload(req.files.image.path, {
         eager: [
@@ -1188,6 +1214,11 @@ app.post('/api/user/upload_icon', multipartMiddleware, (req, res) => {
     });
 });
 
+/**
+ * Route for getting a user's user icon
+ * optional parameters:
+ *  A string corresponding to the username of the user whose user icon you're getting
+ */
 app.get('/api/user/user_icon/:username?', (req, res) => {
     const username = req.params.username ? req.params.username : req.session.username;
 
@@ -1234,6 +1265,13 @@ app.get('/api/user/user_icon/:username?', (req, res) => {
     });
 });
 
+/**
+ * Route for saving a user's change to their country's name
+ * expected data:
+ * {
+ *  countryName: String // the update country name
+ * }
+ */
 app.post('/api/user/change_country_name', mongoChecker, async(req, res) => {
     try {
         const country = await Profile.findByCountryName(req.body.countryName);
@@ -1251,6 +1289,11 @@ app.post('/api/user/change_country_name', mongoChecker, async(req, res) => {
     }
 });
 
+/**
+ * Route for uploader a user's flag
+ * expected data:
+ *  A file
+ */
 app.post('/api/user/upload_flag', multipartMiddleware, (req, res) => {
     cloudinary.uploader.upload(req.files.image.path).then(image => {
         UserFlag.findByUsername(req.session.username).then((userFlag) => {
@@ -1288,6 +1331,13 @@ app.post('/api/user/upload_flag', multipartMiddleware, (req, res) => {
     });
 });
 
+/**
+ * Route for getting a user's flag
+ * expected output:
+ * {
+ *  url: String // string corresponding to the url of the image
+ * }
+ */
 app.get('/api/user/user_flag/:username?', (req, res) => {
     const username = req.params.username ? req.params.username : req.session.username;
 
@@ -1311,6 +1361,11 @@ app.get('/api/user/user_flag/:username?', (req, res) => {
     });
 });
 
+/**
+ * Route for getting an array of users sorted by the sum of their gameplay statistics
+ * expected output:
+ *  [Object] // An array of Gameplay documents sorted in descending order based on the sum of their gameplay statistic
+ */
 app.get("/api/user/leaderboard", mongoChecker, async(req, res) => {
     try {
         const user_gameplay = await Gameplay.find();
@@ -1329,6 +1384,11 @@ app.get("/api/user/leaderboard", mongoChecker, async(req, res) => {
     }
 });
 
+/**
+ * Admin-only route for deleting a user's user icon
+ * expected parameter:
+ *  A string corresponding to the username of the user whose user icon you are deleting
+ */
 app.delete('/api/admin/delete_icon/:username', mongoChecker, adminRequestChecker, (req, res) => {
     const username = req.params.username;
 
@@ -1348,6 +1408,11 @@ app.delete('/api/admin/delete_icon/:username', mongoChecker, adminRequestChecker
     });
 });
 
+/**
+ * Admin-only route for getting a user's user info
+ * expected parameter:
+ *  A string corresponding to the username of the user whose user info you are getting
+ */
 app.get("/api/admin/user_info/:username", adminRequestChecker, mongoChecker, (req, res) => {
     const username = req.params.username;
 
@@ -1366,6 +1431,11 @@ app.get("/api/admin/user_info/:username", adminRequestChecker, mongoChecker, (re
     });
 });
 
+/**
+ * Admin-only route for getting a user's gameplay statistics
+ * expected parameter:
+ *  A string corresponding to the username of the user whose gameplay statistics you are getting
+ */
 app.get("/api/admin/gameplay_stat/:username", adminRequestChecker, mongoChecker, (req, res) => {
     const username = req.params.username;
 
@@ -1384,6 +1454,11 @@ app.get("/api/admin/gameplay_stat/:username", adminRequestChecker, mongoChecker,
     });
 });
 
+/**
+ * Admin-only route for getting a user's ban status
+ * expected parameter:
+ *  A string corresponding to the username of the user whose ban status you are getting
+ */
 app.get("/api/admin/ban_status/:username", mongoChecker, adminRequestChecker, async(req, res) => {
     const username = req.params.username;
 
@@ -1404,6 +1479,18 @@ app.get("/api/admin/ban_status/:username", mongoChecker, adminRequestChecker, as
     }
 });
 
+/**
+ * Admin-only route for changing a user's gameplay statistic
+ * expected parameter:
+ *  A string corresponding to the username of the user whose ban status you are getting
+ * expected data:
+ * {
+ *  economy: Number // a number from 0 to 100
+ *  order: Number // a number from 0 to 100
+ *  health: Number // a number from 0 to 100
+ *  diplomacy: Number // a number from 0 to 100
+ * }
+ */
 app.post("/api/admin/change_stats/:username", adminRequestChecker, mongoChecker, async(req, res) => {
     const username = req.params.username;
 
@@ -1446,6 +1533,12 @@ app.post("/api/admin/change_stats/:username", adminRequestChecker, mongoChecker,
     });
 });
 
+/**
+ * Admin-only route for banning/unbanning a user
+ * expected parameter:
+ *  A string corresponding to the username of the user you are banning/unbanning
+ *  A string, either 'ban' or 'unban'
+ */
 app.post("/api/admin/change_ban/:username/:ban_status", adminRequestChecker, mongoChecker, (req, res) => {
     const username = req.params.username;
     const ban_status = req.params.ban_status;
@@ -1465,6 +1558,17 @@ app.post("/api/admin/change_ban/:username/:ban_status", adminRequestChecker, mon
     });
 });
 
+/**
+ * Admin-only route for getting information about an event
+ * expected parameter:
+ *  A string corresponding to the name of the event you are searching for
+ * expected output:
+ * {
+ *  event: [Object], // RandomEvent
+ *  choice_one_establishment: [Object] // Establishment (optional, if applicable)
+ *  choice_two_establishment: [Object] // Establishment (optional, if applicable)
+ * }
+ */
 app.get("/api/admin/search_event/:event_name", adminRequestChecker, mongoChecker, async(req, res) => {
     const event_name = req.params.event_name;
     const event_data = {};
@@ -1509,6 +1613,38 @@ app.get("/api/admin/search_event/:event_name", adminRequestChecker, mongoChecker
     }
 });
 
+/**
+ * Admin-only route for saving a new event
+ * expected data:
+ * {
+ *  event-name: String, // Name of the event
+ *  event-description: String,  // Description for the event
+ *  choice-one-description: String, // Description for the first choice
+ *  choice-one-econ: Number,    // Economy statistic change for the first choice
+ *  choice-one-order: Number,   // Order statistic change for the first choice
+ *  choice-one-health: Number,  // Health statistic change for the first choice
+ *  choice-one-diplomacy: Number,   // Diplomacy statistic change for the first choice
+ *  choice-one-log-content: String, // Log content the first choice
+ *  choice-one-establishment-name: String,  // Optional; name for the establishment of the first choice
+ *  choice-one-establishment-description: String,   // Optional; description for the establishment of the first choice
+ *  choice-one-establishment-econ: Number,  // Optional; economy statistic change for the establishment of the first choice
+ *  choice-one-establishment-order: Number, // Optional; order statistic change for the establishment of the first choice
+ *  choice-one-establishment-health: Number,    // Optional; health statistic change for the establishment of the first choice
+ *  choice-one-establishment-diplomacy: Number, // Optional; diplomacy statistic change for the establishment of the first choice
+ *  choice-two-description: String  // Description for the second choice
+ *  choice-two-econ: Number,    // Economy statistic change for the second choice
+ *  choice-two-order: Number,   // Order statistic change for the second choice
+ *  choice-two-health: Number,  // Health statistic change for the second choice
+ *  choice-two-diplomacy: Number,   // Diplomacy statistic change for the second choice
+ *  choice-two-log-content: String, // Log content for the second choice
+ *  choice-two-establishment-name: String,  // Optional; name for the establishment of the first choice
+ *  choice-two-establishment-description: String,   // Optional; description for the establishment of the first choice
+ *  choice-two-establishment-econ: Number,  // Optional; economy statistic change for the establishment of the first choice
+ *  choice-two-establishment-order: Number, // Optional; order statistic change for the establishment of the first choice
+ *  choice-two-establishment-health: Number,    // Optional; health statistic change for the establishment of the first choice
+ *  choice-two-establishment-diplomacy: Number  // Optional; diplomacy statistic change for the establishment of the first choice
+ * }
+ */
 app.post("/api/admin/create_event", adminRequestChecker, mongoChecker, async(req, res) => {
     try {
         const choice_one_stat_change = new StatChange({
@@ -1643,6 +1779,8 @@ app.get("/api/admin/feedback", adminRequestChecker, mongoChecker, async(req, res
 
 /**
  * Route for admin to delete a specific user feeback
+ * expected parameter:
+ *  A string corresponding to the id of the Feeback document you are deleting
  */
 app.delete("/api/admin/feedback/:id", adminRequestChecker, mongoChecker, async(req, res) => {
     const id = req.params.id;
