@@ -237,7 +237,6 @@ const GameplaySchema = new mongoose.Schema({
         required: true,
         unique: true, // Usernames need to be unique
         minLength: 3,
-        lowercase: true,
         trim: true
     },
     statistic: {
