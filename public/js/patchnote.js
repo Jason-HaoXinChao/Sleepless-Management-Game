@@ -18,8 +18,6 @@ function initializePage() {
             return response.json();
         }
     }).then(patchNotes => {
-        log("here is the patchnote")
-        log(patchNotes);
         if (patchNotes) {
             const patchName = document.getElementById("patchname");
             patchName.innerText = `Patch ${patchNotes.name} Notes`;

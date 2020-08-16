@@ -48,7 +48,6 @@ function initializePage(e) {
  */
 function switchPage(e) {
     e.preventDefault();
-    log("this is the target", e.target);
     const pageButton = e.target;
     const pageNumber = pageButton.innerText;
     // Empty the card container to put in new cards
