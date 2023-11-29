@@ -1,4 +1,5 @@
 Instructions:
+
 ~~To start, open [this link](https://sleepless-the-game.herokuapp.com/welcome) to access the deployed app. On this page you will see a header bar and some content. On the header bar you can click on the headers to open the corresponding pages. (in case link doesn't work, you can copy paste the link manually here: https://sleepless-the-game.herokuapp.com/welcome)~~
 The game is no longer deployed due to heroku free hosting policy changes. If you want to run the game, you must do it locally.
 
