@@ -1,6 +1,6 @@
-# team32
 Instructions:
-To start, open [this link](https://sleepless-the-game.herokuapp.com/welcome) to access the deployed app. On this page you will see a header bar and some content. On the header bar you can click on the headers to open the corresponding pages. (in case link doesn't work, you can copy paste the link manually here: https://sleepless-the-game.herokuapp.com/welcome)
+~~To start, open [this link](https://sleepless-the-game.herokuapp.com/welcome) to access the deployed app. On this page you will see a header bar and some content. On the header bar you can click on the headers to open the corresponding pages. (in case link doesn't work, you can copy paste the link manually here: https://sleepless-the-game.herokuapp.com/welcome)~~
+The game is no longer deployed due to heroku free hosting policy changes. If you want to run the game, you must do it locally.
 
     Leaderboard: on this page, you can see the top 10 players on the server. You can see their icons, username, core ingame statistics. You can only visit their profile page once you have registered or logged in to an account.
     
@@ -73,7 +73,7 @@ We have a LOT of routes. We will list the url, method, expected body and output 
  *          birthday: <a string in the format YYYY-MM-DD>
  *      }
  */
-app.post("/api/register"
+app.post("/api/register")
 ```
 
 ```javascript
@@ -90,7 +90,7 @@ app.post("/api/login"
 
 ```javascript
 // Logout Route, no expected body or output
-app.post("/api/logout"
+app.post("/api/logout")
 ```
 
 
@@ -105,7 +105,7 @@ app.post("/api/logout"
  * log: send log property
  * strategy: send strategy property
  */
-app.get("/api/user/gameplay/stat/:type/:username?"
+app.get("/api/user/gameplay/stat/:type/:username?")
 ```
 
 ```javascript
@@ -122,7 +122,7 @@ app.get("/api/user/gameplay/stat/:type/:username?"
  * statChange: [number]
  * }
  */
-app.post("/api/user/gameplay/EstInfo"
+app.post("/api/user/gameplay/EstInfo")
 ```
 
 ```javascript
@@ -137,7 +137,7 @@ app.post("/api/user/gameplay/EstInfo"
  * strategyType: which strategy is being change(economy/order/health/diplomacy)
  * value: the new choice of strategy for that field
  */
-app.post("/api/user/gameplay/strategy/:type/:value"
+app.post("/api/user/gameplay/strategy/:type/:value")
 ```
 
 ```javascript
@@ -155,7 +155,7 @@ app.post("/api/user/gameplay/strategy/:type/:value"
  *  newStatistic: object (see StatisticSchema)
  * }
  */
-app.post("/api/user/gameplay/event"
+app.post("/api/user/gameplay/event")
 ```
 
 ```javascript
@@ -174,7 +174,7 @@ app.post("/api/user/gameplay/event"
  *              }
  * }
  */
-app.get("/api/user/gameplay/update"
+app.get("/api/user/gameplay/update")
 ```
 
 ```javascript
@@ -187,14 +187,14 @@ app.get("/api/user/gameplay/update"
  *  connection: [String]    // each element is a user name, should send at most 6 each call
  * }
  */
-app.get("/api/user/diplomacy/:pageNumber"
+app.get("/api/user/diplomacy/:pageNumber")
 ```
 
 ```javascript
 /**
  * Route that cehcks whether :username is an ally, returns true or false.
  */
-app.get("/api/user/diplomacy/status/:username"
+app.get("/api/user/diplomacy/status/:username")
 ```
 
 ```javascript
@@ -211,7 +211,7 @@ app.get("/api/user/diplomacy/status/:username"
  * 
  * Current maximum number of diplomatic connection is 30
  */
-app.post("/api/user/diplomacy/add"
+app.post("/api/user/diplomacy/add")
 ```
 
 ```javascript 
@@ -226,7 +226,7 @@ app.post("/api/user/diplomacy/add"
  *  status: String   // Should indicate one of: not in list, success
  * }
  */
-app.post("/api/user/diplomacy/delete"
+app.post("/api/user/diplomacy/delete")
 ```
 
 ```javascript 
@@ -244,7 +244,7 @@ app.post("/api/user/diplomacy/delete"
  * 
  * Current maximum number of diplomatic connection is 30
  */
-app.post("/api/user/diplomacy/send"
+app.post("/api/user/diplomacy/send")
 ```
 
 ```javascript 
@@ -255,7 +255,7 @@ app.post("/api/user/diplomacy/send"
  *  notes: [Object] //content should follow the NoteSchema in ./models/PatchNotes
  * }
  */
-app.get("/api/patchnote"
+app.get("/api/patchnote")
 ```
 
 ```javascript
@@ -264,7 +264,7 @@ app.get("/api/patchnote"
  * optional parameters:
  *  A string corresponding to the user whose profile info you are getting
  */
-app.get('/api/user/user_profile_info/:username?'
+app.get('/api/user/user_profile_info/:username?')
 ```
 
 ```javascript
@@ -279,7 +279,7 @@ app.get('/api/user/user_profile_info/:username?'
  *  socialMedia: [String]   // An array of strings corresponding to social media accounts
  * }
  */
-app.post('/api/user/user_profile_info'
+app.post('/api/user/user_profile_info')
 ```
 
 ```javascript
@@ -289,7 +289,7 @@ app.post('/api/user/user_profile_info'
  *  A file
  */
 // route that uploads an icon for the currently logged in user
-app.post('/api/user/upload_icon'
+app.post('/api/user/upload_icon')
 ```
 
 ```javascript
@@ -299,7 +299,7 @@ app.post('/api/user/upload_icon'
  *  A string corresponding to the username of the user whose user icon you're getting
  */
 // returns the icon of the specified user
-app.get('/api/user/user_icon/:username?'
+app.get('/api/user/user_icon/:username?')
 ```
 
 ```javascript
@@ -310,7 +310,7 @@ app.get('/api/user/user_icon/:username?'
  *  countryName: String // the update country name
  * }
  */
-app.post('/api/user/change_country_name'
+app.post('/api/user/change_country_name')
 ```
 
 ```javascript
@@ -319,7 +319,7 @@ app.post('/api/user/change_country_name'
  * expected data:
  *  A file
  */
-app.post('/api/user/upload_flag'
+app.post('/api/user/upload_flag')
 ```
 
 ```javascript
@@ -330,7 +330,7 @@ app.post('/api/user/upload_flag'
  *  url: String // string corresponding to the url of the image
  * }
  */
-app.get('/api/user/user_flag/:username?'
+app.get('/api/user/user_flag/:username?')
 ```
 
 ```javascript
@@ -339,7 +339,7 @@ app.get('/api/user/user_flag/:username?'
  * expected output:
  *  [Object] // An array of Gameplay documents sorted in descending order based on the sum of their gameplay statistic
  */
-app.get("/api/user/leaderboard"
+app.get("/api/user/leaderboard")
 ```
 
 ```javascript
@@ -348,7 +348,7 @@ app.get("/api/user/leaderboard"
  * expected parameter:
  *  A string corresponding to the username of the user whose user icon you are deleting
  */
-app.delete('/api/admin/delete_icon/:username'
+app.delete('/api/admin/delete_icon/:username')
 ```
 
 ```javascript
@@ -357,7 +357,7 @@ app.delete('/api/admin/delete_icon/:username'
  * expected parameter:
  *  A string corresponding to the username of the user whose user info you are getting
  */
-app.get("/api/admin/user_info/:username"
+app.get("/api/admin/user_info/:username")
 ```
 
 ```javascript
@@ -366,7 +366,7 @@ app.get("/api/admin/user_info/:username"
  * expected parameter:
  *  A string corresponding to the username of the user whose gameplay statistics you are getting
  */
-app.get("/api/admin/gameplay_stat/:username"
+app.get("/api/admin/gameplay_stat/:username")
 ```
 
 ```javascript
@@ -375,7 +375,7 @@ app.get("/api/admin/gameplay_stat/:username"
  * expected parameter:
  *  A string corresponding to the username of the user whose ban status you are getting
  */
-app.get("/api/admin/ban_status/:username"
+app.get("/api/admin/ban_status/:username")
 ```
 
 ```javascript
@@ -391,7 +391,7 @@ app.get("/api/admin/ban_status/:username"
  *  diplomacy: Number // a number from 0 to 100
  * }
  */
-app.post("/api/admin/change_stats/:username"
+app.post("/api/admin/change_stats/:username")
 ```
 
 ```javascript
@@ -401,7 +401,7 @@ app.post("/api/admin/change_stats/:username"
  *  A string corresponding to the username of the user you are banning/unbanning
  *  A string, either 'ban' or 'unban'
  */
-app.post("/api/admin/change_ban/:username/:ban_status"
+app.post("/api/admin/change_ban/:username/:ban_status")
 ```
 
 ```javascript
@@ -416,7 +416,7 @@ app.post("/api/admin/change_ban/:username/:ban_status"
  *  choice_two_establishment: [Object] // Establishment (optional, if applicable)
  * }
  */
-app.get("/api/admin/search_event/:event_name"
+app.get("/api/admin/search_event/:event_name")
 ```
 
 ```javascript
@@ -452,7 +452,7 @@ app.get("/api/admin/search_event/:event_name"
  *  choice-two-establishment-diplomacy: Number  // Optional; diplomacy statistic change for the establishment of the first choice
  * }
  */
-app.post("/api/admin/create_event"
+app.post("/api/admin/create_event")
 ```
 
 ```javascript
@@ -463,7 +463,7 @@ app.post("/api/admin/create_event"
  *  content: String
  * }
  */
-app.post("/api/user/feedback"
+app.post("/api/user/feedback")
 ```
 
 ```javascript
@@ -474,7 +474,7 @@ app.post("/api/user/feedback"
  *  feedbacks:[Object]  // should contain Feedback models
  * }
  */
-app.get("/api/admin/feedback"
+app.get("/api/admin/feedback")
 ```
 
 ```javascript
@@ -483,38 +483,38 @@ app.get("/api/admin/feedback"
  * expected parameter:
  *  A string corresponding to the id of the Feeback document you are deleting
  */
-app.delete("/api/admin/feedback/:id"
+app.delete("/api/admin/feedback/:id")
 ```
 
 ```javascript
 // Root route: redirects to the '/welcome'
-app.get('/'
+app.get('/')
 ```
 
 ```javascript
 // '/welcome' route: reirects to '/admin_dashboard' if the user is logged in and is an admin user;
 //  redirects to '/gameplay' if the user is already logged in but isn't an admin user
-app.get('/welcome'
+app.get('/welcome')
 ```
 
 ```javascript
 // '/gameplay' route: redirects to '/welcome' if the user isn't logged in; redirects to '/admin_dashboard' if the user is an admin user
-app.get('/gameplay'
+app.get('/gameplay')
 ```
 
 ```javascript
 // '/diplomacy' route: redirects to '/welcome' if the user isn't logged in; redirects to '/admin_dashboard' if the user is an admin user
-app.get('/diplomacy'
+app.get('/diplomacy')
 ```
 
 ```javascript
 // '/contact' route: redirects to '/welcome' if the user isn't logged in; redirects to '/admin_dashboard' if the user is an admin user
-app.get('/contact'
+app.get('/contact')
 ```
 
 ```javascript
 // '/leaderboard' route: if the user isn't logged in, the header will only display links to the the patchnotes and the leaderboard (excluding the other links)
-app.get('/leaderboard'
+app.get('/leaderboard')
 ```
 
 ```javascript
@@ -523,20 +523,20 @@ app.get('/leaderboard'
  * If the user is an admin user - the header will display admin specific links only
  * If the user isn't logged in - the header will only display links to the the patchnotes and the leaderboard (excluding the other links)
  */
-app.get('/patchnotes'
+app.get('/patchnotes')
 ```
 
 ```javascript
 / '/admin_dashboard' route: redirects to '/welcome' if the user isn't logged in; redirects to '/gameplay' if the user isn't an admin user
-app.get('/admin_dashboard'
+app.get('/admin_dashboard')
 ```
 
 ```javascript
 // '/user_feedback' route: redirects to '/welcome' if the user isn't logged in; redirects to '/gameplay' if the user isn't an admin user
-app.get('/user_feedback'
+app.get('/user_feedback')
 ```
 
 ```javascript
 // '/user_profile' route: redirects to '/login' if the user isn't logged in; redirects to '/admin_dashboard' if the user is an admin user
-app.get('/user_profile'
+app.get('/user_profile')
 ```
